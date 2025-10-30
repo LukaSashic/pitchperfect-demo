@@ -173,6 +173,13 @@
             border-bottom: 1px solid var(--border);
             background: var(--white);
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-content {
+            flex: 1;
         }
 
         .chat-title {
@@ -495,19 +502,20 @@
 
         .menu-toggle {
             display: none;
-            position: fixed;
-            bottom: 1rem;
-            left: 1rem;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
+            border-radius: 8px;
+            font-size: 1.25rem;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 200;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-dark);
         }
 
         @media (max-width: 768px) {
@@ -534,7 +542,7 @@
             }
 
             .chat-title {
-                font-size: 1.125rem;
+                font-size: 1rem;
             }
 
             .chat-subtitle {
@@ -641,8 +649,13 @@
 
         <div class="main-area">
             <div class="chat-header" id="chatHeader">
-                <div class="chat-title">Wähle eine Phase zum Starten</div>
-                <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
+                <div class="chat-header-content">
+                    <div class="chat-title">Wähle eine Phase zum Starten</div>
+                    <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
+                </div>
+                <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
+                    ☰
+                </button>
             </div>
 
             <div class="welcome-screen" id="welcomeScreen">
@@ -672,10 +685,6 @@
             </div>
         </div>
     </div>
-
-    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
-        ☰
-    </button>
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
