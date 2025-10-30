@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PitchPerfect AI - Finde die 7 fatalen Fehler in deinem Pitch in 5 Minuten</title>
+    <meta name="description" content="KI-gestützte Pitch-Diagnose, die die 7 kritischen Lücken in deiner Präsentation findet, bevor du dich blamierst. Genutzt von Gründern, die Millionen einsammeln und Speakern, die Keynotes landen.">
+    
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <script src="pitchperfect-connector.js"></script>
+    
+    <style>
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #D97706;
+            --primary-dark: #B45309;
+            --primary-light: #FCD34D;
+            --secondary: #065F46;
+            --secondary-dark: #064E3B;
+            --text-dark: #1F2937;
+            --text-medium: #4B5563;
+            --text-light: #6B7280;
+            --bg-cream: #FFFBEB;
+            --bg-light: #F9FAFB;
+            --white: #FFFFFF;
+            --error: #DC2626;
+            --success: #059669;
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-2xl: 4rem;
+            --spacing-3xl: 6rem;
+            
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.75;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--text-dark);
+            line-height: var(--line-height-normal);
+            overflow-x: hidden;
+            background: var(--white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .container-narrow {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-md) 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--text-dark);
+            border: 2px solid var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .btn-large {
+            padding: 1.125rem 2.5rem;
+            font-size: 1.125rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-cream) 0%, var(--white) 100%);
+            padding: var(--spacing-3xl) 0 var(--spacing-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(217, 119, 6, 0.05));
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.25rem, 5vw, 3.75rem);
+            font-weight: 800;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-dark);
+        }
+
+        .hero h1 .highlight {
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-subheading {
+            font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+            color: var(--text-medium);
+            margin-bottom: var(--spacing-xl);
+            line-height: var(--line-height-relaxed);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .hero-trust {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--spacing-xl);
+            flex-wrap: wrap;
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trust-number {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .trust-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* Problem Section */
+        .problem {
+            padding: var(--spacing-3xl) 0;
+            background: var(--white);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            line-height: var(--line-height-tight);
+        }
+
+        .section-header p {
+            font-size: 1.25rem;
+            color: var(--text-medium);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .problem-card {
+            background: var(--bg-light);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            border-left: 4px solid var(--error);
+            transition: transform 0.2s ease;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .problem-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--error);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .problem-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .problem-card p {
+            color: var(--text-medium);
+            line-height: var(--line-height-relaxed);
+        }
+
+        /* Solution Section */
+        .solution {
+            padding: var(--spacing-3xl) 0;
+            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary) 100%);
+            color: var(--white);
+        }
+
+        .solution .section-header h2,
+        .solution .section-header p {
+            color: var(--white);
+        }
+
+        .solution-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            align-items: center;
+        }
+
+        .solution-text h3 {
+            font-size: 1.75rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-light);
+        }
+
+        .solution-text p {
+            font-size: 1.125rem;
+            line-height: var(--line-height-relaxed);
+            margin-bottom: var(--spacing-md);
+            opacity: 0.95;
+        }
+
+        .solution-features {
+            list-style: none;
+        }
+
+        .solution-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            font-size: 1.125rem;
+        }
+
+        .solution-features .check {
+            color: var(--primary-light);
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .solution-visual {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-xl);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .diagnostic-preview {
+            background: var(--white);
+            color: var(--text-dark);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .diagnostic-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .diagnostic-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .status-critical { background: #FEE2E2; color: var(--error); }
+        .status-warning { background: #FEF3C7; color: #D97706; }
+        .status-good { background: #D1FAE5; color: var(--success); }
+
+        /* Benefits Section */
+        .benefits {
+            padding: var(--spacing-3xl) 0;
+            background: var(--white);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .benefit-card {
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: var(--bg-light);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            font-size: 2rem;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .benefit-card p {
+            color: var(--text-medium);
+            line-height: var(--line-height-relaxed);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: var(--spacing-3xl) 0;
+            background: var(--bg-cream);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            position: relative;
+        }
+
+        .step {
+            text-align: center;
+            padding: var(--spacing-lg);
+            position: relative;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto var(--spacing-md);
+            box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3);
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .step p {
+            color: var(--text-medium);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .step-time {
+            display: inline-block;
+            background: var(--white);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: var(--spacing-sm);
+        }
+
+        /* Social Proof */
+        .social-proof {
+            padding: var(--spacing-3xl) 0;
+            background: var(--white);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .testimonial {
+            background: var(--bg-light);
+            padding: var(--spacing-xl);
+            border-radius: 12px;
+            border-top: 4px solid var(--primary);
+        }
+
+        .testimonial-quote {
+            font-size: 1.125rem;
+            line-height: var(--line-height-relaxed);
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-md);
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .testimonial-info {
+            flex: 1;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .testimonial-title {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .testimonial-result {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--white);
+            border-left: 3px solid var(--success);
+            font-size: 0.875rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: var(--spacing-3xl) 0;
+            background: var(--bg-cream);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(217, 119, 6, 0.2);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 0.25rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .pricing-card .price span {
+            font-size: 1.25rem;
+            color: var(--text-medium);
+            font-weight: 400;
+        }
+
+        .pricing-card .price-description {
+            color: var(--text-light);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-medium);
+        }
+
+        .pricing-features .check {
+            color: var(--success);
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        /* Guarantee */
+        .guarantee {
+            padding: var(--spacing-2xl) 0;
+            background: var(--white);
+        }
+
+        .guarantee-box {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-light);
+            padding: var(--spacing-xl);
+            border-radius: 16px;
+            border: 2px solid var(--success);
+            text-align: center;
+        }
+
+        .guarantee-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--success);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            font-size: 2rem;
+        }
+
+        .guarantee-box h3 {
+            font-size: 1.75rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .guarantee-box p {
+            font-size: 1.125rem;
+            color: var(--text-medium);
+            line-height: var(--line-height-relaxed);
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: var(--spacing-3xl) 0;
+            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary) 100%);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .final-cta p {
+            font-size: 1.25rem;
+            margin-bottom: var(--spacing-xl);
+            opacity: 0.95;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .final-cta .btn-primary {
+            background: var(--white);
+            color: var(--secondary);
+        }
+
+        .final-cta .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: var(--white);
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: var(--spacing-2xl) 0 var(--spacing-xl);
+            }
+
+            .hero-cta-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-cta-group .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .solution-content {
+                grid-template-columns: 1fr;
+            }
+
+            .solution-visual {
+                order: -1;
+            }
+
+            .problem-grid,
+            .benefits-grid,
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: var(--spacing-sm); }
+        .mt-2 { margin-top: var(--spacing-md); }
+        .mb-1 { margin-bottom: var(--spacing-sm); }
+        .mb-2 { margin-bottom: var(--spacing-md); }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">PP</div>
+                    PitchPerfect AI
+                </a>
+                <a href="diagnostic-questionnaire.html" class="btn btn-primary">Kostenlose Diagnose</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>⚡</span>
+                    <span>Genutzt von 2.347+ Gründern und Speakern</span>
+                </div>
+                
+                <h1>
+                    Finde die <span class="highlight">7 fatalen Fehler</span>, die deinen Pitch killen - in 5 Minuten
+                </h1>
+                
+                <p class="hero-subheading">
+                    KI-gestützte Pitch-Diagnose, die die kritischen Lücken in deinem Investoren-Deck oder deiner Präsentation findet, <strong>bevor</strong> du dich blamierst. Keine Templates. Kein Raten. Nur brutale Ehrlichkeit und Expertenrat.
+                </p>
+
+                <div class="hero-cta-group">
+                    <a href="diagnostic-questionnaire.html" class="btn btn-primary btn-large">
+                        Kostenlose Diagnose erhalten →
+                    </a>
+                    <a href="#how-it-works" class="btn btn-secondary">
+                        Wie es funktioniert
+                    </a>
+                </div>
+
+                <div class="hero-trust">
+                    <div class="trust-item">
+                        <div class="trust-number">€500M+</div>
+                        <div class="trust-label">Von Nutzern eingesammelt</div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-number">10.000+</div>
+                        <div class="trust-label">Analysierte Pitches</div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-number">95%</div>
+                        <div class="trust-label">Erfolgsrate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem">
+        <div class="container">
+            <div class="section-header">
+                <h2>95% der Pitches scheitern, weil...</h2>
+                <p>Diese fatalen Fehler killen jeden Tag Finanzierungen und Speaking-Möglichkeiten</p>
+            </div>
+
+            <div class="problem-grid fade-in">
+                <div class="problem-card">
+                    <div class="problem-icon">❌</div>
+                    <h3>Vage Problemstellungen</h3>
+                    <p>"Menschen brauchen bessere Produktivität" — Investoren checken ihre Handys. Welches Problem <strong>genau</strong>? Wer hat es? Wie viel kostet es sie?</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">❌</div>
+                    <h3>Keine Beweise, dass es funktioniert</h3>
+                    <p>"Wir werden den Markt disruptieren" — Mit welchen Beweisen? Wo sind deine Kunden? Deine Metriken? Deine Fallstudien? Keine Beweise = keine Glaubwürdigkeit.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">❌</div>
+                    <h3>Schwache Finanzen</h3>
+                    <p>"Wir werden bald profitabel sein" — Zeig mir die Zahlen. LTV:CAC Verhältnis? Unit Economics? Burn Rate? Vage Zahlen = sofortige Ablehnung.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">❌</div>
+                    <h3>Kann grundlegende Fragen nicht beantworten</h3>
+                    <p>"Äh, da müsste ich nochmal nachschauen..." — Der Todeskuss. Wenn du dein Business nicht in- und auswendig kennst, warum sollte jemand investieren?</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">❌</div>
+                    <h3>Verwirrende Lösung</h3>
+                    <p>"Es ist wie Uber für Hunde meets Blockchain KI" — Wenn deine Oma es nicht in 30 Sekunden versteht, werden Investoren es nicht finanzieren.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">❌</div>
+                    <h3>Kein Wettbewerbsvorteil</h3>
+                    <p>"Wir haben keine Konkurrenz" — Falsch. Jeder hat Konkurrenz, selbst wenn es Excel ist. Was ist dein unfairer Vorteil, der nicht kopiert werden kann?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution">
+        <div class="container">
+            <div class="section-header">
+                <h2>Der KI-Pitch-Coach, der dich nicht scheitern lässt</h2>
+                <p>Systematisches Hinterfragen, das jeden fatalen Fehler findet, bevor du pitchst</p>
+            </div>
+
+            <div class="solution-content fade-in">
+                <div class="solution-text">
+                    <h3>Wie die meisten Pitch-Coaches versagen</h3>
+                    <p>
+                        Sie machen deine Slides hübscher. Sie sagen dir "sei selbstbewusster". Sie verlangen €5.000 für generische Ratschläge.
+                    </p>
+                    <p>
+                        Aber sie stellen nie die harten Fragen, die VCs, Investoren und Auswahlkomitees <strong>tatsächlich interessieren</strong>.
+                    </p>
+
+                    <h3 style="margin-top: 2rem;">Was PitchPerfect AI anders macht</h3>
+                    <ul class="solution-features">
+                        <li>
+                            <span class="check">✓</span>
+                            <span><strong>Chirurgische Diagnose</strong> in 5 Minuten — findet die exakten Lücken, die deinen Pitch killen</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span><strong>Experten-Befragung</strong> über 12 Phasen — Problem, Lösung, Markt, Team, Finanzen</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span><strong>Forschungsbasiert</strong> — Frameworks aus 10.000+ erfolgreichen Pitches</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span><strong>Investoren Q&A Vorbereitung</strong> — weiß genau, wie man die 10 härtesten Fragen beantwortet</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span><strong>Export-fertiger Pitch</strong> — geh mit investoren-tauglicher Dokumentation raus</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="solution-visual">
+                    <div class="diagnostic-preview">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.125rem;">Deine Pitch-Diagnose Vorschau</h4>
+                        
+                        <div class="diagnostic-item">
+                            <div class="status-icon status-critical">🔴</div>
+                            <div>
+                                <strong>Problemstellung</strong><br>
+                                <small style="color: #6B7280;">Zu vage — braucht spezifischen Schmerzpunkt</small>
+                            </div>
+                        </div>
+
+                        <div class="diagnostic-item">
+                            <div class="status-icon status-critical">🔴</div>
+                            <div>
+                                <strong>Marktvalidierung</strong><br>
+                                <small style="color: #6B7280;">Keine Beweise — fehlende Kundendaten</small>
+                            </div>
+                        </div>
+
+                        <div class="diagnostic-item">
+                            <div class="status-icon status-warning">🟡</div>
+                            <div>
+                                <strong>Finanzen</strong><br>
+                                <small style="color: #6B7280;">Unvollständig — Unit Economics hinzufügen</small>
+                            </div>
+                        </div>
+
+                        <div class="diagnostic-item">
+                            <div class="status-icon status-warning">🟡</div>
+                            <div>
+                                <strong>Wettbewerbsanalyse</strong><br>
+                                <small style="color: #6B7280;">Braucht Tiefe — Burggraben klar definieren</small>
+                            </div>
+                        </div>
+
+                        <div class="diagnostic-item">
+                            <div class="status-icon status-good">🟢</div>
+                            <div>
+                                <strong>Team-Glaubwürdigkeit</strong><br>
+                                <small style="color: #6B7280;">Starke Domain-Expertise</small>
+                            </div>
+                        </div>
+
+                        <div class="diagnostic-item">
+                            <div class="status-icon status-good">🟢</div>
+                            <div>
+                                <strong>Lösungsklarheit</strong><br>
+                                <small style="color: #6B7280;">Klar und verständlich</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <h2>Was du bekommst</h2>
+                <p>Alles, was du brauchst, um deinen Pitch von peinlich zu exzellent zu transformieren</p>
+            </div>
+
+            <div class="benefits-grid fade-in">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>Sofortige Fehler-Erkennung</h3>
+                    <p>Beantworte 10 Fragen und erhalte eine umfassende Diagnose, die genau zeigt, was in deinem Pitch kaputt ist. 🔴 Kritische Probleme, 🟡 braucht Arbeit, 🟢 starke Bereiche.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🧠</div>
+                    <h3>12-Phasen Experten-Verfeinerung</h3>
+                    <p>Systematisches Hinterfragen zu Problem, Lösung, Markt, Traktion, Team, Finanzen und Wettbewerbspositionierung. Wie einen €5k Coach zu einem Bruchteil der Kosten.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">📄</div>
+                    <h3>Investoren-fertiger Export</h3>
+                    <p>Geh mit polierter Pitch-Dokumentation, Q&A-Vorbereitungsleitfaden und Talking Points raus, die du sofort in Meetings, Präsentationen oder Demo Days nutzen kannst.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>So funktioniert's</h2>
+                <p>Von kaputtem Pitch zu investoren-fertig in vier einfachen Schritten</p>
+            </div>
+
+            <div class="steps fade-in">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Beantworte 10 Fragen</h3>
+                    <p>Erzähl uns über deinen Pitch: Typ, Stadium, Publikum und was du gerade hast.</p>
+                    <span class="step-time">5 Minuten</span>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Erhalte KI-Diagnose</h3>
+                    <p>Unsere KI analysiert deine Antworten und identifiziert die 7 fatalen Fehler mit Schweregradscores und Empfehlungen.</p>
+                    <span class="step-time">Sofort</span>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Schließe kritische Lücken</h3>
+                    <p>Arbeite durch unseren 12-Phasen-Verfeinerungsprozess. Jede Phase befragt und stärkt deinen Pitch systematisch.</p>
+                    <span class="step-time">€49 freischalten</span>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Exportieren & Präsentieren</h3>
+                    <p>Lade deine investoren-fertige Pitch-Dokumentation, Q&A-Vorbereitung und Talking Points herunter. Du bist bereit zu gewinnen.</p>
+                    <span class="step-time">Fertig ✓</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <div class="container">
+            <div class="section-header">
+                <h2>Echte Ergebnisse von echten Gründern & Speakern</h2>
+                <p>Diese fatalen Fehler zerstörten ihre Pitches. Nicht mehr.</p>
+            </div>
+
+            <div class="testimonial-grid fade-in">
+                <div class="testimonial">
+                    <p class="testimonial-quote">
+                        "Ich dachte, mein Pitch wäre solide. PitchPerfect fand 6 kritische Lücken, von denen ich nicht mal wusste. In 2 Stunden behoben. 3 Wochen später unsere Seed-Runde eingesammelt."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">SJ</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Sarah Johnson</div>
+                            <div class="testimonial-title">Gründerin, HealthTech Startup</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-result">✓ €1,2M Seed-Runde eingesammelt</div>
+                </div>
+
+                <div class="testimonial">
+                    <p class="testimonial-quote">
+                        "Ich habe bei 20+ VCs gepitcht und immer gehört 'wir passen'. PitchPerfect zeigte mir, dass meine Problemstellung Müll war und meine Finanzen nicht aufgingen. Kompletter Game Changer."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">MC</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Michael Chen</div>
+                            <div class="testimonial-title">Serial Founder, 2. Startup</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-result">✓ 3 Term Sheets in 2 Wochen</div>
+                </div>
+
+                <div class="testimonial">
+                    <p class="testimonial-quote">
+                        "Als Keynote-Speaker muss ich jeden Pitch nageln. Dieses Tool fand Lücken in meiner Erzählung, die ich nie erwischt hätte. Jetzt buche ich 2x mehr Speaking-Gigs."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">RP</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Rachel Patel</div>
+                            <div class="testimonial-title">Professionelle Speakerin & Coach</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-result">✓ Speaking-Buchungen verdoppelt</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="get-started">
+        <div class="container">
+            <div class="section-header">
+                <h2>Verschwende nicht deine eine Chance</h2>
+                <p>Dein nächstes Investoren-Meeting oder deine Speaking-Möglichkeit könnte alles verändern</p>
+            </div>
+
+            <div class="pricing-cards fade-in">
+                <div class="pricing-card">
+                    <h3>Kostenlose Diagnose</h3>
+                    <div class="price">€0</div>
+                    <p class="price-description">Finde heraus, was kaputt ist</p>
+                    
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> <span>Beantworte 10 Fragen über deinen Pitch</span></li>
+                        <li><span class="check">✓</span> <span>Erhalte sofortige KI-Diagnose</span></li>
+                        <li><span class="check">✓</span> <span>Sieh deine 7 fatalen Fehler mit Schweregradscores</span></li>
+                        <li><span class="check">✓</span> <span>Personalisierte Verbesserungs-Roadmap</span></li>
+                        <li><span class="check">✓</span> <span>Keine Kreditkarte erforderlich</span></li>
+                    </ul>
+
+                    <a href="diagnostic-questionnaire.html" class="btn btn-secondary" style="width: 100%; justify-content: center;">Kostenlose Diagnose starten</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Beliebteste</div>
+                    <h3>Vollständiger Workshop</h3>
+                    <div class="price">€49<span> einmalig</span></div>
+                    <p class="price-description">Alles beheben + exportieren</p>
+                    
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> <span>Alles in Kostenloser Diagnose</span></li>
+                        <li><span class="check">✓</span> <span>12-Phasen Experten-Verfeinerungsprozess</span></li>
+                        <li><span class="check">✓</span> <span>Problem, Lösung, Markt, Traktion-Befragung</span></li>
+                        <li><span class="check">✓</span> <span>Finanzmodell & Unit Economics Validierung</span></li>
+                        <li><span class="check">✓</span> <span>Wettbewerbsanalyse & Positionierung</span></li>
+                        <li><span class="check">✓</span> <span>Q&A Vorbereitung für harte Fragen</span></li>
+                        <li><span class="check">✓</span> <span>Exportiere investoren-fertige Pitch-Dokumentation</span></li>
+                        <li><span class="check">✓</span> <span>30-Tage Geld-zurück-Garantie</span></li>
+                    </ul>
+
+                    <a href="diagnostic-questionnaire.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Kostenlos starten, später upgraden</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guarantee -->
+    <section class="guarantee">
+        <div class="container">
+            <div class="guarantee-box fade-in">
+                <div class="guarantee-icon">🛡️</div>
+                <h3>30-Tage Geld-zurück-Garantie</h3>
+                <p>
+                    Wenn PitchPerfect AI deinen Pitch nicht signifikant verbessert, erstatten wir dir sofort das Geld zurück. 
+                    Keine Fragen. Du hast nichts zu verlieren und alles zu gewinnen.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" id="start-diagnostic">
+        <div class="container">
+            <h2>Dein nächster Pitch könnte alles verändern</h2>
+            <p>
+                Verschwende deine eine Chance nicht mit einem kaputten Pitch. Finde deine fatalen Fehler in 5 Minuten. Behebe sie in 2 Stunden. Gewinne deine Finanzierung, lande deine Speaking-Gigs oder schließe deinen Deal.
+            </p>
+            <a href="diagnostic-questionnaire.html" class="btn btn-primary btn-large">Kostenlose Diagnose jetzt erhalten →</a>
+            <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.9;">
+                Schließe dich 2.347+ Gründern und Speakern an, die aufhörten, sich zu blamieren
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 PitchPerfect AI. Alle Rechte vorbehalten.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:hallo@pitchperfect.ai">hallo@pitchperfect.ai</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scroll Animations Script -->
+    <script>
+        const header = document.getElementById('header');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        }, { passive: true });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('CTA geklickt:', this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

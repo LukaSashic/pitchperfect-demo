@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch-Diagnose - PitchPerfect AI</title>
+    <script src="pitchperfect-connector.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #D97706;
+            --primary-dark: #B45309;
+            --secondary: #065F46;
+            --text-dark: #1F2937;
+            --text-medium: #4B5563;
+            --text-light: #6B7280;
+            --bg-cream: #FFFBEB;
+            --bg-light: #F9FAFB;
+            --white: #FFFFFF;
+            --error: #DC2626;
+            --warning: #F59E0B;
+            --success: #059669;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-cream) 0%, var(--white) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-light);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 0.4s ease;
+            border-radius: 999px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-medium);
+            font-size: 0.875rem;
+            margin-bottom: 3rem;
+        }
+
+        .intro-section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .intro-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .intro-section .highlight {
+            color: var(--primary);
+        }
+
+        .intro-section p {
+            font-size: 1.125rem;
+            color: var(--text-medium);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .intro-section ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .intro-section li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: var(--text-medium);
+        }
+
+        .intro-section .check {
+            color: var(--success);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-container {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-header {
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .step-description {
+            font-size: 1rem;
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .radio-option:hover,
+        .checkbox-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-cream);
+        }
+
+        .radio-option input,
+        .checkbox-option input {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            cursor: pointer;
+        }
+
+        .radio-option.selected,
+        .checkbox-option.selected {
+            border-color: var(--primary);
+            background: var(--bg-cream);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--text-dark);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-dark);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading-screen {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 4rem 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: none;
+        }
+
+        .loading-screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .loading-spinner {
+            width: 64px;
+            height: 64px;
+            border: 4px solid var(--bg-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-screen h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .loading-status {
+            font-size: 1rem;
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+        }
+
+        .results-screen {
+            display: none;
+        }
+
+        .results-screen.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .results-header {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .results-header p {
+            font-size: 1.125rem;
+            color: var(--text-medium);
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .score-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-card.critical .score-number { color: var(--error); }
+        .score-card.warning .score-number { color: var(--warning); }
+        .score-card.good .score-number { color: var(--success); }
+
+        .score-label {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .issues-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .issue-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid;
+        }
+
+        .issue-card.critical { border-left-color: var(--error); }
+        .issue-card.warning { border-left-color: var(--warning); }
+        .issue-card.good { border-left-color: var(--success); }
+
+        .issue-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .issue-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .issue-card.critical .issue-icon { background: #FEE2E2; color: var(--error); }
+        .issue-card.warning .issue-icon { background: #FEF3C7; color: var(--warning); }
+        .issue-card.good .issue-icon { background: #D1FAE5; color: var(--success); }
+
+        .issue-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .issue-description {
+            color: var(--text-medium);
+            line-height: 1.6;
+            margin-left: 2.5rem;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, var(--secondary-dark), var(--secondary));
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+        }
+
+        .cta-box h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-box p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-box .btn-primary {
+            background: white;
+            color: var(--secondary);
+        }
+
+        .cta-box .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .intro-section,
+            .step-container,
+            .loading-screen,
+            .results-header,
+            .cta-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .intro-section h1 {
+                font-size: 2rem;
+            }
+
+            .step-title {
+                font-size: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">PP</div>
+                PitchPerfect AI
+            </a>
+            <span style="color: var(--text-light); font-size: 0.875rem;">Kostenlose Diagnose</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">Schritt 0 von 11</div>
+
+        <!-- Intro Section -->
+        <div class="intro-section" id="intro-section">
+            <h1>Finde die <span class="highlight">7 fatalen Fehler</span> in deinem Pitch</h1>
+            <p>
+                In den nächsten 5 Minuten wird unsere KI deinen Pitch analysieren und die kritischen Lücken identifizieren, die deine Finanzierung, Speaking-Möglichkeit oder deinen Deal killen.
+            </p>
+            
+            <p><strong>Was du bekommst:</strong></p>
+            <ul>
+                <li><span class="check">✓</span> <span>Sofortige Diagnose mit Schweregradscores (🔴 Kritisch, 🟡 Warnung, 🟢 Stark)</span></li>
+                <li><span class="check">✓</span> <span>Personalisierte Verbesserungs-Roadmap</span></li>
+                <li><span class="check">✓</span> <span>Option, den vollständigen 12-Phasen-Workshop freizuschalten (€49)</span></li>
+            </ul>
+
+            <p style="color: var(--text-light); font-size: 0.875rem; margin-top: 2rem;">
+                ⏱️ Dauert 5 Minuten • 🔒 Deine Daten sind privat • 💳 Keine Kreditkarte erforderlich
+            </p>
+
+            <button class="btn btn-primary" style="margin-top: 2rem; width: 100%; justify-content: center;" onclick="startDiagnostic()">
+                Jetzt starten →
+            </button>
+        </div>
+
+        <!-- Step 1: Pitch Type -->
+        <div class="step-container" data-step="1">
+            <div class="step-header">
+                <span class="step-number">Frage 1 von 10</span>
+                <h2 class="step-title">Welche Art von Pitch entwickelst du?</h2>
+                <p class="step-description">Dies hilft uns, die Diagnose auf dein spezifisches Szenario zuzuschneiden.</p>
+            </div>
+
+            <div class="radio-group" id="pitchType">
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="investor">
+                    <span><strong>Investoren-Pitch</strong> — Kapitalbeschaffung (Seed, Series A/B, etc.)</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="speaking">
+                    <span><strong>Speaking Pitch</strong> — Keynote, Konferenz-Talk, Workshop</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="sales">
+                    <span><strong>Sales Pitch</strong> — Enterprise-Deal, Partnerschaft, B2B-Vertrieb</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="competition">
+                    <span><strong>Wettbewerbs-Pitch</strong> — Demo Day, Startup-Wettbewerb, Hackathon</span>
+                </label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Stage -->
+        <div class="step-container" data-step="2">
+            <div class="step-header">
+                <span class="step-number">Frage 2 von 10</span>
+                <h2 class="step-title">In welcher Phase bist du?</h2>
+                <p class="step-description">Hilft uns zu verstehen, wo du in deiner Reise stehst.</p>
+            </div>
+
+            <div class="radio-group" id="stage">
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="idea">
+                    <span><strong>Ideen-Phase</strong> — Konzept validieren, noch nicht gestartet</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="pre-launch">
+                    <span><strong>Pre-Launch</strong> — MVP aufbauen, erste Nutzer testen</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="early">
+                    <span><strong>Frühe Traktion</strong> — Gestartet, suche Product-Market Fit</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="growth">
+                    <span><strong>Wachstum</strong> — Klarer PMF, skaliere jetzt</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="scale">
+                    <span><strong>Scale-up</strong> — Etabliert, expandiere in neue Märkte</span>
+                </label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Industry -->
+        <div class="step-container" data-step="3">
+            <div class="step-header">
+                <span class="step-number">Frage 3 von 10</span>
+                <h2 class="step-title">In welcher Branche/Bereich bist du tätig?</h2>
+                <p class="step-description">Branchen-Kontext hilft uns, relevante Benchmarks bereitzustellen.</p>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="industry" placeholder="z.B. HealthTech, FinTech, SaaS, EdTech, E-Commerce..." />
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Problem Clarity -->
+        <div class="step-container" data-step="4">
+            <div class="step-header">
+                <span class="step-number">Frage 4 von 10</span>
+                <h2 class="step-title">Wie würdest du deine Problemstellung beschreiben?</h2>
+                <p class="step-description">Sei so spezifisch wie möglich. Wer hat das Problem? Wie viel kostet es sie?</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="problemStatement" placeholder="z.B. Kleine Unternehmen (10-50 Mitarbeiter) verschwenden 15+ Stunden/Woche mit manueller Rechnungsverwaltung, was sie €5.000+/Monat an verlorener Produktivität kostet..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Solution -->
+        <div class="step-container" data-step="5">
+            <div class="step-header">
+                <span class="step-number">Frage 5 von 10</span>
+                <h2 class="step-title">Wie würdest du deine Lösung in 2-3 Sätzen beschreiben?</h2>
+                <p class="step-description">Oma-Test: Kann deine Großmutter verstehen, was du machst?</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="solution" placeholder="z.B. Wir automatisieren Rechnungsverarbeitung mit KI. Unternehmen scannen Rechnungen, unsere KI extrahiert Daten, validiert und zahlt automatisch. Reduziert manuelle Arbeit von 15 Stunden auf 15 Minuten..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 6: Traction -->
+        <div class="step-container" data-step="6">
+            <div class="step-header">
+                <span class="step-number">Frage 6 von 10</span>
+                <h2 class="step-title">Was ist deine aktuelle Traktion?</h2>
+                <p class="step-description">Zahlen, die deine Idee validieren. Umsatz, Nutzer, Wachstumsrate, etc.</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="traction" placeholder="z.B. €25k MRR, 150 zahlende Kunden, 30% MoM-Wachstum, 85% Retention nach 90 Tagen, 3 Enterprise-LOIs..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 7: Market Size -->
+        <div class="step-container" data-step="7">
+            <div class="step-header">
+                <span class="step-number">Frage 7 von 10</span>
+                <h2 class="step-title">Wie groß ist deine Marktchance?</h2>
+                <p class="step-description">TAM, SAM, SOM. Wenn du nicht sicher bist, gib deine beste Schätzung.</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="marketSize" placeholder="z.B. TAM: €50B (alle KMU-Buchhaltung), SAM: €5B (KMU, die Automatisierung suchen), SOM: €500M (unsere ersten 3 Märkte in 5 Jahren)..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 8: Competition -->
+        <div class="step-container" data-step="8">
+            <div class="step-header">
+                <span class="step-number">Frage 8 von 10</span>
+                <h2 class="step-title">Wer sind deine Hauptwettbewerber und was ist dein Vorteil?</h2>
+                <p class="step-description">Sei ehrlich. "Keine Konkurrenz" ist die falsche Antwort.</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="competition" placeholder="z.B. Wettbewerber: QuickBooks (kompliziert), Expensify (nur Spesen), Excel (manuell). Unser Vorteil: End-to-End-Automatisierung mit KI + spezifisch für KMU + 10x günstiger als Enterprise-Tools..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 9: Team -->
+        <div class="step-container" data-step="9">
+            <div class="step-header">
+                <span class="step-number">Frage 9 von 10</span>
+                <h2 class="step-title">Warum ist dein Team einzigartig qualifiziert, dies aufzubauen?</h2>
+                <p class="step-description">Relevante Erfahrung, Domain-Expertise, frühere Erfolge.</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="team" placeholder="z.B. Mitgründer 1: 10 Jahre Fintech bei PayPal, baute Zahlungssysteme für 5M+ Nutzer. Mitgründer 2: AI-PhD von MIT, 3 Patente in ML. Beide betrieben kleine Unternehmen und lebten diesen Schmerzpunkt..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 10: Funding Ask -->
+        <div class="step-container" data-step="10">
+            <div class="step-header">
+                <span class="step-number">Frage 10 von 10</span>
+                <h2 class="step-title">Wie viel sammelst du und wofür? (Falls zutreffend)</h2>
+                <p class="step-description">Betrag, Verwendungszweck, wichtige Meilensteine.</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="fundingAsk" placeholder="z.B. €2M Seed-Runde. €800k Produktentwicklung (3 Ingenieure), €700k Vertrieb (GTM-Team), €500k Ops. Erreiche in 18 Monaten €100k MRR, 500+ Kunden, breakeven..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 11: Email -->
+        <div class="step-container" data-step="11">
+            <div class="step-header">
+                <span class="step-number">Letzte Frage</span>
+                <h2 class="step-title">Wohin sollen wir deine Diagnose senden?</h2>
+                <p class="step-description">Wir senden dir auch einen Link, damit du später darauf zugreifen kannst.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-Mail Adresse</label>
+                <input type="email" id="email" placeholder="deine@email.de" required />
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="submitDiagnostic()">Diagnose erhalten →</button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loading-screen">
+            <div class="loading-spinner"></div>
+            <h2>Analysiere deinen Pitch...</h2>
+            <p class="loading-status" id="loading-status">Starte Analyse...</p>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-screen" id="results-screen">
+            <div class="results-header">
+                <h1>Deine Pitch-Diagnose ist fertig</h1>
+                <p>Hier sind die 7 kritischen Bereiche, die deinen Erfolg bestimmen werden</p>
+
+                <div class="score-grid">
+                    <div class="score-card critical">
+                        <div class="score-number" id="criticalCount">0</div>
+                        <div class="score-label">Kritische Probleme</div>
+                    </div>
+                    <div class="score-card warning">
+                        <div class="score-number" id="warningCount">0</div>
+                        <div class="score-label">Warnungen</div>
+                    </div>
+                    <div class="score-card good">
+                        <div class="score-number" id="goodCount">0</div>
+                        <div class="score-label">Starke Bereiche</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="issues-list" id="issuesList"></div>
+
+            <div class="cta-box">
+                <h2>Bereit, diese Lücken zu schließen?</h2>
+                <p>
+                    Schalte den vollständigen 12-Phasen-Workshop frei (€49) und bekomme systematische Hilfe beim Beheben jedes einzelnen kritischen Fehlers. Geführte Befragung + exportierbare Pitch-Dokumentation.
+                </p>
+                <button class="btn btn-primary" style="font-size: 1.125rem; padding: 1rem 2.5rem;" onclick="handleCheckout()">
+                    Workshop für €49 freischalten →
+                </button>
+                <p style="font-size: 0.875rem; margin-top: 1rem; opacity: 0.9;">
+                    30-Tage Geld-zurück-Garantie • Sofortiger Zugang
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            currentStep: 0,
+            formData: {},
+            diagnosis: null
+        };
+
+        function startDiagnostic() {
+            document.getElementById('intro-section').style.display = 'none';
+            state.currentStep = 1;
+            showStep(1);
+            updateProgress();
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.step-container').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            const step = document.querySelector(`[data-step="${stepNumber}"]`);
+            if (step) {
+                step.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updateProgress() {
+            const progress = (state.currentStep / 11) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Schritt ${state.currentStep} von 11`;
+        }
+
+        function nextStep() {
+            if (validateCurrentStep()) {
+                saveStepData(state.currentStep);
+                state.currentStep++;
+                showStep(state.currentStep);
+                updateProgress();
+            }
+        }
+
+        function previousStep() {
+            if (state.currentStep > 1) {
+                state.currentStep--;
+                showStep(state.currentStep);
+                updateProgress();
+            } else {
+                document.getElementById('intro-section').style.display = 'block';
+                document.querySelector(`[data-step="1"]`).classList.remove('active');
+                state.currentStep = 0;
+                updateProgress();
+            }
+        }
+
+        function validateCurrentStep() {
+            const step = state.currentStep;
+            
+            if (step === 1) {
+                const selected = document.querySelector('input[name="pitchType"]:checked');
+                if (!selected) {
+                    alert('Bitte wähle einen Pitch-Typ');
+                    return false;
+                }
+            } else if (step === 2) {
+                const selected = document.querySelector('input[name="stage"]:checked');
+                if (!selected) {
+                    alert('Bitte wähle eine Phase');
+                    return false;
+                }
+            } else if (step === 3) {
+                const value = document.getElementById('industry').value.trim();
+                if (!value) {
+                    alert('Bitte gib deine Branche ein');
+                    return false;
+                }
+            } else if (step === 11) {
+                const email = document.getElementById('email').value.trim();
+                if (!email || !email.includes('@')) {
+                    alert('Bitte gib eine gültige E-Mail-Adresse ein');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function saveStepData(step) {
+            if (step === 1) {
+                state.formData.pitchType = document.querySelector('input[name="pitchType"]:checked').value;
+            } else if (step === 2) {
+                state.formData.stage = document.querySelector('input[name="stage"]:checked').value;
+            } else if (step === 3) {
+                state.formData.industry = document.getElementById('industry').value;
+            } else if (step === 4) {
+                state.formData.problemStatement = document.getElementById('problemStatement').value;
+            } else if (step === 5) {
+                state.formData.solution = document.getElementById('solution').value;
+            } else if (step === 6) {
+                state.formData.traction = document.getElementById('traction').value;
+            } else if (step === 7) {
+                state.formData.marketSize = document.getElementById('marketSize').value;
+            } else if (step === 8) {
+                state.formData.competition = document.getElementById('competition').value;
+            } else if (step === 9) {
+                state.formData.team = document.getElementById('team').value;
+            } else if (step === 10) {
+                state.formData.fundingAsk = document.getElementById('fundingAsk').value;
+            } else if (step === 11) {
+                state.formData.email = document.getElementById('email').value;
+            }
+        }
+
+        async function submitDiagnostic() {
+            if (!validateCurrentStep()) return;
+            
+            saveStepData(11);
+            
+            document.querySelector(`[data-step="${state.currentStep}"]`).classList.remove('active');
+            document.getElementById('loading-screen').classList.add('active');
+
+            const statusMessages = [
+                'Analysiere Problemstellung...',
+                'Bewerte Lösungsklarheit...',
+                'Prüfe Marktvalidierung...',
+                'Überprüfe Finanzmodell...',
+                'Bewerte Wettbewerbspositionierung...',
+                'Validiere Team-Glaubwürdigkeit...',
+                'Generiere Diagnose...'
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                document.getElementById('loading-status').textContent = statusMessages[i];
+                i++;
+                if (i >= statusMessages.length) clearInterval(interval);
+            }, 1000);
+
+            try {
+                const diagnosis = await PitchPerfect.AI.generateDiagnostic(state.formData);
+                
+                clearInterval(interval);
+                state.diagnosis = diagnosis;
+                
+                const demoState = PitchPerfect.DemoState.load();
+                demoState.diagnostic.completed = true;
+                demoState.diagnostic.answers = state.formData;
+                demoState.diagnostic.results = diagnosis;
+                demoState.user.email = state.formData.email;
+                PitchPerfect.DemoState.save(demoState);
+                
+                displayResults(diagnosis);
+                
+                document.getElementById('loading-screen').classList.remove('active');
+                document.getElementById('results-screen').classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('Fehler bei Diagnose-Generierung:', error);
+                alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+            }
+        }
+
+        function displayResults(diagnosis) {
+            document.getElementById('criticalCount').textContent = diagnosis.criticalIssues || 0;
+            document.getElementById('warningCount').textContent = diagnosis.warningIssues || 0;
+            document.getElementById('goodCount').textContent = diagnosis.strongAreas || 0;
+
+            const issuesList = document.getElementById('issuesList');
+            issuesList.innerHTML = '';
+
+            const severityOrder = { 'critical': 1, 'warning': 2, 'good': 3 };
+            const sortedIssues = [...diagnosis.issues].sort((a, b) => 
+                severityOrder[a.severity] - severityOrder[b.severity]
+            );
+
+            sortedIssues.forEach(issue => {
+                const icon = issue.severity === 'critical' ? '🔴' : 
+                             issue.severity === 'warning' ? '🟡' : '🟢';
+                
+                const card = document.createElement('div');
+                card.className = `issue-card ${issue.severity}`;
+                card.innerHTML = `
+                    <div class="issue-header">
+                        <div class="issue-icon">${icon}</div>
+                        <div class="issue-title">${issue.title}</div>
+                    </div>
+                    <p class="issue-description">${issue.description}</p>
+                `;
+                issuesList.appendChild(card);
+            });
+        }
+
+        function handleCheckout() {
+            const demoState = PitchPerfect.DemoState.load();
+            demoState.workshop.unlocked = true;
+            demoState.paymentIntent = true;
+            PitchPerfect.DemoState.save(demoState);
+            
+            alert('🎉 Workshop freigeschaltet! (KOSTENLOS für Demo - normalerweise €49)\n\nWir haben dein Interesse gespeichert. Du erhältst Frühbucher-Preise bei unserem Launch!');
+            
+            window.location.href = 'workshop-interface.html';
+        }
+
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('input');
+                input.checked = true;
+                
+                this.parentElement.querySelectorAll('.radio-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>
