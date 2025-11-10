@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PitchPerfect AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-name {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: #f5f7fa;
+            color: #666;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #e8ecf1;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 48px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+        }
+
+        .welcome-section h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .welcome-section p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-content {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .subscription-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .badge-free {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-basic {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-pro {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f7fa;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .locked-overlay {
+            position: relative;
+        }
+
+        .locked-overlay::after {
+            content: '🔒 Premium Feature';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #999;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎯 PitchPerfect AI</div>
+        <div class="navbar-user">
+            <span class="user-name" id="userName">Laden...</span>
+            <button class="btn-logout" id="logoutBtn">Abmelden</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 16px;">Dashboard wird geladen...</p>
+        </div>
+
+        <div id="dashboardContent" style="display: none;">
+            <div class="welcome-section">
+                <h1 id="welcomeMessage">Willkommen zurück!</h1>
+                <p>Perfektionieren Sie Ihren Pitch mit KI-gestützter Analyse</p>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Subscription Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">💳</span>
+                        <h2 class="card-title">Ihr Abonnement</h2>
+                    </div>
+                    <div class="card-content">
+                        <p>Aktueller Plan:</p>
+                        <div id="subscriptionBadge" class="subscription-badge badge-free">
+                            Free
+                        </div>
+                        <div id="subscriptionFeatures"></div>
+                        <a href="#" class="btn-secondary" id="upgradeBtn">Plan upgraden</a>
+                    </div>
+                </div>
+
+                <!-- Diagnostic Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h2 class="card-title">Pitch-Diagnose</h2>
+                    </div>
+                    <div class="card-content">
+                        <p>Starten Sie mit unserem 5-Minuten-Fragebogen</p>
+                        <ul class="feature-list">
+                            <li>7 kritische Fehler identifizieren</li>
+                            <li>Personalisierte Verbesserungsvorschläge</li>
+                            <li>Sofortige Ergebnisse</li>
+                        </ul>
+                        <a href="diagnostic-questionnaire.html" class="btn-primary">
+                            Diagnose starten
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Workshop Card -->
+                <div class="card" id="workshopCard">
+                    <div class="card-header">
+                        <span class="card-icon">🎓</span>
+                        <h2 class="card-title">12-Phasen Workshop</h2>
+                    </div>
+                    <div class="card-content">
+                        <p>Interaktive KI-gestützte Pitch-Optimierung</p>
+                        <ul class="feature-list">
+                            <li>Adaptive Phasen basierend auf Pitch-Typ</li>
+                            <li>BNI 60-Sekunden-Track verfügbar</li>
+                            <li>Investor Pitch Track verfügbar</li>
+                        </ul>
+                        <a href="workshop-interface.html" class="btn-primary" id="workshopBtn">
+                            Workshop starten
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Section -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📁</span>
+                    <h2 class="card-title">Meine Pitch-Projekte</h2>
+                </div>
+                <div class="card-content" id="projectsList">
+                    <p style="color: #999;">Noch keine Projekte vorhanden. Starten Sie Ihre erste Diagnose!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './lib/supabase.js';
+        import { getUserTier, hasFeatureAccess } from './lib/access-control.js';
+
+        const loadingState = document.getElementById('loadingState');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const userName = document.getElementById('userName');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const subscriptionBadge = document.getElementById('subscriptionBadge');
+        const subscriptionFeatures = document.getElementById('subscriptionFeatures');
+        const workshopCard = document.getElementById('workshopCard');
+        const workshopBtn = document.getElementById('workshopBtn');
+        const upgradeBtn = document.getElementById('upgradeBtn');
+
+        let currentUser = null;
+        let userProfile = null;
+
+        async function loadDashboard() {
+            try {
+                // Check authentication
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+
+                // Load user profile
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (profileError) {
+                    console.error('Error loading profile:', profileError);
+                    // Create profile if it doesn't exist
+                    const { data: newProfile, error: createError } = await supabase
+                        .from('profiles')
+                        .insert([
+                            {
+                                id: currentUser.id,
+                                email: currentUser.email,
+                                full_name: currentUser.user_metadata?.full_name || '',
+                                subscription_tier: 'free',
+                                subscription_status: 'active'
+                            }
+                        ])
+                        .select()
+                        .single();
+
+                    if (createError) {
+                        console.error('Error creating profile:', createError);
+                        alert('Fehler beim Laden des Profils. Bitte laden Sie die Seite neu.');
+                        return;
+                    }
+                    
+                    userProfile = newProfile;
+                } else {
+                    userProfile = profile;
+                }
+
+                // Update UI
+                const fullName = userProfile.full_name || currentUser.email.split('@')[0];
+                userName.textContent = fullName;
+                welcomeMessage.textContent = `Willkommen zurück, ${fullName.split(' ')[0]}!`;
+
+                // Update subscription info
+                const tier = userProfile.subscription_tier || 'free';
+                updateSubscriptionUI(tier);
+
+                // Load user's projects
+                await loadProjects();
+
+                // Show dashboard
+                loadingState.style.display = 'none';
+                dashboardContent.style.display = 'block';
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                alert('Fehler beim Laden des Dashboards');
+            }
+        }
+
+        function updateSubscriptionUI(tier) {
+            // Update badge
+            subscriptionBadge.textContent = tier.charAt(0).toUpperCase() + tier.slice(1);
+            subscriptionBadge.className = `subscription-badge badge-${tier}`;
+
+            // Update features based on tier
+            let featuresHTML = '<ul class="feature-list">';
+            
+            if (tier === 'free') {
+                featuresHTML += `
+                    <li>Pitch-Diagnose (unbegrenzt)</li>
+                    <li>Personalisierte Ergebnisse</li>
+                    <li>🔒 12-Phasen Workshop (Premium)</li>
+                `;
+                // Lock workshop for free users
+                workshopCard.classList.add('locked-overlay');
+                workshopBtn.style.display = 'none';
+            } else if (tier === 'basic') {
+                featuresHTML += `
+                    <li>Alle Free-Features</li>
+                    <li>12-Phasen Workshop</li>
+                    <li>BNI 60-Sekunden-Track</li>
+                    <li>Investor Pitch Track</li>
+                `;
+                workshopCard.classList.remove('locked-overlay');
+                workshopBtn.style.display = 'inline-block';
+            } else if (tier === 'pro') {
+                featuresHTML += `
+                    <li>Alle Basic-Features</li>
+                    <li>Unbegrenzte Pitch-Projekte</li>
+                    <li>PDF-Export</li>
+                    <li>Prioritäts-Support</li>
+                `;
+                workshopCard.classList.remove('locked-overlay');
+                workshopBtn.style.display = 'inline-block';
+            }
+            
+            featuresHTML += '</ul>';
+            subscriptionFeatures.innerHTML = featuresHTML;
+
+            // Hide upgrade button for pro users
+            if (tier === 'pro') {
+                upgradeBtn.style.display = 'none';
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const { data: projects, error } = await supabase
+                    .from('pitch_projects')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('updated_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                const projectsList = document.getElementById('projectsList');
+                
+                if (projects && projects.length > 0) {
+                    projectsList.innerHTML = projects.map(project => `
+                        <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
+                            <strong>${project.project_name || 'Unbenanntes Projekt'}</strong>
+                            <p style="font-size: 13px; color: #999; margin-top: 4px;">
+                                Zuletzt aktualisiert: ${new Date(project.updated_at).toLocaleDateString('de-DE')}
+                            </p>
+                        </div>
+                    `).join('');
+                } else {
+                    projectsList.innerHTML = '<p style="color: #999;">Noch keine Projekte vorhanden. Starten Sie Ihre erste Diagnose!</p>';
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        // Logout handler
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Fehler beim Abmelden');
+            }
+        });
+
+        // Upgrade button handler
+        upgradeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Upgrade-Funktion wird bald verfügbar sein!\n\nIn Kürze können Sie hier Ihren Plan upgraden.');
+        });
+
+        // Load dashboard on page load
+        loadDashboard();
+    </script>
+</body>
+</html>
