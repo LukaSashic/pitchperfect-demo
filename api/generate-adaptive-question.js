@@ -1,7 +1,6 @@
 // api/generate-adaptive-question.js
 import Anthropic from '@anthropic-ai/sdk';
 
-// Initialize Anthropic client
 let anthropic;
 try {
     anthropic = new Anthropic({
@@ -11,7 +10,6 @@ try {
     console.error('Failed to initialize Anthropic client:', error);
 }
 
-// Fallback questions if API fails
 const FALLBACK_QUESTIONS = {
     4: {
         question: 'Wie würdest du das Hauptproblem beschreiben?',
@@ -53,32 +51,26 @@ const FALLBACK_QUESTIONS = {
 
 const SYSTEM_PROMPT = `Du bist ein KI-Assistent, der adaptive Fragen für eine Pitch-Diagnose generiert.
 
-Deine Aufgabe:
-1. Analysiere den Kontext (Pitch-Typ, Phase, Pitch-Entwurf)
-2. Generiere EINE präzise, spezifische Frage basierend auf dem Pitch-Entwurf
-3. Erstelle 3 relevante Antwortoptionen, die zum Nutzer passen
+AUFGABE:
+1. Analysiere den Pitch-Entwurf
+2. Generiere EINE spezifische Frage
+3. Erstelle 3 unterschiedliche Antwortoptionen
 
-WICHTIGE REGELN:
-- Die Frage MUSS zum Pitch-Entwurf passen und spezifisch sein
-- Verwende Details aus dem Pitch-Entwurf in der Frage
-- Antwortoptionen müssen realistisch und unterschiedlich sein
-- Eine Option konservativ, eine ambitioniert, eine mittelmäßig
-- Antworten sollten 1-2 Sätze lang sein
-- Sprache: Deutsch, direkt, ohne Floskeln
+REGELN:
+- Frage MUSS zum Pitch passen
+- Nutze Details aus dem Pitch
+- Antworten: konservativ, mittelmäßig, ambitioniert
+- Antworten: 1-2 Sätze
+- Deutsch, direkt, konkret
 
-OUTPUT FORMAT (reines JSON, keine Markdown):
+OUTPUT (reines JSON):
 {
-    "question": "Spezifische Frage basierend auf Kontext",
-    "description": "Warum diese Frage wichtig ist (1 Satz)",
-    "suggestedAnswers": [
-        "Antwort Option 1 (konservativ/realistisch)",
-        "Antwort Option 2 (mittelmäßig/ausgewogen)",
-        "Antwort Option 3 (ambitioniert/optimistisch)"
-    ]
+    "question": "Spezifische Frage",
+    "description": "Warum wichtig (1 Satz)",
+    "suggestedAnswers": ["Option 1", "Option 2", "Option 3"]
 }`;
 
 export default async function handler(req, res) {
-    // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -96,27 +88,10 @@ export default async function handler(req, res) {
     try {
         const { stepNumber, context } = req.body;
 
-        console.log('📥 Received request:', { stepNumber, contextKeys: Object.keys(context || {}) });
-
-        // Validation
-        if (!stepNumber || !context) {
-            console.error('❌ Missing stepNumber or context');
+        if (!stepNumber || !context || !process.env.ANTHROPIC_API_KEY || !anthropic) {
             return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
         }
 
-        // Check if API key is available
-        if (!process.env.ANTHROPIC_API_KEY) {
-            console.error('❌ ANTHROPIC_API_KEY not set, using fallback');
-            return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
-        }
-
-        // Check if anthropic client initialized
-        if (!anthropic) {
-            console.error('❌ Anthropic client not initialized, using fallback');
-            return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
-        }
-
-        // Build context prompt
         const focusAreas = {
             4: 'Problem',
             5: 'Lösung',
@@ -126,6 +101,7 @@ export default async function handler(req, res) {
 
         const focusArea = focusAreas[stepNumber] || 'Business';
 
+        // SOLUTION 5: Reduced pitch draft length (800 chars instead of 1500)
         let contextPrompt = `KONTEXT:
 Pitch-Typ: ${context.pitchType || 'nicht angegeben'}
 Phase: ${context.stage || 'nicht angegeben'}
@@ -133,77 +109,51 @@ Fokusbereich: ${focusArea}
 
 `;
 
-        // Add pitch draft if available
         if (context.pitchDraft && context.pitchDraft !== '[Kein Pitch-Entwurf vorhanden]') {
-            const pitchPreview = context.pitchDraft.substring(0, 1500);
-            contextPrompt += `PITCH-ENTWURF:
+            const pitchPreview = context.pitchDraft.substring(0, 800); // Reduced from 1500
+            contextPrompt += `PITCH:
 ${pitchPreview}
 
 `;
         }
 
-        contextPrompt += `AUFGABE:
-Generiere eine ${focusArea}-Frage mit 3 Antwortoptionen basierend auf dem Pitch-Entwurf oben.
+        contextPrompt += `Generiere ${focusArea}-Frage mit 3 Optionen.
+NUR JSON, keine Markdown.`;
 
-Die Frage sollte spezifisch auf den Pitch-Entwurf eingehen.
-
-Antworte NUR mit dem JSON-Objekt, NICHTS anderes. Keine Markdown-Blöcke.`;
-
-        console.log('🤖 Calling Claude API...');
-
-        // Call Claude API with timeout
+        // SOLUTION 5: Reduced max_tokens (500 instead of 800) & timeout (7s instead of 10s)
         const response = await Promise.race([
             anthropic.messages.create({
                 model: 'claude-sonnet-4-20250514',
-                max_tokens: 800,
+                max_tokens: 500,
                 system: SYSTEM_PROMPT,
-                messages: [
-                    {
-                        role: 'user',
-                        content: contextPrompt
-                    }
-                ]
+                messages: [{ role: 'user', content: contextPrompt }]
             }),
             new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Timeout')), 10000)
+                setTimeout(() => reject(new Error('Timeout')), 7000)
             )
         ]);
 
         const content = response.content[0].text;
         
-        console.log('✅ Got response from Claude');
-
-        // Parse JSON response
         let questionData;
         try {
-            // Strip markdown code blocks if present
             let cleanContent = content.trim();
-            if (cleanContent.startsWith('```json')) {
+            if (cleanContent.startsWith('```')) {
                 cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            } else if (cleanContent.startsWith('```')) {
-                cleanContent = cleanContent.replace(/```\n?/g, '').trim();
             }
-            
             questionData = JSON.parse(cleanContent);
         } catch (parseError) {
-            console.error('❌ Failed to parse JSON:', content.substring(0, 200));
             return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
         }
 
-        // Validate response structure
         if (!questionData.question || !questionData.suggestedAnswers || questionData.suggestedAnswers.length !== 3) {
-            console.error('❌ Invalid question structure');
             return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
         }
-
-        console.log('✅ Returning adaptive question:', questionData.question.substring(0, 50) + '...');
 
         return res.status(200).json(questionData);
 
     } catch (error) {
-        console.error('❌ Error in generate-adaptive-question:', error.message);
-        
-        // Always return fallback instead of error
+        console.error('❌ Error:', error.message);
         const stepNumber = req.body?.stepNumber || 4;
         return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
     }
