@@ -1,5 +1,5 @@
 // PitchPerfect AI - Enhanced Connector with Feature Flags & Metrics
-// V2.0 - Optimized with caching support
+// V2.1 - Optimized with caching support + Adaptive Questions
 
 (function() {
     'use strict';
@@ -10,12 +10,14 @@
         metricsKey: 'pitchperfect_metrics',
         apiEndpoint: '/api/chat',
         apiEndpointV2: '/api/chat-v2',
+        apiAdaptiveQuestion: '/api/generate-adaptive-question',
         
         // Feature flags
         features: {
             useV2API: true,  // Toggle to enable/disable optimized API
             trackMetrics: true,
-            useStructuredOutputs: true
+            useStructuredOutputs: true,
+            adaptiveQuestions: true  // NEW: Enable adaptive questions
         }
     };
 
@@ -97,6 +99,18 @@
                 : 0;
 
             this.save(metrics);
+            
+            // Dispatch event for metrics dashboard
+            window.dispatchEvent(new CustomEvent('pitchperfect:metrics', {
+                detail: {
+                    phase: phase,
+                    cost: parseFloat(responseMetrics.cost_usd || 0),
+                    latency: responseMetrics.latency_ms || 0,
+                    cacheHit: (responseMetrics.cache_read_tokens || 0) > 0,
+                    inputTokens: responseMetrics.input_tokens || 0,
+                    outputTokens: responseMetrics.output_tokens || 0
+                }
+            }));
             
             // Log to console for debugging
             console.log('📊 Metrics Update:', {
@@ -209,6 +223,103 @@
             }
         },
 
+        // ============================================
+        // NEW: ADAPTIVE QUESTION GENERATION
+        // ============================================
+        async generateAdaptiveQuestion(stepNumber, context) {
+            if (!CONFIG.features.adaptiveQuestions) {
+                console.log('⚠️ Adaptive questions disabled, using fallback');
+                return this._fallbackQuestion(stepNumber);
+            }
+
+            try {
+                console.log(`🔍 Generating adaptive question for step ${stepNumber}`);
+                
+                const startTime = Date.now();
+                
+                const response = await fetch(CONFIG.apiAdaptiveQuestion, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        stepNumber,
+                        context
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                const latency = Date.now() - startTime;
+                
+                console.log(`✅ Adaptive question generated in ${latency}ms:`, data.question);
+                
+                // Track metrics for adaptive questions
+                if (CONFIG.features.trackMetrics) {
+                    Metrics.track(`diagnostic-q${stepNumber}`, {
+                        cost_usd: 0.002, // Estimated cost
+                        latency_ms: latency,
+                        input_tokens: 500,
+                        output_tokens: 150,
+                        cache_read_tokens: 0
+                    });
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Error generating adaptive question:', error);
+                console.log('⚠️ Using fallback question');
+                return this._fallbackQuestion(stepNumber);
+            }
+        },
+
+        _fallbackQuestion(stepNumber) {
+            const fallbacks = {
+                4: {
+                    question: 'Wie würdest du das Hauptproblem beschreiben?',
+                    description: 'Eine klare Problemstellung ist die Basis eines überzeugenden Pitches',
+                    suggestedAnswers: [
+                        'Unternehmen verschwenden Zeit mit ineffizienten manuellen Prozessen',
+                        'Kunden haben Schwierigkeiten, die richtige Lösung zu finden',
+                        'Der Markt ist intransparent und schwer zu navigieren'
+                    ]
+                },
+                5: {
+                    question: 'Was macht deine Lösung konkret?',
+                    description: 'Investoren müssen sofort verstehen, was du baust',
+                    suggestedAnswers: [
+                        'Wir automatisieren manuelle Prozesse mit KI-Technologie',
+                        'Wir bieten eine Plattform, die Komplexität reduziert',
+                        'Wir schaffen Transparenz durch Datenanalyse'
+                    ]
+                },
+                6: {
+                    question: 'Welche messbaren Erfolge hast du bisher?',
+                    description: 'Traktion ist der beste Beweis für Product-Market Fit',
+                    suggestedAnswers: [
+                        'Wir haben erste zahlende Kunden und positives Feedback',
+                        'Wir sind noch im MVP-Stadium mit Beta-Nutzern',
+                        'Wir wachsen 20%+ monatlich bei Umsatz oder Nutzerzahlen'
+                    ]
+                },
+                7: {
+                    question: 'Wer sind deine Hauptwettbewerber?',
+                    description: '"Keine Konkurrenz" ist nie die richtige Antwort',
+                    suggestedAnswers: [
+                        'Etablierte Player mit komplexen und teuren Lösungen',
+                        'Indirekte Konkurrenz wie Excel oder manuelle Prozesse',
+                        'Wir sind die ersten, die dieses Problem so angehen'
+                    ]
+                }
+            };
+            
+            return fallbacks[stepNumber] || fallbacks[4];
+        },
+
         _demoResponse() {
             return {
                 criticalIssues: 4,
@@ -256,7 +367,7 @@
     // Initialize metrics on load
     Metrics.init();
 
-    console.log(`✅ PitchPerfect Geladen (${CONFIG.features.useV2API ? 'V2 Optimized' : 'V1'} API)`);
+    console.log(`✅ PitchPerfect Geladen (V${CONFIG.features.useV2API ? '2.1' : '1'} - ${CONFIG.features.adaptiveQuestions ? 'Adaptive Questions Enabled' : 'Standard Mode'})`);
     
     // Log metrics summary if available
     const summary = Metrics.getSummary();
