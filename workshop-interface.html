@@ -182,6 +182,34 @@
             flex: 1;
         }
 
+        .chat-header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .restart-phase-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: none;
+        }
+
+        .restart-phase-btn:hover {
+            background: var(--border);
+            border-color: var(--text-medium);
+        }
+
+        .restart-phase-btn.visible {
+            display: block;
+        }
+
         .chat-title {
             font-size: 1.25rem;
             font-weight: 700;
@@ -455,6 +483,10 @@
             margin: 0 auto 1.5rem;
         }
 
+        .modal-icon.warning {
+            background: var(--primary);
+        }
+
         .modal h3 {
             font-size: 1.5rem;
             font-weight: 700;
@@ -500,6 +532,15 @@
             color: var(--text-dark);
         }
 
+        .modal-button.danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .modal-button.danger:hover {
+            background: #B91C1C;
+        }
+
         .menu-toggle {
             display: none;
             width: 40px;
@@ -522,30 +563,34 @@
            METRICS DASHBOARD STYLES
            ======================================== */
 
-        /* Metrics Toggle Button */
+        /* Metrics Toggle Button - HIDDEN BY DEFAULT */
         .metrics-toggle-btn {
             position: fixed;
             bottom: 24px;
-            right: 24px;
+            left: 24px;
             width: 56px;
             height: 56px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
             color: white;
             border: none;
             border-radius: 50%;
             font-size: 1.5rem;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
             transition: all 0.3s ease;
             z-index: 999;
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             justify-content: center;
         }
 
+        .metrics-toggle-btn.visible {
+            display: flex;
+        }
+
         .metrics-toggle-btn:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.5);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
         }
 
         /* Metrics Overlay */
@@ -802,6 +847,16 @@
 
             .chat-header {
                 padding: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .chat-header-actions {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            .restart-phase-btn {
+                width: 100%;
             }
 
             .chat-title {
@@ -882,7 +937,7 @@
             /* Metrics Mobile */
             .metrics-toggle-btn {
                 bottom: 16px;
-                right: 16px;
+                left: 16px;
                 width: 48px;
                 height: 48px;
                 font-size: 1.25rem;
@@ -955,9 +1010,14 @@
                     <div class="chat-title">Wähle eine Phase zum Starten</div>
                     <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
                 </div>
-                <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
-                    ☰
-                </button>
+                <div class="chat-header-actions">
+                    <button class="restart-phase-btn" id="restartPhaseBtn" onclick="confirmRestartPhase()">
+                        🔄 Phase neu starten
+                    </button>
+                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
+                        ☰
+                    </button>
+                </div>
             </div>
 
             <div class="welcome-screen" id="welcomeScreen">
@@ -1001,6 +1061,19 @@
         </div>
     </div>
 
+    <!-- Restart Phase Confirmation Modal -->
+    <div class="modal-overlay" id="restartModal">
+        <div class="modal">
+            <div class="modal-icon warning">⚠️</div>
+            <h3>Phase neu starten?</h3>
+            <p>Möchtest du diese Phase wirklich neu starten? Alle bisherigen Nachrichten werden gelöscht und du beginnst von vorne.</p>
+            <div class="modal-buttons">
+                <button class="modal-button danger" onclick="restartPhase()">Ja, neu starten</button>
+                <button class="modal-button secondary" onclick="closeRestartModal()">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- METRICS DASHBOARD -->
     <div id="metricsOverlay" class="metrics-overlay">
         <div class="metrics-panel">
@@ -1014,7 +1087,7 @@
         </div>
     </div>
 
-    <button id="metricsToggleBtn" class="metrics-toggle-btn" onclick="toggleMetrics()" title="Metrics Dashboard (Ctrl+M)">
+    <button id="metricsToggleBtn" class="metrics-toggle-btn" onclick="toggleMetrics()" title="Metrics Dashboard (Ctrl+Shift+M)">
         📊
     </button>
 
@@ -1134,7 +1207,36 @@
                     this.update(event.detail);
                 });
 
+                // Check for admin mode via URL parameter or localStorage
+                this.checkAdminMode();
+
                 console.log('📊 Metrics System Initialized');
+            },
+
+            checkAdminMode() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const adminParam = urlParams.get('admin');
+                const adminStored = localStorage.getItem('pitchperfect_admin');
+
+                if (adminParam === 'true') {
+                    localStorage.setItem('pitchperfect_admin', 'true');
+                    this.enableMetrics();
+                } else if (adminParam === 'false') {
+                    localStorage.removeItem('pitchperfect_admin');
+                    this.disableMetrics();
+                } else if (adminStored === 'true') {
+                    this.enableMetrics();
+                }
+            },
+
+            enableMetrics() {
+                document.getElementById('metricsToggleBtn').classList.add('visible');
+                console.log('📊 Metrics Dashboard Enabled (Admin Mode)');
+            },
+
+            disableMetrics() {
+                document.getElementById('metricsToggleBtn').classList.remove('visible');
+                document.getElementById('metricsOverlay').classList.remove('active');
             },
 
             update(metrics) {
@@ -1230,7 +1332,6 @@
 
             renderPhaseBreakdown() {
                 const phases = Object.keys(this.data.phaseMetrics).sort((a, b) => {
-                    // Sort numerically if possible
                     const aNum = parseInt(a);
                     const bNum = parseInt(b);
                     if (!isNaN(aNum) && !isNaN(bNum)) {
@@ -1332,6 +1433,38 @@
         }
 
         // ========================================
+        // PHASE RESTART FUNCTIONALITY
+        // ========================================
+
+        function confirmRestartPhase() {
+            document.getElementById('restartModal').classList.add('active');
+        }
+
+        function closeRestartModal() {
+            document.getElementById('restartModal').classList.remove('active');
+        }
+
+        function restartPhase() {
+            if (!state.currentPhase) return;
+
+            // Clear messages for this phase
+            state.messages = [];
+            
+            // Clear from localStorage
+            const demoState = PitchPerfect.DemoState.load();
+            if (demoState.workshop.messages && demoState.workshop.messages[state.currentPhase]) {
+                delete demoState.workshop.messages[state.currentPhase];
+                PitchPerfect.DemoState.save(demoState);
+            }
+
+            // Close modal
+            closeRestartModal();
+
+            // Reload the phase with welcome message
+            loadPhaseMessages(state.currentPhase);
+        }
+
+        // ========================================
         // WORKSHOP FUNCTIONALITY
         // ========================================
 
@@ -1408,6 +1541,9 @@
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('chatMessages').style.display = 'flex';
             document.getElementById('chatInputContainer').style.display = 'block';
+
+            // Show restart button
+            document.getElementById('restartPhaseBtn').classList.add('visible');
 
             document.querySelector('.chat-title').textContent = `Phase ${phaseNumber}: ${phase.title}`;
             document.querySelector('.chat-subtitle').textContent = phase.description;
@@ -1659,11 +1795,19 @@
             }
         });
 
-        // Keyboard shortcut: Ctrl+M for metrics
+        // Keyboard shortcut: Ctrl+Shift+M for metrics (admin only)
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'm') {
+            if (e.ctrlKey && e.shiftKey && e.key === 'M') {
                 e.preventDefault();
-                toggleMetrics();
+                const btn = document.getElementById('metricsToggleBtn');
+                if (btn.classList.contains('visible')) {
+                    toggleMetrics();
+                } else {
+                    // Enable admin mode
+                    localStorage.setItem('pitchperfect_admin', 'true');
+                    MetricsSystem.enableMetrics();
+                    toggleMetrics();
+                }
             }
         });
 
@@ -1671,6 +1815,13 @@
         document.getElementById('metricsOverlay').addEventListener('click', (e) => {
             if (e.target.id === 'metricsOverlay') {
                 toggleMetrics();
+            }
+        });
+
+        // Close restart modal on overlay click
+        document.getElementById('restartModal').addEventListener('click', (e) => {
+            if (e.target.id === 'restartModal') {
+                closeRestartModal();
             }
         });
 
