@@ -825,3 +825,1042 @@
     </style>
 </head>
 <body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">PP</div>
+                PitchPerfect AI
+            </a>
+            <span style="color: var(--text-light); font-size: 0.875rem;">Kostenlose Diagnose</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Enhanced Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text">
+            <span id="progressText">Schritt 0 von 8</span>
+            <span class="progress-percentage" id="progressPercentage">0%</span>
+        </div>
+        <div class="auto-save-indicator" id="autoSaveIndicator">
+            <span>✓</span>
+            <span>Fortschritt gespeichert</span>
+        </div>
+
+        <!-- Intro Section -->
+        <div class="intro-section" id="intro-section">
+            <h1>Finde die <span class="highlight">7 fatalen Fehler</span> in deinem Pitch</h1>
+            <p>
+                In den nächsten 5 Minuten wird unsere KI deinen Pitch analysieren und die kritischen Lücken identifizieren, die deine Finanzierung, Speaking-Möglichkeit oder deinen Deal killen.
+            </p>
+            
+            <p><strong>Was du bekommst:</strong></p>
+            <ul>
+                <li><span class="check">✓</span> <span>Sofortige Diagnose mit Schweregradscores (🔴 Kritisch, 🟡 Warnung, 🟢 Stark)</span></li>
+                <li><span class="check">✓</span> <span>Personalisierte Verbesserungs-Roadmap</span></li>
+                <li><span class="check">✓</span> <span>Option, den vollständigen 12-Phasen-Workshop freizuschalten (€49)</span></li>
+            </ul>
+
+            <p style="color: var(--text-light); font-size: 0.875rem; margin-top: 2rem;">
+                ⏱️ Dauert 5 Minuten • 🔒 Deine Daten sind privat • 💳 Keine Kreditkarte erforderlich
+            </p>
+
+            <button class="btn btn-primary" style="margin-top: 2rem; width: 100%; justify-content: center;" onclick="startDiagnostic()">
+                Jetzt starten →
+            </button>
+        </div>
+
+        <!-- Step 1: Pitch Type -->
+        <div class="step-container" data-step="1">
+            <div class="step-header">
+                <span class="step-number">Frage 1 von 8</span>
+                <h2 class="step-title">Welche Art von Pitch entwickelst du?</h2>
+                <p class="step-description">Dies hilft uns, die Diagnose auf dein spezifisches Szenario zuzuschneiden.</p>
+            </div>
+
+            <div class="radio-group" id="pitchType">
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="investor">
+                    <span><strong>Investoren-Pitch</strong> — Kapitalbeschaffung (Seed, Series A/B, etc.)</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="speaking">
+                    <span><strong>Speaking Pitch</strong> — Keynote, Konferenz-Talk, Workshop</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="sales">
+                    <span><strong>Sales Pitch</strong> — Enterprise-Deal, Partnerschaft, B2B-Vertrieb</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pitchType" value="competition">
+                    <span><strong>Wettbewerbs-Pitch</strong> — Demo Day, Startup-Wettbewerb, Hackathon</span>
+                </label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Stage -->
+        <div class="step-container" data-step="2">
+            <div class="step-header">
+                <span class="step-number">Frage 2 von 8</span>
+                <h2 class="step-title">In welcher Phase bist du?</h2>
+                <p class="step-description">Hilft uns zu verstehen, wo du in deiner Reise stehst.</p>
+            </div>
+
+            <div class="radio-group" id="stage">
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="idea">
+                    <span><strong>Ideen-Phase</strong> — Konzept validieren, noch nicht gestartet</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="pre-launch">
+                    <span><strong>Pre-Launch</strong> — MVP aufbauen, erste Nutzer testen</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="early">
+                    <span><strong>Frühe Traktion</strong> — Gestartet, suche Product-Market Fit</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="growth">
+                    <span><strong>Wachstum</strong> — Klarer PMF, skaliere jetzt</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="stage" value="scale">
+                    <span><strong>Scale-up</strong> — Etabliert, expandiere in neue Märkte</span>
+                </label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Pitch Draft -->
+        <div class="step-container" data-step="3">
+            <div class="step-header">
+                <span class="step-number">Frage 3 von 8</span>
+                <h2 class="step-title">Teile deinen Pitch-Entwurf mit uns</h2>
+                <p class="step-description">Füge deinen aktuellen Pitch-Text ein oder nutze die Spracheingabe. Je mehr Details, desto präziser wird die Analyse.</p>
+            </div>
+
+            <div class="form-group">
+                <div class="pitch-draft-container">
+                    <textarea 
+                        id="pitchDraft" 
+                        class="pitch-draft-textarea"
+                        placeholder="Beschreibe dein Startup, dein Problem, deine Lösung, deinen Markt, deine Traktion... Du kannst auch einfach deinen bestehenden Pitch-Text hier einfügen.
+
+Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automatisieren. Das Problem ist, dass KMUs durchschnittlich 15 Stunden pro Woche mit manueller Rechnungsverwaltung verschwenden...'"
+                    ></textarea>
+                    <div class="voice-button-container">
+                        <button 
+                            type="button" 
+                            class="voice-button" 
+                            id="voiceButton" 
+                            onclick="toggleVoiceInput()"
+                            title="Spracheingabe starten"
+                        >
+                            🎤
+                        </button>
+                    </div>
+                </div>
+                <div class="no-draft-option">
+                    <a href="#" class="no-draft-link" onclick="skipPitchDraft(event)">
+                        Ich habe noch keinen Pitch-Entwurf →
+                    </a>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Steps 4-7: Adaptive Questions -->
+        <div class="step-container" data-step="4" id="adaptiveStep4">
+            <div class="step-header">
+                <span class="step-number">Frage 4 von 8</span>
+                <h2 class="step-title" id="question4Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question4Desc">Einen Moment, wir analysieren deinen Pitch...</p>
+            </div>
+
+            <div class="answer-options" id="answers4">
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(4)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer4">
+                <textarea id="customAnswerText4" placeholder="Schreibe deine eigene Antwort..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <div class="step-container" data-step="5" id="adaptiveStep5">
+            <div class="step-header">
+                <span class="step-number">Frage 5 von 8</span>
+                <h2 class="step-title" id="question5Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question5Desc">Einen Moment, wir analysieren deinen Pitch...</p>
+            </div>
+
+            <div class="answer-options" id="answers5">
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(5)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer5">
+                <textarea id="customAnswerText5" placeholder="Schreibe deine eigene Antwort..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <div class="step-container" data-step="6" id="adaptiveStep6">
+            <div class="step-header">
+                <span class="step-number">Frage 6 von 8</span>
+                <h2 class="step-title" id="question6Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question6Desc">Einen Moment, wir analysieren deinen Pitch...</p>
+            </div>
+
+            <div class="answer-options" id="answers6">
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(6)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer6">
+                <textarea id="customAnswerText6" placeholder="Schreibe deine eigene Antwort..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <div class="step-container" data-step="7" id="adaptiveStep7">
+            <div class="step-header">
+                <span class="step-number">Frage 7 von 8</span>
+                <h2 class="step-title" id="question7Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question7Desc">Einen Moment, wir analysieren deinen Pitch...</p>
+            </div>
+
+            <div class="answer-options" id="answers7">
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(7)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer7">
+                <textarea id="customAnswerText7" placeholder="Schreibe deine eigene Antwort..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Step 8: Email -->
+        <div class="step-container" data-step="8">
+            <div class="step-header">
+                <span class="step-number">Letzte Frage</span>
+                <h2 class="step-title">Wohin sollen wir deine Diagnose senden?</h2>
+                <p class="step-description">Wir senden dir auch einen Link, damit du später darauf zugreifen kannst.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-Mail Adresse</label>
+                <input type="email" id="email" placeholder="deine@email.de" required />
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
+                <button class="btn btn-primary" onclick="submitDiagnostic()">Diagnose erhalten →</button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loading-screen">
+            <div class="loading-spinner"></div>
+            <h2>Analysiere deinen Pitch...</h2>
+            <p class="loading-status" id="loading-status">Starte Analyse...</p>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-screen" id="results-screen">
+            <div class="results-header">
+                <h1>Deine Pitch-Diagnose ist fertig</h1>
+                <p>Hier sind die kritischen Bereiche, die zwischen Erfolg und Ablehnung entscheiden</p>
+
+                <div class="score-grid">
+                    <div class="score-card critical">
+                        <div class="score-number" id="criticalCount">0</div>
+                        <div class="score-label">Kritische Probleme</div>
+                        <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                            Deal-Breaker
+                        </div>
+                    </div>
+                    <div class="score-card warning">
+                        <div class="score-number" id="warningCount">0</div>
+                        <div class="score-label">Warnungen</div>
+                        <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                            Schwächen Pitch
+                        </div>
+                    </div>
+                    <div class="score-card good">
+                        <div class="score-number" id="goodCount">0</div>
+                        <div class="score-label">Starke Bereiche</div>
+                        <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                            Ausbauen
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issues List -->
+            <div class="issues-list" id="issuesList"></div>
+
+            <!-- Social Proof Section -->
+            <div style="background: var(--white); border-radius: 16px; padding: 2rem; margin: 2rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.25rem; color: var(--text-dark);">
+                    Was andere Gründer sagen
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div style="border-left: 3px solid var(--primary); padding-left: 1rem;">
+                        <p style="font-style: italic; color: var(--text-medium); margin-bottom: 0.5rem;">
+                            "Nach dem Workshop haben wir €250k raised. Die Struktur war Gold wert."
+                        </p>
+                        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-dark);">
+                            — Sarah K., HealthTech Gründerin
+                        </p>
+                    </div>
+                    <div style="border-left: 3px solid var(--primary); padding-left: 1rem;">
+                        <p style="font-style: italic; color: var(--text-medium); margin-bottom: 0.5rem;">
+                            "Endlich ein System statt zusammengewürfelter Folien. Mein Pitch ist jetzt bulletproof."
+                        </p>
+                        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-dark);">
+                            — Michael R., B2B SaaS
+                        </p>
+                    </div>
+                    <div style="border-left: 3px solid var(--primary); padding-left: 1rem;">
+                        <p style="font-style: italic; color: var(--text-medium); margin-bottom: 0.5rem;">
+                            "Die KI-geführten Fragen haben blinde Flecken aufgedeckt, die mir nie aufgefallen wären."
+                        </p>
+                        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-dark);">
+                            — Lisa M., Marketplace
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced CTA Box -->
+            <div class="cta-box">
+                <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; margin-bottom: 2rem;">
+                    <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; opacity: 0.9;">
+                        🔥 FRÜH ADOPTER ANGEBOT
+                    </div>
+                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+                        €49 <span style="font-size: 1.5rem; text-decoration: line-through; opacity: 0.6;">€149</span>
+                    </div>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">
+                        67% Rabatt - Nur für die ersten 100 Nutzer
+                    </div>
+                </div>
+
+                <h2>Bereit, jeden einzelnen Fehler systematisch zu beheben?</h2>
+                
+                <div style="text-align: left; margin: 2rem 0; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 1.5rem;">
+                    <p style="font-weight: 600; margin-bottom: 1rem; font-size: 1.125rem;">Der Workshop gibt dir:</p>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 0.5rem 0; display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="flex-shrink: 0;">✓</span>
+                            <span><strong>12 geführte Phasen</strong>, die jeden kritischen Fehler systematisch beheben</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="flex-shrink: 0;">✓</span>
+                            <span><strong>KI-Coach</strong>, der dich durch harte Fragen führt (wie ein echter Investor)</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="flex-shrink: 0;">✓</span>
+                            <span><strong>Exportierbare Pitch-Dokumentation</strong> (PDF) für Investoren-Meetings</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="flex-shrink: 0;">✓</span>
+                            <span><strong>Fortschritt-Tracking</strong> - sieh, wie dein Pitch von 2/10 auf 9/10 steigt</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="flex-shrink: 0;">✓</span>
+                            <span><strong>Lifetime Access</strong> - nutze es für jeden zukünftigen Pitch</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-primary" style="font-size: 1.25rem; padding: 1.25rem 3rem; width: 100%; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.3);" onclick="handleCheckout()">
+                    🚀 Workshop für €49 freischalten
+                </button>
+
+                <div style="margin-top: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 2rem; font-size: 0.875rem; opacity: 0.95; flex-wrap: wrap;">
+                    <span>✓ 30-Tage Geld-zurück-Garantie</span>
+                    <span>✓ Sofortiger Zugang</span>
+                    <span>✓ Keine Abo-Falle</span>
+                </div>
+
+                <!-- Urgency Timer -->
+                <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; text-align: center;">
+                    <div style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                        ⏰ Früh-Adopter-Preis endet in:
+                    </div>
+                    <div id="urgencyTimer" style="font-size: 1.5rem; font-weight: 700; font-family: monospace;">
+                        47:23:15
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Reversal -->
+            <div style="background: var(--white); border-radius: 16px; padding: 2rem; margin-top: 2rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-dark);">
+                    Kein Risiko. 100% Geld-zurück-Garantie.
+                </h3>
+                <p style="color: var(--text-medium); max-width: 600px; margin: 0 auto; line-height: 1.7;">
+                    Teste den Workshop 30 Tage risikofrei. Wenn du nicht mindestens 3 kritische Verbesserungen in deinem Pitch machst, bekommst du dein Geld zurück. Ohne Wenn und Aber.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            currentStep: 0,
+            formData: {},
+            diagnosis: null,
+            adaptiveQuestions: {},
+            recognition: null,
+            isRecording: false,
+            questionGenerationPromises: {}
+        };
+
+        // ========================================
+        // VOICE INPUT FUNCTIONALITY
+        // ========================================
+
+        function initVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('Speech recognition not supported');
+                document.getElementById('voiceButton').style.display = 'none';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            state.recognition = new SpeechRecognition();
+            state.recognition.continuous = true;
+            state.recognition.interimResults = true;
+            state.recognition.lang = 'de-DE';
+
+            let finalTranscript = '';
+
+            state.recognition.onresult = (event) => {
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                const textarea = document.getElementById('pitchDraft');
+                textarea.value = finalTranscript + interimTranscript;
+            };
+
+            state.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                stopVoiceInput();
+            };
+
+            state.recognition.onend = () => {
+                if (state.isRecording) {
+                    state.recognition.start();
+                }
+            };
+        }
+
+        function toggleVoiceInput() {
+            if (!state.recognition) {
+                initVoiceRecognition();
+                if (!state.recognition) {
+                    alert('Spracheingabe wird von deinem Browser nicht unterstützt. Bitte nutze Chrome, Edge oder Safari.');
+                    return;
+                }
+            }
+
+            if (state.isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            state.isRecording = true;
+            state.recognition.start();
+            
+            const button = document.getElementById('voiceButton');
+            button.classList.add('recording');
+            button.innerHTML = '⏹️';
+            button.title = 'Aufnahme beenden';
+        }
+
+        function stopVoiceInput() {
+            state.isRecording = false;
+            if (state.recognition) {
+                state.recognition.stop();
+            }
+            
+            const button = document.getElementById('voiceButton');
+            button.classList.remove('recording');
+            button.innerHTML = '🎤';
+            button.title = 'Spracheingabe starten';
+        }
+
+        function skipPitchDraft(event) {
+            event.preventDefault();
+            document.getElementById('pitchDraft').value = '[Kein Pitch-Entwurf vorhanden]';
+            nextStep();
+        }
+
+        // ========================================
+        // ADAPTIVE QUESTIONS
+        // ========================================
+
+        async function generateAdaptiveQuestion(stepNumber) {
+            if (state.adaptiveQuestions[stepNumber]) {
+                console.log('✅ Using cached question for step', stepNumber);
+                displayGeneratedQuestion(stepNumber, state.adaptiveQuestions[stepNumber]);
+                return state.adaptiveQuestions[stepNumber];
+            }
+
+            if (state.questionGenerationPromises[stepNumber]) {
+                console.log('⏳ Question already being generated for step', stepNumber);
+                return state.questionGenerationPromises[stepNumber];
+            }
+
+            const context = {
+                pitchType: state.formData.pitchType,
+                stage: state.formData.stage,
+                pitchDraft: state.formData.pitchDraft,
+                previousAnswers: {}
+            };
+
+            for (let i = 4; i < stepNumber; i++) {
+                if (state.formData[`question${i}`]) {
+                    context.previousAnswers[`question${i}`] = state.formData[`question${i}`];
+                }
+            }
+
+            console.log(`🔍 Generating question for step ${stepNumber} (${state.currentStep === stepNumber ? 'current' : 'background'})`);
+
+            const generationPromise = (async () => {
+                try {
+                    const response = await PitchPerfect.AI.generateAdaptiveQuestion(stepNumber, context);
+                    
+                    state.adaptiveQuestions[stepNumber] = response;
+
+                    if (state.currentStep === stepNumber) {
+                        displayGeneratedQuestion(stepNumber, response);
+                    }
+
+                    return response;
+                } catch (error) {
+                    console.error('Error generating adaptive question:', error);
+                    return null;
+                } finally {
+                    delete state.questionGenerationPromises[stepNumber];
+                }
+            })();
+
+            state.questionGenerationPromises[stepNumber] = generationPromise;
+            return generationPromise;
+        }
+
+        function displayGeneratedQuestion(stepNumber, response) {
+            if (!response) return;
+
+            document.getElementById(`question${stepNumber}Title`).textContent = response.question;
+            document.getElementById(`question${stepNumber}Desc`).textContent = response.description;
+
+            const answersContainer = document.getElementById(`answers${stepNumber}`);
+            answersContainer.innerHTML = '';
+
+            response.suggestedAnswers.forEach((answer, index) => {
+                const option = document.createElement('div');
+                option.className = 'answer-option';
+                option.textContent = answer;
+                option.onclick = () => selectAnswer(stepNumber, index, answer);
+                
+                option.style.animation = `fadeInUp 0.3s ease backwards ${index * 0.1}s`;
+                
+                answersContainer.appendChild(option);
+            });
+        }
+
+        function selectAnswer(stepNumber, index, answer) {
+            document.querySelectorAll(`#answers${stepNumber} .answer-option`).forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            const selectedOption = document.querySelectorAll(`#answers${stepNumber} .answer-option`)[index];
+            selectedOption.classList.add('selected');
+
+            if (!selectedOption.querySelector('.success-checkmark')) {
+                const checkmark = document.createElement('span');
+                checkmark.className = 'success-checkmark';
+                checkmark.innerHTML = '✓';
+                selectedOption.appendChild(checkmark);
+            }
+
+            state.formData[`question${stepNumber}`] = answer;
+
+            document.getElementById(`customAnswer${stepNumber}`).classList.remove('active');
+
+            showAutoSaveIndicator();
+        }
+
+        function toggleCustomAnswer(stepNumber) {
+            const customArea = document.getElementById(`customAnswer${stepNumber}`);
+            customArea.classList.toggle('active');
+
+            if (customArea.classList.contains('active')) {
+                document.querySelectorAll(`#answers${stepNumber} .answer-option`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                document.getElementById(`customAnswerText${stepNumber}`).focus();
+            }
+        }
+
+        // ========================================
+        // NAVIGATION & VALIDATION
+        // ========================================
+
+        function startDiagnostic() {
+            document.getElementById('intro-section').style.display = 'none';
+            state.currentStep = 1;
+            showStep(1);
+            updateProgress();
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.step-container').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            const step = document.querySelector(`[data-step="${stepNumber}"]`);
+            if (step) {
+                step.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                if (stepNumber >= 4 && stepNumber <= 7) {
+                    if (!state.adaptiveQuestions[stepNumber]) {
+                        generateAdaptiveQuestion(stepNumber);
+                    } else {
+                        displayGeneratedQuestion(stepNumber, state.adaptiveQuestions[stepNumber]);
+                    }
+                }
+            }
+        }
+
+        function updateProgress() {
+            const progress = (state.currentStep / 8) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Schritt ${state.currentStep} von 8`;
+            document.getElementById('progressPercentage').textContent = `${Math.round(progress)}%`;
+        }
+
+        async function nextStep() {
+            if (!await validateCurrentStep()) return;
+            
+            saveStepData(state.currentStep);
+            showAutoSaveIndicator();
+
+            const nextStepNumber = state.currentStep + 1;
+            if (nextStepNumber >= 4 && nextStepNumber <= 7 && !state.adaptiveQuestions[nextStepNumber]) {
+                generateAdaptiveQuestion(nextStepNumber).catch(err => 
+                    console.log('Background generation failed, will try again on step load:', err)
+                );
+            }
+            
+            state.currentStep++;
+            showStep(state.currentStep);
+            updateProgress();
+        }
+
+        function previousStep() {
+            if (state.isRecording) {
+                stopVoiceInput();
+            }
+
+            if (state.currentStep > 1) {
+                state.currentStep--;
+                showStep(state.currentStep);
+                updateProgress();
+            } else {
+                document.getElementById('intro-section').style.display = 'block';
+                document.querySelector(`[data-step="1"]`).classList.remove('active');
+                state.currentStep = 0;
+                updateProgress();
+            }
+        }
+
+        async function validateCurrentStep() {
+            const step = state.currentStep;
+            
+            if (step === 1) {
+                const selected = document.querySelector('input[name="pitchType"]:checked');
+                if (!selected) {
+                    alert('Bitte wähle einen Pitch-Typ');
+                    return false;
+                }
+            } else if (step === 2) {
+                const selected = document.querySelector('input[name="stage"]:checked');
+                if (!selected) {
+                    alert('Bitte wähle eine Phase');
+                    return false;
+                }
+            } else if (step === 3) {
+                const value = document.getElementById('pitchDraft').value.trim();
+                if (!value || value === '') {
+                    alert('Bitte füge deinen Pitch-Entwurf hinzu oder klicke auf "Ich habe noch keinen Pitch-Entwurf"');
+                    return false;
+                }
+            } else if (step >= 4 && step <= 7) {
+                const selectedOption = document.querySelector(`#answers${step} .answer-option.selected`);
+                const customAnswer = document.getElementById(`customAnswerText${step}`).value.trim();
+                
+                if (!selectedOption && !customAnswer) {
+                    alert('Bitte wähle eine Antwort oder schreibe deine eigene');
+                    return false;
+                }
+
+                if (customAnswer) {
+                    state.formData[`question${step}`] = customAnswer;
+                }
+            } else if (step === 8) {
+                const email = document.getElementById('email').value.trim();
+                if (!email || !email.includes('@')) {
+                    alert('Bitte gib eine gültige E-Mail-Adresse ein');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function saveStepData(step) {
+            if (step === 1) {
+                state.formData.pitchType = document.querySelector('input[name="pitchType"]:checked').value;
+            } else if (step === 2) {
+                state.formData.stage = document.querySelector('input[name="stage"]:checked').value;
+            } else if (step === 3) {
+                state.formData.pitchDraft = document.getElementById('pitchDraft').value;
+            } else if (step === 8) {
+                state.formData.email = document.getElementById('email').value;
+            }
+        }
+
+        function showAutoSaveIndicator() {
+            const indicator = document.getElementById('autoSaveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        async function submitDiagnostic() {
+            if (!await validateCurrentStep()) return;
+            
+            saveStepData(8);
+            
+            document.querySelector(`[data-step="${state.currentStep}"]`).classList.remove('active');
+            document.getElementById('loading-screen').classList.add('active');
+
+            const statusMessages = [
+                'Analysiere deinen spezifischen Pitch...',
+                'Bewerte Problemstellung im Detail...',
+                'Prüfe Lösungsklarheit und USP...',
+                'Validiere Marktpotenzial und TAM...',
+                'Bewerte Wettbewerbsposition...',
+                'Berechne Impact jedes Problems...',
+                'Generiere personalisierte Roadmap...'
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < statusMessages.length) {
+                    document.getElementById('loading-status').textContent = statusMessages[i];
+                    i++;
+                }
+            }, 1500);
+
+            try {
+                const diagnosis = await PitchPerfect.AI.generatePersonalizedDiagnostic(state.formData);
+                
+                clearInterval(interval);
+                state.diagnosis = diagnosis;
+                
+                const demoState = PitchPerfect.DemoState.load();
+                demoState.diagnostic.completed = true;
+                demoState.diagnostic.answers = state.formData;
+                demoState.diagnostic.results = diagnosis;
+                demoState.user.email = state.formData.email;
+                PitchPerfect.DemoState.save(demoState);
+                
+                displayResults(diagnosis);
+                
+                document.getElementById('loading-screen').classList.remove('active');
+                document.getElementById('results-screen').classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                startUrgencyTimer();
+                
+            } catch (error) {
+                console.error('Fehler bei Diagnose-Generierung:', error);
+                clearInterval(interval);
+                alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+                document.getElementById('loading-screen').classList.remove('active');
+                showStep(state.currentStep);
+            }
+        }
+
+        function displayResults(diagnosis) {
+            document.getElementById('criticalCount').textContent = diagnosis.criticalIssues || 0;
+            document.getElementById('warningCount').textContent = diagnosis.warningIssues || 0;
+            document.getElementById('goodCount').textContent = diagnosis.strongAreas || 0;
+
+            const issuesList = document.getElementById('issuesList');
+            issuesList.innerHTML = '';
+
+            const severityOrder = { 'critical': 1, 'warning': 2, 'good': 3 };
+            const sortedIssues = [...diagnosis.issues].sort((a, b) => 
+                severityOrder[a.severity] - severityOrder[b.severity]
+            );
+
+            sortedIssues.forEach((issue, index) => {
+                const icon = issue.severity === 'critical' ? '🔴' : 
+                             issue.severity === 'warning' ? '🟡' : '🟢';
+                
+                const priorityBadge = issue.severity === 'critical' && index === 0 
+                    ? '<span style="background: #DC2626; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-left: 0.5rem;">HÖCHSTE PRIORITÄT</span>'
+                    : '';
+                
+                const card = document.createElement('div');
+                card.className = `issue-card ${issue.severity}`;
+                card.innerHTML = `
+                    <div class="issue-header">
+                        <div class="issue-icon">${icon}</div>
+                        <div style="flex: 1;">
+                            <div class="issue-title">${issue.title}${priorityBadge}</div>
+                            ${issue.workshopPhase && issue.workshopPhase !== '-' ? 
+                                `<div style="font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-top: 0.25rem;">
+                                    💡 Fix in Workshop: ${issue.workshopPhase}
+                                </div>` : ''}
+                        </div>
+                    </div>
+                    <p class="issue-description">${issue.description}</p>
+                    ${issue.impact ? 
+                        `<div style="margin-top: 1rem; padding: 0.75rem; background: ${issue.severity === 'critical' ? '#FEE2E2' : '#FEF3C7'}; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: var(--text-dark);">
+                            ⚠️ Impact: ${issue.impact}
+                        </div>` : ''}
+                `;
+                issuesList.appendChild(card);
+            });
+
+            const totalImpact = calculateTotalImpact(diagnosis);
+            addImpactSummary(totalImpact);
+        }
+
+        function calculateTotalImpact(diagnosis) {
+            const criticalCost = diagnosis.criticalIssues * 100000;
+            const warningCost = diagnosis.warningIssues * 25000;
+            return criticalCost + warningCost;
+        }
+
+        function addImpactSummary(totalImpact) {
+            const resultsHeader = document.querySelector('.results-header');
+            
+            const impactBox = document.createElement('div');
+            impactBox.style.cssText = `
+                background: linear-gradient(135deg, #FEE2E2, #FECACA);
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin-top: 2rem;
+                border-left: 4px solid #DC2626;
+            `;
+            
+            impactBox.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="font-size: 3rem;">⚠️</div>
+                    <div>
+                        <div style="font-size: 0.875rem; color: #991B1B; font-weight: 600; text-transform: uppercase;">
+                            Geschätzter Verlust wenn nicht behoben
+                        </div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #DC2626; margin-top: 0.25rem;">
+                            €${totalImpact.toLocaleString('de-DE')}+
+                        </div>
+                        <div style="font-size: 0.875rem; color: #7F1D1D; margin-top: 0.5rem;">
+                            in verlorenen Deals, verschwendeter Zeit und verpassten Opportunitäten
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsHeader.appendChild(impactBox);
+        }
+
+        function startUrgencyTimer() {
+            let hours = 47;
+            let minutes = 23;
+            let seconds = 15;
+
+            setInterval(() => {
+                seconds--;
+                if (seconds < 0) {
+                    seconds = 59;
+                    minutes--;
+                }
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                }
+                if (hours < 0) {
+                    hours = 0;
+                    minutes = 0;
+                    seconds = 0;
+                }
+
+                const timerEl = document.getElementById('urgencyTimer');
+                if (timerEl) {
+                    timerEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function handleCheckout() {
+            const demoState = PitchPerfect.DemoState.load();
+            demoState.workshop.unlocked = true;
+            demoState.paymentIntent = true;
+            PitchPerfect.DemoState.save(demoState);
+            
+            alert('🎉 Workshop freigeschaltet! (KOSTENLOS für Demo - normalerweise €49)\n\nWir haben dein Interesse gespeichert. Du erhältst Frühbucher-Preise bei unserem Launch!');
+            
+            window.location.href = 'workshop-interface.html';
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('input');
+                input.checked = true;
+                
+                this.parentElement.querySelectorAll('.radio-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+
+                if (!this.querySelector('.success-checkmark')) {
+                    const checkmark = document.createElement('span');
+                    checkmark.className = 'success-checkmark';
+                    checkmark.innerHTML = '✓';
+                    this.appendChild(checkmark);
+                }
+            });
+        });
+
+        window.addEventListener('load', () => {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                initVoiceRecognition();
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (state.isRecording) {
+                stopVoiceInput();
+            }
+        });
+    </script>
+</body>
+</html>
+
