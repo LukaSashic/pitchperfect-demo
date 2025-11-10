@@ -84,27 +84,53 @@
             padding: 3rem 1.5rem;
         }
 
+        /* Enhanced Progress Bar with Neuroscience Principles */
         .progress-bar {
             width: 100%;
-            height: 8px;
+            height: 12px;
             background: var(--bg-light);
             border-radius: 999px;
             overflow: hidden;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            transition: width 0.4s ease;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 999px;
+            box-shadow: 0 0 12px rgba(217, 119, 6, 0.4);
         }
 
         .progress-text {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             color: var(--text-medium);
             font-size: 0.875rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        /* Auto-save indicator (Loss Aversion principle) */
+        .auto-save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--success);
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
         }
 
         .intro-section {
@@ -164,12 +190,18 @@
 
         .step-container.active {
             display: block;
-            animation: fadeIn 0.4s ease;
+            animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
         }
 
         .step-header {
@@ -185,6 +217,12 @@
             font-weight: 700;
             font-size: 0.875rem;
             margin-bottom: 1rem;
+            animation: slideInLeft 0.3s ease;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         .step-title {
@@ -223,7 +261,7 @@
             font-size: 1rem;
             font-family: inherit;
             color: var(--text-dark);
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--white);
         }
 
@@ -232,7 +270,8 @@
         select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
+            transform: translateY(-1px);
         }
 
         textarea {
@@ -267,7 +306,7 @@
             border-radius: 50%;
             font-size: 1.25rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -285,8 +324,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
         }
 
         .no-draft-option {
@@ -307,7 +346,7 @@
             color: var(--primary);
         }
 
-        /* Adaptive Answer Options */
+        /* Enhanced Answer Options with Micro-interactions */
         .answer-options {
             display: flex;
             flex-direction: column;
@@ -318,28 +357,80 @@
         .answer-option {
             padding: 1rem 1.25rem;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--white);
             text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.1), transparent);
+            transition: left 0.5s ease;
         }
 
         .answer-option:hover {
             border-color: var(--primary);
             background: var(--bg-cream);
+            transform: translateX(4px);
+        }
+
+        .answer-option:hover::before {
+            left: 100%;
         }
 
         .answer-option.selected {
             border-color: var(--primary);
             background: var(--bg-cream);
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
+            animation: successPulse 0.4s ease;
         }
 
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Enhanced Loading States */
         .answer-option.loading {
-            opacity: 0.6;
+            background: linear-gradient(90deg, var(--bg-light) 25%, var(--bg-cream) 50%, var(--bg-light) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border: 2px solid var(--border);
+            min-height: 60px;
             cursor: wait;
         }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .loading-skeleton {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .skeleton-line {
+            height: 16px;
+            background: linear-gradient(90deg, var(--bg-light) 25%, var(--bg-cream) 50%, var(--bg-light) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            margin: 4px 0;
+        }
+
+        .skeleton-line:nth-child(1) { width: 80%; }
+        .skeleton-line:nth-child(2) { width: 65%; }
 
         .custom-answer-toggle {
             text-align: center;
@@ -351,11 +442,15 @@
             text-decoration: none;
             font-size: 0.875rem;
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: all 0.2s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            display: inline-block;
         }
 
         .custom-answer-link:hover {
             color: var(--primary);
+            background: var(--bg-cream);
         }
 
         .custom-answer-area {
@@ -365,7 +460,7 @@
 
         .custom-answer-area.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeInUp 0.3s ease;
         }
 
         .radio-group {
@@ -379,14 +474,15 @@
             align-items: center;
             padding: 1rem;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .radio-option:hover {
             border-color: var(--primary);
             background: var(--bg-cream);
+            transform: translateX(4px);
         }
 
         .radio-option input {
@@ -399,8 +495,10 @@
         .radio-option.selected {
             border-color: var(--primary);
             background: var(--bg-cream);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
         }
 
+        /* Enhanced Button with Haptic Feedback */
         .button-group {
             display: flex;
             gap: 1rem;
@@ -410,26 +508,51 @@
         .btn {
             padding: 0.875rem 2rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             flex: 1;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.4);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .btn-secondary {
@@ -440,6 +563,7 @@
 
         .btn-secondary:hover {
             border-color: var(--text-dark);
+            transform: translateX(-2px);
         }
 
         .btn:disabled {
@@ -448,6 +572,28 @@
             transform: none !important;
         }
 
+        /* Success Micro-animation (Dopamine trigger) */
+        .success-checkmark {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-left: 0.5rem;
+            animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Loading and Results styles remain the same as before */
         .loading-screen {
             background: var(--white);
             border-radius: 16px;
@@ -459,7 +605,7 @@
 
         .loading-screen.active {
             display: block;
-            animation: fadeIn 0.4s ease;
+            animation: fadeInUp 0.4s ease;
         }
 
         .loading-spinner {
@@ -495,7 +641,7 @@
 
         .results-screen.active {
             display: block;
-            animation: fadeIn 0.6s ease;
+            animation: fadeInUp 0.6s ease;
         }
 
         .results-header {
@@ -531,7 +677,12 @@
             padding: 1.5rem;
             border-radius: 12px;
             text-align: center;
+            animation: fadeInUp 0.6s ease backwards;
         }
+
+        .score-card:nth-child(1) { animation-delay: 0.1s; }
+        .score-card:nth-child(2) { animation-delay: 0.2s; }
+        .score-card:nth-child(3) { animation-delay: 0.3s; }
 
         .score-number {
             font-size: 3rem;
@@ -563,7 +714,12 @@
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             border-left: 4px solid;
+            animation: fadeInUp 0.4s ease backwards;
         }
+
+        .issue-card:nth-child(1) { animation-delay: 0.4s; }
+        .issue-card:nth-child(2) { animation-delay: 0.5s; }
+        .issue-card:nth-child(3) { animation-delay: 0.6s; }
 
         .issue-card.critical { border-left-color: var(--error); }
         .issue-card.warning { border-left-color: var(--warning); }
@@ -688,10 +844,18 @@
     </header>
 
     <div class="container">
+        <!-- Enhanced Progress Bar -->
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
-        <div class="progress-text" id="progressText">Schritt 0 von 8</div>
+        <div class="progress-text">
+            <span id="progressText">Schritt 0 von 8</span>
+            <span class="progress-percentage" id="progressPercentage">0%</span>
+        </div>
+        <div class="auto-save-indicator" id="autoSaveIndicator">
+            <span>✓</span>
+            <span>Fortschritt gespeichert</span>
+        </div>
 
         <!-- Intro Section -->
         <div class="intro-section" id="intro-section">
@@ -828,16 +992,27 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
             </div>
         </div>
 
-        <!-- Step 4-8: Adaptive Questions (Generated by AI) -->
+        <!-- Steps 4-7: Adaptive Questions -->
         <div class="step-container" data-step="4" id="adaptiveStep4">
             <div class="step-header">
                 <span class="step-number">Frage 4 von 8</span>
-                <h2 class="step-title" id="question4Title">Lade Frage...</h2>
-                <p class="step-description" id="question4Desc">Einen Moment bitte...</p>
+                <h2 class="step-title" id="question4Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question4Desc">Einen Moment, wir analysieren deinen Pitch...</p>
             </div>
 
             <div class="answer-options" id="answers4">
-                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
             </div>
 
             <div class="custom-answer-toggle">
@@ -857,12 +1032,23 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
         <div class="step-container" data-step="5" id="adaptiveStep5">
             <div class="step-header">
                 <span class="step-number">Frage 5 von 8</span>
-                <h2 class="step-title" id="question5Title">Lade Frage...</h2>
-                <p class="step-description" id="question5Desc">Einen Moment bitte...</p>
+                <h2 class="step-title" id="question5Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question5Desc">Einen Moment, wir analysieren deinen Pitch...</p>
             </div>
 
             <div class="answer-options" id="answers5">
-                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
             </div>
 
             <div class="custom-answer-toggle">
@@ -882,12 +1068,23 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
         <div class="step-container" data-step="6" id="adaptiveStep6">
             <div class="step-header">
                 <span class="step-number">Frage 6 von 8</span>
-                <h2 class="step-title" id="question6Title">Lade Frage...</h2>
-                <p class="step-description" id="question6Desc">Einen Moment bitte...</p>
+                <h2 class="step-title" id="question6Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question6Desc">Einen Moment, wir analysieren deinen Pitch...</p>
             </div>
 
             <div class="answer-options" id="answers6">
-                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
             </div>
 
             <div class="custom-answer-toggle">
@@ -907,12 +1104,23 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
         <div class="step-container" data-step="7" id="adaptiveStep7">
             <div class="step-header">
                 <span class="step-number">Frage 7 von 8</span>
-                <h2 class="step-title" id="question7Title">Lade Frage...</h2>
-                <p class="step-description" id="question7Desc">Einen Moment bitte...</p>
+                <h2 class="step-title" id="question7Title">Lade personalisierte Frage...</h2>
+                <p class="step-description" id="question7Desc">Einen Moment, wir analysieren deinen Pitch...</p>
             </div>
 
             <div class="answer-options" id="answers7">
-                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="answer-option loading">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
             </div>
 
             <div class="custom-answer-toggle">
@@ -1001,7 +1209,8 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
             diagnosis: null,
             adaptiveQuestions: {},
             recognition: null,
-            isRecording: false
+            isRecording: false,
+            questionGenerationPromises: {} // Track ongoing generations
         };
 
         // ========================================
@@ -1046,7 +1255,6 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
 
             state.recognition.onend = () => {
                 if (state.isRecording) {
-                    // Restart if still supposed to be recording
                     state.recognition.start();
                 }
             };
@@ -1097,10 +1305,23 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
         }
 
         // ========================================
-        // ADAPTIVE QUESTIONS GENERATION
+        // ADAPTIVE QUESTIONS WITH PRE-LOADING
         // ========================================
 
         async function generateAdaptiveQuestion(stepNumber) {
+            // Check if already generated (cached)
+            if (state.adaptiveQuestions[stepNumber]) {
+                console.log('✅ Using cached question for step', stepNumber);
+                displayGeneratedQuestion(stepNumber, state.adaptiveQuestions[stepNumber]);
+                return state.adaptiveQuestions[stepNumber];
+            }
+
+            // Check if already being generated
+            if (state.questionGenerationPromises[stepNumber]) {
+                console.log('⏳ Question already being generated for step', stepNumber);
+                return state.questionGenerationPromises[stepNumber];
+            }
+
             const context = {
                 pitchType: state.formData.pitchType,
                 stage: state.formData.stage,
@@ -1115,87 +1336,53 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
                 }
             }
 
-            try {
-                // Call your API to generate adaptive question
-                const response = await PitchPerfect.AI.generateAdaptiveQuestion(stepNumber, context);
-                
-                state.adaptiveQuestions[stepNumber] = response;
+            console.log(`🔍 Generating question for step ${stepNumber} (${state.currentStep === stepNumber ? 'current' : 'background'})`);
 
-                // Update UI
-                document.getElementById(`question${stepNumber}Title`).textContent = response.question;
-                document.getElementById(`question${stepNumber}Desc`).textContent = response.description;
+            // Create promise and store it
+            const generationPromise = (async () => {
+                try {
+                    const response = await PitchPerfect.AI.generateAdaptiveQuestion(stepNumber, context);
+                    
+                    state.adaptiveQuestions[stepNumber] = response;
 
-                const answersContainer = document.getElementById(`answers${stepNumber}`);
-                answersContainer.innerHTML = '';
-
-                response.suggestedAnswers.forEach((answer, index) => {
-                    const option = document.createElement('div');
-                    option.className = 'answer-option';
-                    option.textContent = answer;
-                    option.onclick = () => selectAnswer(stepNumber, index, answer);
-                    answersContainer.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('Error generating adaptive question:', error);
-                
-                // Fallback to generic question
-                const fallbacks = {
-                    4: {
-                        question: 'Wie würdest du dein Problem beschreiben?',
-                        description: 'Wer hat das Problem und wie viel kostet es sie?',
-                        suggestedAnswers: [
-                            'Unternehmen verlieren Zeit mit manuellen Prozessen',
-                            'Kunden haben Schwierigkeiten, die richtige Lösung zu finden',
-                            'Der Markt ist ineffizient und intransparent'
-                        ]
-                    },
-                    5: {
-                        question: 'Was ist deine Lösung?',
-                        description: 'Wie löst du das Problem konkret?',
-                        suggestedAnswers: [
-                            'Wir automatisieren den Prozess mit KI',
-                            'Wir bieten eine Plattform, die alles vereinfacht',
-                            'Wir schaffen Transparenz durch Daten'
-                        ]
-                    },
-                    6: {
-                        question: 'Welche Traktion hast du bisher?',
-                        description: 'Umsatz, Nutzer, Wachstum?',
-                        suggestedAnswers: [
-                            'Wir haben erste zahlende Kunden',
-                            'Wir sind noch im MVP-Stadium',
-                            'Wir wachsen 20%+ monatlich'
-                        ]
-                    },
-                    7: {
-                        question: 'Wer sind deine Hauptwettbewerber?',
-                        description: 'Und was ist dein Vorteil?',
-                        suggestedAnswers: [
-                            'Etablierte Player, aber kompliziert und teuer',
-                            'Indirekte Wettbewerber wie Excel/manuelle Prozesse',
-                            'Wir sind die ersten in diesem Bereich'
-                        ]
+                    // Only update UI if we're on this step
+                    if (state.currentStep === stepNumber) {
+                        displayGeneratedQuestion(stepNumber, response);
                     }
-                };
 
-                const fallback = fallbacks[stepNumber];
-                if (fallback) {
-                    document.getElementById(`question${stepNumber}Title`).textContent = fallback.question;
-                    document.getElementById(`question${stepNumber}Desc`).textContent = fallback.description;
-
-                    const answersContainer = document.getElementById(`answers${stepNumber}`);
-                    answersContainer.innerHTML = '';
-
-                    fallback.suggestedAnswers.forEach((answer, index) => {
-                        const option = document.createElement('div');
-                        option.className = 'answer-option';
-                        option.textContent = answer;
-                        option.onclick = () => selectAnswer(stepNumber, index, answer);
-                        answersContainer.appendChild(option);
-                    });
+                    return response;
+                } catch (error) {
+                    console.error('Error generating adaptive question:', error);
+                    return null;
+                } finally {
+                    delete state.questionGenerationPromises[stepNumber];
                 }
-            }
+            })();
+
+            state.questionGenerationPromises[stepNumber] = generationPromise;
+            return generationPromise;
+        }
+
+        function displayGeneratedQuestion(stepNumber, response) {
+            if (!response) return;
+
+            document.getElementById(`question${stepNumber}Title`).textContent = response.question;
+            document.getElementById(`question${stepNumber}Desc`).textContent = response.description;
+
+            const answersContainer = document.getElementById(`answers${stepNumber}`);
+            answersContainer.innerHTML = '';
+
+            response.suggestedAnswers.forEach((answer, index) => {
+                const option = document.createElement('div');
+                option.className = 'answer-option';
+                option.textContent = answer;
+                option.onclick = () => selectAnswer(stepNumber, index, answer);
+                
+                // Staggered animation
+                option.style.animation = `fadeInUp 0.3s ease backwards ${index * 0.1}s`;
+                
+                answersContainer.appendChild(option);
+            });
         }
 
         function selectAnswer(stepNumber, index, answer) {
@@ -1204,14 +1391,26 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
                 opt.classList.remove('selected');
             });
 
-            // Select this option
-            document.querySelectorAll(`#answers${stepNumber} .answer-option`)[index].classList.add('selected');
+            // Select this option with micro-animation
+            const selectedOption = document.querySelectorAll(`#answers${stepNumber} .answer-option`)[index];
+            selectedOption.classList.add('selected');
+
+            // Add success checkmark (dopamine trigger)
+            if (!selectedOption.querySelector('.success-checkmark')) {
+                const checkmark = document.createElement('span');
+                checkmark.className = 'success-checkmark';
+                checkmark.innerHTML = '✓';
+                selectedOption.appendChild(checkmark);
+            }
 
             // Save answer
             state.formData[`question${stepNumber}`] = answer;
 
             // Hide custom answer if shown
             document.getElementById(`customAnswer${stepNumber}`).classList.remove('active');
+
+            // Show auto-save indicator (loss aversion)
+            showAutoSaveIndicator();
         }
 
         function toggleCustomAnswer(stepNumber) {
@@ -1254,6 +1453,9 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
                 if (stepNumber >= 4 && stepNumber <= 7) {
                     if (!state.adaptiveQuestions[stepNumber]) {
                         generateAdaptiveQuestion(stepNumber);
+                    } else {
+                        // Display cached question
+                        displayGeneratedQuestion(stepNumber, state.adaptiveQuestions[stepNumber]);
                     }
                 }
             }
@@ -1263,12 +1465,24 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
             const progress = (state.currentStep / 8) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
             document.getElementById('progressText').textContent = `Schritt ${state.currentStep} von 8`;
+            document.getElementById('progressPercentage').textContent = `${Math.round(progress)}%`;
         }
 
         async function nextStep() {
             if (!await validateCurrentStep()) return;
             
             saveStepData(state.currentStep);
+            showAutoSaveIndicator();
+
+            // PRE-GENERATE next adaptive question in background (Solution 1)
+            const nextStepNumber = state.currentStep + 1;
+            if (nextStepNumber >= 4 && nextStepNumber <= 7 && !state.adaptiveQuestions[nextStepNumber]) {
+                // Start generating in background (don't await)
+                generateAdaptiveQuestion(nextStepNumber).catch(err => 
+                    console.log('Background generation failed, will try again on step load:', err)
+                );
+            }
+            
             state.currentStep++;
             showStep(state.currentStep);
             updateProgress();
@@ -1348,6 +1562,15 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
                 state.formData.email = document.getElementById('email').value;
             }
             // Adaptive questions 4-7 are saved in selectAnswer() or validateCurrentStep()
+        }
+
+        // Auto-save indicator (Loss Aversion principle)
+        function showAutoSaveIndicator() {
+            const indicator = document.getElementById('autoSaveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
         }
 
         async function submitDiagnostic() {
@@ -1456,6 +1679,14 @@ Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automat
                     opt.classList.remove('selected');
                 });
                 this.classList.add('selected');
+
+                // Micro-feedback
+                if (!this.querySelector('.success-checkmark')) {
+                    const checkmark = document.createElement('span');
+                    checkmark.className = 'success-checkmark';
+                    checkmark.innerHTML = '✓';
+                    this.appendChild(checkmark);
+                }
             });
         });
 
