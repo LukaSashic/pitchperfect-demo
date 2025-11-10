@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrierung - PitchPerfect AI</title>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         * {
             margin: 0;
@@ -252,9 +256,22 @@
         </div>
     </div>
 
-    <script type="module">
-        import { supabase } from './lib/supabase.js';
+    <script>
+        // ⚙️ CONFIGURATION - Replace with your actual Supabase values
+        // Get these from: Supabase Dashboard → Settings → API
+        const SUPABASE_URL = 'https://cfqwzxomkgvphlhywwpg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcXd6eG9ta2d2cGhsaHl3d3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NTQxMzksImV4cCI6MjA3ODMzMDEzOX0.cVBxieYS9yxvxxs9ct02sIgwGczngJ2lOE6Y-o7H-Zc';
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            }
+        });
 
+        // DOM elements
         const form = document.getElementById('signupForm');
         const submitBtn = document.getElementById('submitBtn');
         const alertContainer = document.getElementById('alertContainer');
@@ -274,6 +291,14 @@
                 : 'Kostenloses Konto erstellen';
         }
 
+        // Check if user is already logged in
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -296,8 +321,10 @@
             alertContainer.innerHTML = '';
 
             try {
+                console.log('Starting signup process...');
+                
                 // Sign up the user
-                const { data: authData, error: signUpError } = await supabase.auth.signUp({
+                const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
                     options: {
@@ -307,11 +334,15 @@
                     }
                 });
 
+                console.log('Signup response:', authData, signUpError);
+
                 if (signUpError) throw signUpError;
 
                 if (authData.user) {
-                    // Create profile in our database
-                    const { error: profileError } = await supabase
+                    console.log('User created:', authData.user.id);
+                    
+                    // Create profile in database
+                    const { error: profileError } = await supabaseClient
                         .from('profiles')
                         .insert([
                             {
@@ -326,12 +357,14 @@
 
                     if (profileError) {
                         console.error('Profile creation error:', profileError);
-                        // Don't block the user, profile can be created later
+                        // Don't block - profile can be created later
+                    } else {
+                        console.log('Profile created successfully');
                     }
 
                     // Check if email confirmation is required
                     if (authData.session) {
-                        // User is logged in immediately
+                        // User is logged in immediately (email confirmation disabled)
                         showAlert('Konto erfolgreich erstellt! Weiterleitung...', 'success');
                         setTimeout(() => {
                             window.location.href = 'dashboard.html';
@@ -362,12 +395,7 @@
             }
         });
 
-        // Check if user is already logged in
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                window.location.href = 'dashboard.html';
-            }
-        });
+        console.log('✅ Signup page initialized');
     </script>
 </body>
 </html>
