@@ -1300,5 +1300,33 @@
             });
         });
     </script>
+
+    <!-- Auth Redirect Handler -->
+    <script>
+    // Check if this is an email confirmation callback
+    const checkAuthCallback = () => {
+        const hash = window.location.hash;
+        const params = new URLSearchParams(hash.substring(1));
+        
+        // Check for Supabase auth tokens
+        const hasAccessToken = params.get('access_token');
+        const hasRefreshToken = params.get('refresh_token');
+        const type = params.get('type');
+        
+        // If this is an auth callback, redirect to dashboard
+        if (hasAccessToken || type === 'signup' || type === 'recovery' || type === 'invite') {
+            console.log('Auth callback detected, redirecting to dashboard...');
+            window.location.href = '/dashboard.html' + window.location.hash;
+            return true;
+        }
+        
+        return false;
+    };
+    
+    // Run check immediately
+    checkAuthCallback();
+</script>
+</body>
+</html>
 </body>
 </html>
