@@ -214,7 +214,6 @@
 
         input[type="text"],
         input[type="email"],
-        input[type="url"],
         textarea,
         select {
             width: 100%;
@@ -241,15 +240,141 @@
             resize: vertical;
         }
 
-        .radio-group,
-        .checkbox-group {
+        /* Voice Input Styles */
+        .pitch-draft-container {
+            position: relative;
+        }
+
+        .pitch-draft-textarea {
+            min-height: 200px;
+            padding-right: 60px;
+        }
+
+        .voice-button-container {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .voice-button {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+        }
+
+        .voice-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+        }
+
+        .voice-button.recording {
+            background: var(--error);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .no-draft-option {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .no-draft-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .no-draft-link:hover {
+            color: var(--primary);
+        }
+
+        /* Adaptive Answer Options */
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .answer-option {
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+            text-align: left;
+        }
+
+        .answer-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-cream);
+        }
+
+        .answer-option.selected {
+            border-color: var(--primary);
+            background: var(--bg-cream);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+
+        .answer-option.loading {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .custom-answer-toggle {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .custom-answer-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .custom-answer-link:hover {
+            color: var(--primary);
+        }
+
+        .custom-answer-area {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .custom-answer-area.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .radio-group {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
 
-        .radio-option,
-        .checkbox-option {
+        .radio-option {
             display: flex;
             align-items: center;
             padding: 1rem;
@@ -259,22 +384,19 @@
             transition: all 0.2s ease;
         }
 
-        .radio-option:hover,
-        .checkbox-option:hover {
+        .radio-option:hover {
             border-color: var(--primary);
             background: var(--bg-cream);
         }
 
-        .radio-option input,
-        .checkbox-option input {
+        .radio-option input {
             width: 20px;
             height: 20px;
             margin-right: 0.75rem;
             cursor: pointer;
         }
 
-        .radio-option.selected,
-        .checkbox-option.selected {
+        .radio-option.selected {
             border-color: var(--primary);
             background: var(--bg-cream);
         }
@@ -483,7 +605,7 @@
         }
 
         .cta-box {
-            background: linear-gradient(135deg, var(--secondary-dark), var(--secondary));
+            background: linear-gradient(135deg, #064E3B, var(--secondary));
             border-radius: 16px;
             padding: 3rem;
             text-align: center;
@@ -541,6 +663,16 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .pitch-draft-textarea {
+                padding-right: 12px;
+                padding-bottom: 60px;
+            }
+
+            .voice-button-container {
+                right: 12px;
+                bottom: 12px;
+            }
         }
     </style>
 </head>
@@ -559,7 +691,7 @@
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
-        <div class="progress-text" id="progressText">Schritt 0 von 11</div>
+        <div class="progress-text" id="progressText">Schritt 0 von 8</div>
 
         <!-- Intro Section -->
         <div class="intro-section" id="intro-section">
@@ -587,7 +719,7 @@
         <!-- Step 1: Pitch Type -->
         <div class="step-container" data-step="1">
             <div class="step-header">
-                <span class="step-number">Frage 1 von 10</span>
+                <span class="step-number">Frage 1 von 8</span>
                 <h2 class="step-title">Welche Art von Pitch entwickelst du?</h2>
                 <p class="step-description">Dies hilft uns, die Diagnose auf dein spezifisches Szenario zuzuschneiden.</p>
             </div>
@@ -620,7 +752,7 @@
         <!-- Step 2: Stage -->
         <div class="step-container" data-step="2">
             <div class="step-header">
-                <span class="step-number">Frage 2 von 10</span>
+                <span class="step-number">Frage 2 von 8</span>
                 <h2 class="step-title">In welcher Phase bist du?</h2>
                 <p class="step-description">Hilft uns zu verstehen, wo du in deiner Reise stehst.</p>
             </div>
@@ -654,16 +786,40 @@
             </div>
         </div>
 
-        <!-- Step 3: Industry -->
+        <!-- Step 3: Pitch Draft (NEW with Voice Input) -->
         <div class="step-container" data-step="3">
             <div class="step-header">
-                <span class="step-number">Frage 3 von 10</span>
-                <h2 class="step-title">In welcher Branche/Bereich bist du tätig?</h2>
-                <p class="step-description">Branchen-Kontext hilft uns, relevante Benchmarks bereitzustellen.</p>
+                <span class="step-number">Frage 3 von 8</span>
+                <h2 class="step-title">Teile deinen Pitch-Entwurf mit uns</h2>
+                <p class="step-description">Füge deinen aktuellen Pitch-Text ein oder nutze die Spracheingabe. Je mehr Details, desto präziser wird die Analyse.</p>
             </div>
 
             <div class="form-group">
-                <input type="text" id="industry" placeholder="z.B. HealthTech, FinTech, SaaS, EdTech, E-Commerce..." />
+                <div class="pitch-draft-container">
+                    <textarea 
+                        id="pitchDraft" 
+                        class="pitch-draft-textarea"
+                        placeholder="Beschreibe dein Startup, dein Problem, deine Lösung, deinen Markt, deine Traktion... Du kannst auch einfach deinen bestehenden Pitch-Text hier einfügen.
+
+Beispiel: 'Wir helfen kleinen Unternehmen, ihre Rechnungsverarbeitung zu automatisieren. Das Problem ist, dass KMUs durchschnittlich 15 Stunden pro Woche mit manueller Rechnungsverwaltung verschwenden...'"
+                    ></textarea>
+                    <div class="voice-button-container">
+                        <button 
+                            type="button" 
+                            class="voice-button" 
+                            id="voiceButton" 
+                            onclick="toggleVoiceInput()"
+                            title="Spracheingabe starten"
+                        >
+                            🎤
+                        </button>
+                    </div>
+                </div>
+                <div class="no-draft-option">
+                    <a href="#" class="no-draft-link" onclick="skipPitchDraft(event)">
+                        Ich habe noch keinen Pitch-Entwurf →
+                    </a>
+                </div>
             </div>
 
             <div class="button-group">
@@ -672,16 +828,24 @@
             </div>
         </div>
 
-        <!-- Step 4: Problem Clarity -->
-        <div class="step-container" data-step="4">
+        <!-- Step 4-8: Adaptive Questions (Generated by AI) -->
+        <div class="step-container" data-step="4" id="adaptiveStep4">
             <div class="step-header">
-                <span class="step-number">Frage 4 von 10</span>
-                <h2 class="step-title">Wie würdest du deine Problemstellung beschreiben?</h2>
-                <p class="step-description">Sei so spezifisch wie möglich. Wer hat das Problem? Wie viel kostet es sie?</p>
+                <span class="step-number">Frage 4 von 8</span>
+                <h2 class="step-title" id="question4Title">Lade Frage...</h2>
+                <p class="step-description" id="question4Desc">Einen Moment bitte...</p>
             </div>
 
-            <div class="form-group">
-                <textarea id="problemStatement" placeholder="z.B. Kleine Unternehmen (10-50 Mitarbeiter) verschwenden 15+ Stunden/Woche mit manueller Rechnungsverwaltung, was sie €5.000+/Monat an verlorener Produktivität kostet..."></textarea>
+            <div class="answer-options" id="answers4">
+                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(4)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer4">
+                <textarea id="customAnswerText4" placeholder="Schreibe deine eigene Antwort..."></textarea>
             </div>
 
             <div class="button-group">
@@ -690,16 +854,23 @@
             </div>
         </div>
 
-        <!-- Step 5: Solution -->
-        <div class="step-container" data-step="5">
+        <div class="step-container" data-step="5" id="adaptiveStep5">
             <div class="step-header">
-                <span class="step-number">Frage 5 von 10</span>
-                <h2 class="step-title">Wie würdest du deine Lösung in 2-3 Sätzen beschreiben?</h2>
-                <p class="step-description">Oma-Test: Kann deine Großmutter verstehen, was du machst?</p>
+                <span class="step-number">Frage 5 von 8</span>
+                <h2 class="step-title" id="question5Title">Lade Frage...</h2>
+                <p class="step-description" id="question5Desc">Einen Moment bitte...</p>
             </div>
 
-            <div class="form-group">
-                <textarea id="solution" placeholder="z.B. Wir automatisieren Rechnungsverarbeitung mit KI. Unternehmen scannen Rechnungen, unsere KI extrahiert Daten, validiert und zahlt automatisch. Reduziert manuelle Arbeit von 15 Stunden auf 15 Minuten..."></textarea>
+            <div class="answer-options" id="answers5">
+                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(5)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer5">
+                <textarea id="customAnswerText5" placeholder="Schreibe deine eigene Antwort..."></textarea>
             </div>
 
             <div class="button-group">
@@ -708,16 +879,23 @@
             </div>
         </div>
 
-        <!-- Step 6: Traction -->
-        <div class="step-container" data-step="6">
+        <div class="step-container" data-step="6" id="adaptiveStep6">
             <div class="step-header">
-                <span class="step-number">Frage 6 von 10</span>
-                <h2 class="step-title">Was ist deine aktuelle Traktion?</h2>
-                <p class="step-description">Zahlen, die deine Idee validieren. Umsatz, Nutzer, Wachstumsrate, etc.</p>
+                <span class="step-number">Frage 6 von 8</span>
+                <h2 class="step-title" id="question6Title">Lade Frage...</h2>
+                <p class="step-description" id="question6Desc">Einen Moment bitte...</p>
             </div>
 
-            <div class="form-group">
-                <textarea id="traction" placeholder="z.B. €25k MRR, 150 zahlende Kunden, 30% MoM-Wachstum, 85% Retention nach 90 Tagen, 3 Enterprise-LOIs..."></textarea>
+            <div class="answer-options" id="answers6">
+                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(6)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer6">
+                <textarea id="customAnswerText6" placeholder="Schreibe deine eigene Antwort..."></textarea>
             </div>
 
             <div class="button-group">
@@ -726,16 +904,23 @@
             </div>
         </div>
 
-        <!-- Step 7: Market Size -->
-        <div class="step-container" data-step="7">
+        <div class="step-container" data-step="7" id="adaptiveStep7">
             <div class="step-header">
-                <span class="step-number">Frage 7 von 10</span>
-                <h2 class="step-title">Wie groß ist deine Marktchance?</h2>
-                <p class="step-description">TAM, SAM, SOM. Wenn du nicht sicher bist, gib deine beste Schätzung.</p>
+                <span class="step-number">Frage 7 von 8</span>
+                <h2 class="step-title" id="question7Title">Lade Frage...</h2>
+                <p class="step-description" id="question7Desc">Einen Moment bitte...</p>
             </div>
 
-            <div class="form-group">
-                <textarea id="marketSize" placeholder="z.B. TAM: €50B (alle KMU-Buchhaltung), SAM: €5B (KMU, die Automatisierung suchen), SOM: €500M (unsere ersten 3 Märkte in 5 Jahren)..."></textarea>
+            <div class="answer-options" id="answers7">
+                <div class="answer-option loading">Generiere personalisierte Antwortoptionen...</div>
+            </div>
+
+            <div class="custom-answer-toggle">
+                <a class="custom-answer-link" onclick="toggleCustomAnswer(7)">✏️ Eigene Antwort schreiben</a>
+            </div>
+
+            <div class="custom-answer-area" id="customAnswer7">
+                <textarea id="customAnswerText7" placeholder="Schreibe deine eigene Antwort..."></textarea>
             </div>
 
             <div class="button-group">
@@ -744,62 +929,8 @@
             </div>
         </div>
 
-        <!-- Step 8: Competition -->
+        <!-- Step 8: Email -->
         <div class="step-container" data-step="8">
-            <div class="step-header">
-                <span class="step-number">Frage 8 von 10</span>
-                <h2 class="step-title">Wer sind deine Hauptwettbewerber und was ist dein Vorteil?</h2>
-                <p class="step-description">Sei ehrlich. "Keine Konkurrenz" ist die falsche Antwort.</p>
-            </div>
-
-            <div class="form-group">
-                <textarea id="competition" placeholder="z.B. Wettbewerber: QuickBooks (kompliziert), Expensify (nur Spesen), Excel (manuell). Unser Vorteil: End-to-End-Automatisierung mit KI + spezifisch für KMU + 10x günstiger als Enterprise-Tools..."></textarea>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
-                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
-            </div>
-        </div>
-
-        <!-- Step 9: Team -->
-        <div class="step-container" data-step="9">
-            <div class="step-header">
-                <span class="step-number">Frage 9 von 10</span>
-                <h2 class="step-title">Warum ist dein Team einzigartig qualifiziert, dies aufzubauen?</h2>
-                <p class="step-description">Relevante Erfahrung, Domain-Expertise, frühere Erfolge.</p>
-            </div>
-
-            <div class="form-group">
-                <textarea id="team" placeholder="z.B. Mitgründer 1: 10 Jahre Fintech bei PayPal, baute Zahlungssysteme für 5M+ Nutzer. Mitgründer 2: AI-PhD von MIT, 3 Patente in ML. Beide betrieben kleine Unternehmen und lebten diesen Schmerzpunkt..."></textarea>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
-                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
-            </div>
-        </div>
-
-        <!-- Step 10: Funding Ask -->
-        <div class="step-container" data-step="10">
-            <div class="step-header">
-                <span class="step-number">Frage 10 von 10</span>
-                <h2 class="step-title">Wie viel sammelst du und wofür? (Falls zutreffend)</h2>
-                <p class="step-description">Betrag, Verwendungszweck, wichtige Meilensteine.</p>
-            </div>
-
-            <div class="form-group">
-                <textarea id="fundingAsk" placeholder="z.B. €2M Seed-Runde. €800k Produktentwicklung (3 Ingenieure), €700k Vertrieb (GTM-Team), €500k Ops. Erreiche in 18 Monaten €100k MRR, 500+ Kunden, breakeven..."></textarea>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-secondary" onclick="previousStep()">← Zurück</button>
-                <button class="btn btn-primary" onclick="nextStep()">Weiter →</button>
-            </div>
-        </div>
-
-        <!-- Step 11: Email -->
-        <div class="step-container" data-step="11">
             <div class="step-header">
                 <span class="step-number">Letzte Frage</span>
                 <h2 class="step-title">Wohin sollen wir deine Diagnose senden?</h2>
@@ -867,8 +998,240 @@
         let state = {
             currentStep: 0,
             formData: {},
-            diagnosis: null
+            diagnosis: null,
+            adaptiveQuestions: {},
+            recognition: null,
+            isRecording: false
         };
+
+        // ========================================
+        // VOICE INPUT FUNCTIONALITY
+        // ========================================
+
+        function initVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('Speech recognition not supported');
+                document.getElementById('voiceButton').style.display = 'none';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            state.recognition = new SpeechRecognition();
+            state.recognition.continuous = true;
+            state.recognition.interimResults = true;
+            state.recognition.lang = 'de-DE';
+
+            let finalTranscript = '';
+
+            state.recognition.onresult = (event) => {
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                const textarea = document.getElementById('pitchDraft');
+                textarea.value = finalTranscript + interimTranscript;
+            };
+
+            state.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                stopVoiceInput();
+            };
+
+            state.recognition.onend = () => {
+                if (state.isRecording) {
+                    // Restart if still supposed to be recording
+                    state.recognition.start();
+                }
+            };
+        }
+
+        function toggleVoiceInput() {
+            if (!state.recognition) {
+                initVoiceRecognition();
+                if (!state.recognition) {
+                    alert('Spracheingabe wird von deinem Browser nicht unterstützt. Bitte nutze Chrome, Edge oder Safari.');
+                    return;
+                }
+            }
+
+            if (state.isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            state.isRecording = true;
+            state.recognition.start();
+            
+            const button = document.getElementById('voiceButton');
+            button.classList.add('recording');
+            button.innerHTML = '⏹️';
+            button.title = 'Aufnahme beenden';
+        }
+
+        function stopVoiceInput() {
+            state.isRecording = false;
+            if (state.recognition) {
+                state.recognition.stop();
+            }
+            
+            const button = document.getElementById('voiceButton');
+            button.classList.remove('recording');
+            button.innerHTML = '🎤';
+            button.title = 'Spracheingabe starten';
+        }
+
+        function skipPitchDraft(event) {
+            event.preventDefault();
+            document.getElementById('pitchDraft').value = '[Kein Pitch-Entwurf vorhanden]';
+            nextStep();
+        }
+
+        // ========================================
+        // ADAPTIVE QUESTIONS GENERATION
+        // ========================================
+
+        async function generateAdaptiveQuestion(stepNumber) {
+            const context = {
+                pitchType: state.formData.pitchType,
+                stage: state.formData.stage,
+                pitchDraft: state.formData.pitchDraft,
+                previousAnswers: {}
+            };
+
+            // Include previous adaptive answers
+            for (let i = 4; i < stepNumber; i++) {
+                if (state.formData[`question${i}`]) {
+                    context.previousAnswers[`question${i}`] = state.formData[`question${i}`];
+                }
+            }
+
+            try {
+                // Call your API to generate adaptive question
+                const response = await PitchPerfect.AI.generateAdaptiveQuestion(stepNumber, context);
+                
+                state.adaptiveQuestions[stepNumber] = response;
+
+                // Update UI
+                document.getElementById(`question${stepNumber}Title`).textContent = response.question;
+                document.getElementById(`question${stepNumber}Desc`).textContent = response.description;
+
+                const answersContainer = document.getElementById(`answers${stepNumber}`);
+                answersContainer.innerHTML = '';
+
+                response.suggestedAnswers.forEach((answer, index) => {
+                    const option = document.createElement('div');
+                    option.className = 'answer-option';
+                    option.textContent = answer;
+                    option.onclick = () => selectAnswer(stepNumber, index, answer);
+                    answersContainer.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error generating adaptive question:', error);
+                
+                // Fallback to generic question
+                const fallbacks = {
+                    4: {
+                        question: 'Wie würdest du dein Problem beschreiben?',
+                        description: 'Wer hat das Problem und wie viel kostet es sie?',
+                        suggestedAnswers: [
+                            'Unternehmen verlieren Zeit mit manuellen Prozessen',
+                            'Kunden haben Schwierigkeiten, die richtige Lösung zu finden',
+                            'Der Markt ist ineffizient und intransparent'
+                        ]
+                    },
+                    5: {
+                        question: 'Was ist deine Lösung?',
+                        description: 'Wie löst du das Problem konkret?',
+                        suggestedAnswers: [
+                            'Wir automatisieren den Prozess mit KI',
+                            'Wir bieten eine Plattform, die alles vereinfacht',
+                            'Wir schaffen Transparenz durch Daten'
+                        ]
+                    },
+                    6: {
+                        question: 'Welche Traktion hast du bisher?',
+                        description: 'Umsatz, Nutzer, Wachstum?',
+                        suggestedAnswers: [
+                            'Wir haben erste zahlende Kunden',
+                            'Wir sind noch im MVP-Stadium',
+                            'Wir wachsen 20%+ monatlich'
+                        ]
+                    },
+                    7: {
+                        question: 'Wer sind deine Hauptwettbewerber?',
+                        description: 'Und was ist dein Vorteil?',
+                        suggestedAnswers: [
+                            'Etablierte Player, aber kompliziert und teuer',
+                            'Indirekte Wettbewerber wie Excel/manuelle Prozesse',
+                            'Wir sind die ersten in diesem Bereich'
+                        ]
+                    }
+                };
+
+                const fallback = fallbacks[stepNumber];
+                if (fallback) {
+                    document.getElementById(`question${stepNumber}Title`).textContent = fallback.question;
+                    document.getElementById(`question${stepNumber}Desc`).textContent = fallback.description;
+
+                    const answersContainer = document.getElementById(`answers${stepNumber}`);
+                    answersContainer.innerHTML = '';
+
+                    fallback.suggestedAnswers.forEach((answer, index) => {
+                        const option = document.createElement('div');
+                        option.className = 'answer-option';
+                        option.textContent = answer;
+                        option.onclick = () => selectAnswer(stepNumber, index, answer);
+                        answersContainer.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        function selectAnswer(stepNumber, index, answer) {
+            // Clear previous selection
+            document.querySelectorAll(`#answers${stepNumber} .answer-option`).forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Select this option
+            document.querySelectorAll(`#answers${stepNumber} .answer-option`)[index].classList.add('selected');
+
+            // Save answer
+            state.formData[`question${stepNumber}`] = answer;
+
+            // Hide custom answer if shown
+            document.getElementById(`customAnswer${stepNumber}`).classList.remove('active');
+        }
+
+        function toggleCustomAnswer(stepNumber) {
+            const customArea = document.getElementById(`customAnswer${stepNumber}`);
+            customArea.classList.toggle('active');
+
+            if (customArea.classList.contains('active')) {
+                // Clear selected option
+                document.querySelectorAll(`#answers${stepNumber} .answer-option`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Focus textarea
+                document.getElementById(`customAnswerText${stepNumber}`).focus();
+            }
+        }
+
+        // ========================================
+        // NAVIGATION & VALIDATION
+        // ========================================
 
         function startDiagnostic() {
             document.getElementById('intro-section').style.display = 'none';
@@ -886,25 +1249,37 @@
             if (step) {
                 step.classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Generate adaptive question if needed
+                if (stepNumber >= 4 && stepNumber <= 7) {
+                    if (!state.adaptiveQuestions[stepNumber]) {
+                        generateAdaptiveQuestion(stepNumber);
+                    }
+                }
             }
         }
 
         function updateProgress() {
-            const progress = (state.currentStep / 11) * 100;
+            const progress = (state.currentStep / 8) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `Schritt ${state.currentStep} von 11`;
+            document.getElementById('progressText').textContent = `Schritt ${state.currentStep} von 8`;
         }
 
-        function nextStep() {
-            if (validateCurrentStep()) {
-                saveStepData(state.currentStep);
-                state.currentStep++;
-                showStep(state.currentStep);
-                updateProgress();
-            }
+        async function nextStep() {
+            if (!await validateCurrentStep()) return;
+            
+            saveStepData(state.currentStep);
+            state.currentStep++;
+            showStep(state.currentStep);
+            updateProgress();
         }
 
         function previousStep() {
+            // Stop voice recording if active
+            if (state.isRecording) {
+                stopVoiceInput();
+            }
+
             if (state.currentStep > 1) {
                 state.currentStep--;
                 showStep(state.currentStep);
@@ -917,7 +1292,7 @@
             }
         }
 
-        function validateCurrentStep() {
+        async function validateCurrentStep() {
             const step = state.currentStep;
             
             if (step === 1) {
@@ -933,12 +1308,25 @@
                     return false;
                 }
             } else if (step === 3) {
-                const value = document.getElementById('industry').value.trim();
-                if (!value) {
-                    alert('Bitte gib deine Branche ein');
+                const value = document.getElementById('pitchDraft').value.trim();
+                if (!value || value === '') {
+                    alert('Bitte füge deinen Pitch-Entwurf hinzu oder klicke auf "Ich habe noch keinen Pitch-Entwurf"');
                     return false;
                 }
-            } else if (step === 11) {
+            } else if (step >= 4 && step <= 7) {
+                // Check if answer is selected or custom answer provided
+                const selectedOption = document.querySelector(`#answers${step} .answer-option.selected`);
+                const customAnswer = document.getElementById(`customAnswerText${step}`).value.trim();
+                
+                if (!selectedOption && !customAnswer) {
+                    alert('Bitte wähle eine Antwort oder schreibe deine eigene');
+                    return false;
+                }
+
+                if (customAnswer) {
+                    state.formData[`question${step}`] = customAnswer;
+                }
+            } else if (step === 8) {
                 const email = document.getElementById('email').value.trim();
                 if (!email || !email.includes('@')) {
                     alert('Bitte gib eine gültige E-Mail-Adresse ein');
@@ -955,50 +1343,37 @@
             } else if (step === 2) {
                 state.formData.stage = document.querySelector('input[name="stage"]:checked').value;
             } else if (step === 3) {
-                state.formData.industry = document.getElementById('industry').value;
-            } else if (step === 4) {
-                state.formData.problemStatement = document.getElementById('problemStatement').value;
-            } else if (step === 5) {
-                state.formData.solution = document.getElementById('solution').value;
-            } else if (step === 6) {
-                state.formData.traction = document.getElementById('traction').value;
-            } else if (step === 7) {
-                state.formData.marketSize = document.getElementById('marketSize').value;
+                state.formData.pitchDraft = document.getElementById('pitchDraft').value;
             } else if (step === 8) {
-                state.formData.competition = document.getElementById('competition').value;
-            } else if (step === 9) {
-                state.formData.team = document.getElementById('team').value;
-            } else if (step === 10) {
-                state.formData.fundingAsk = document.getElementById('fundingAsk').value;
-            } else if (step === 11) {
                 state.formData.email = document.getElementById('email').value;
             }
+            // Adaptive questions 4-7 are saved in selectAnswer() or validateCurrentStep()
         }
 
         async function submitDiagnostic() {
-            if (!validateCurrentStep()) return;
+            if (!await validateCurrentStep()) return;
             
-            saveStepData(11);
+            saveStepData(8);
             
             document.querySelector(`[data-step="${state.currentStep}"]`).classList.remove('active');
             document.getElementById('loading-screen').classList.add('active');
 
             const statusMessages = [
-                'Analysiere Problemstellung...',
-                'Bewerte Lösungsklarheit...',
-                'Prüfe Marktvalidierung...',
-                'Überprüfe Finanzmodell...',
-                'Bewerte Wettbewerbspositionierung...',
-                'Validiere Team-Glaubwürdigkeit...',
-                'Generiere Diagnose...'
+                'Analysiere Pitch-Struktur...',
+                'Bewerte Problemstellung...',
+                'Prüfe Lösungsklarheit...',
+                'Validiere Marktpotenzial...',
+                'Bewerte Wettbewerbsposition...',
+                'Generiere personalisierte Diagnose...'
             ];
 
             let i = 0;
             const interval = setInterval(() => {
-                document.getElementById('loading-status').textContent = statusMessages[i];
-                i++;
-                if (i >= statusMessages.length) clearInterval(interval);
-            }, 1000);
+                if (i < statusMessages.length) {
+                    document.getElementById('loading-status').textContent = statusMessages[i];
+                    i++;
+                }
+            }, 1500);
 
             try {
                 const diagnosis = await PitchPerfect.AI.generateDiagnostic(state.formData);
@@ -1020,7 +1395,10 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 console.error('Fehler bei Diagnose-Generierung:', error);
+                clearInterval(interval);
                 alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+                document.getElementById('loading-screen').classList.remove('active');
+                showStep(state.currentStep);
             }
         }
 
@@ -1065,6 +1443,10 @@
             window.location.href = 'workshop-interface.html';
         }
 
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
         document.querySelectorAll('.radio-option').forEach(option => {
             option.addEventListener('click', function() {
                 const input = this.querySelector('input');
@@ -1075,6 +1457,20 @@
                 });
                 this.classList.add('selected');
             });
+        });
+
+        // Initialize voice recognition on load
+        window.addEventListener('load', () => {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                initVoiceRecognition();
+            }
+        });
+
+        // Clean up voice recognition when leaving page
+        window.addEventListener('beforeunload', () => {
+            if (state.isRecording) {
+                stopVoiceInput();
+            }
         });
     </script>
 </body>
