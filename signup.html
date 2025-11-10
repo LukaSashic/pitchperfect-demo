@@ -369,7 +369,18 @@
 
                     if (profileError) {
                         console.error('Profile creation failed:', profileError);
-                        // Continue anyway - profile might already exist
+
+                        // Check if it's a duplicate/conflict error
+                        if (profileError.code === '23505' ||
+                            profileError.message.includes('duplicate') ||
+                            profileError.message.includes('unique') ||
+                            profileError.message.includes('already exists')) {
+
+                            throw new Error('Diese E-Mail-Adresse ist bereits registriert.');
+                        }
+
+                        // For other errors, log but continue
+                        console.warn('Profile creation failed but continuing:', profileError.message);
                     }
 
                     // Show success message
