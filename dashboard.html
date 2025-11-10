@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - PitchPerfect AI</title>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         * {
             margin: 0;
@@ -203,6 +207,10 @@
             font-weight: bold;
         }
 
+        .feature-list li.locked::before {
+            content: '🔒';
+        }
+
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -225,22 +233,18 @@
 
         .locked-overlay {
             position: relative;
+            opacity: 0.6;
         }
 
-        .locked-overlay::after {
-            content: '🔒 Premium Feature';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .locked-badge {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 600;
-            color: #999;
-            border-radius: 12px;
+            margin-left: 8px;
         }
     </style>
 </head>
@@ -305,11 +309,14 @@
                 <div class="card" id="workshopCard">
                     <div class="card-header">
                         <span class="card-icon">🎓</span>
-                        <h2 class="card-title">12-Phasen Workshop</h2>
+                        <h2 class="card-title">
+                            12-Phasen Workshop
+                            <span class="locked-badge" id="workshopLockBadge" style="display: none;">🔒 Premium</span>
+                        </h2>
                     </div>
                     <div class="card-content">
                         <p>Interaktive KI-gestützte Pitch-Optimierung</p>
-                        <ul class="feature-list">
+                        <ul class="feature-list" id="workshopFeatures">
                             <li>Adaptive Phasen basierend auf Pitch-Typ</li>
                             <li>BNI 60-Sekunden-Track verfügbar</li>
                             <li>Investor Pitch Track verfügbar</li>
@@ -334,10 +341,22 @@
         </div>
     </div>
 
-    <script type="module">
-        import { supabase } from './lib/supabase.js';
-        import { getUserTier, hasFeatureAccess } from './lib/access-control.js';
+    <script>
+        // ⚙️ CONFIGURATION - Replace with your actual Supabase values
+        const SUPABASE_URL = 'https://cfqwzxomkgvphlhywwpg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcXd6eG9ta2d2cGhsaHl3d3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NTQxMzksImV4cCI6MjA3ODMzMDEzOX0.cVBxieYS9yxvxxs9ct02sIgwGczngJ2lOE6Y-o7H-Zc';
 
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            }
+        });
+
+        // DOM elements
         const loadingState = document.getElementById('loadingState');
         const dashboardContent = document.getElementById('dashboardContent');
         const userName = document.getElementById('userName');
@@ -347,6 +366,7 @@
         const subscriptionFeatures = document.getElementById('subscriptionFeatures');
         const workshopCard = document.getElementById('workshopCard');
         const workshopBtn = document.getElementById('workshopBtn');
+        const workshopLockBadge = document.getElementById('workshopLockBadge');
         const upgradeBtn = document.getElementById('upgradeBtn');
 
         let currentUser = null;
@@ -354,27 +374,35 @@
 
         async function loadDashboard() {
             try {
+                console.log('Loading dashboard...');
+                
                 // Check authentication
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                
+                console.log('Session check:', session, sessionError);
                 
                 if (sessionError || !session) {
+                    console.log('No session found, redirecting to login');
                     window.location.href = 'login.html';
                     return;
                 }
 
                 currentUser = session.user;
+                console.log('Current user:', currentUser);
 
                 // Load user profile
-                const { data: profile, error: profileError } = await supabase
+                const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
                     .select('*')
                     .eq('id', currentUser.id)
                     .single();
 
-                if (profileError) {
-                    console.error('Error loading profile:', profileError);
+                console.log('Profile:', profile, profileError);
+
+                if (profileError || !profile) {
+                    console.log('Profile not found, creating...');
                     // Create profile if it doesn't exist
-                    const { data: newProfile, error: createError } = await supabase
+                    const { data: newProfile, error: createError } = await supabaseClient
                         .from('profiles')
                         .insert([
                             {
@@ -395,6 +423,7 @@
                     }
                     
                     userProfile = newProfile;
+                    console.log('Profile created:', newProfile);
                 } else {
                     userProfile = profile;
                 }
@@ -415,9 +444,11 @@
                 loadingState.style.display = 'none';
                 dashboardContent.style.display = 'block';
 
+                console.log('✅ Dashboard loaded successfully');
+
             } catch (error) {
                 console.error('Dashboard error:', error);
-                alert('Fehler beim Laden des Dashboards');
+                alert('Fehler beim Laden des Dashboards: ' + error.message);
             }
         }
 
@@ -433,9 +464,10 @@
                 featuresHTML += `
                     <li>Pitch-Diagnose (unbegrenzt)</li>
                     <li>Personalisierte Ergebnisse</li>
-                    <li>🔒 12-Phasen Workshop (Premium)</li>
+                    <li class="locked">12-Phasen Workshop (Premium)</li>
                 `;
-                // Lock workshop for free users
+                // Show lock badge on workshop
+                workshopLockBadge.style.display = 'inline-block';
                 workshopCard.classList.add('locked-overlay');
                 workshopBtn.style.display = 'none';
             } else if (tier === 'basic') {
@@ -445,6 +477,7 @@
                     <li>BNI 60-Sekunden-Track</li>
                     <li>Investor Pitch Track</li>
                 `;
+                workshopLockBadge.style.display = 'none';
                 workshopCard.classList.remove('locked-overlay');
                 workshopBtn.style.display = 'inline-block';
             } else if (tier === 'pro') {
@@ -454,6 +487,7 @@
                     <li>PDF-Export</li>
                     <li>Prioritäts-Support</li>
                 `;
+                workshopLockBadge.style.display = 'none';
                 workshopCard.classList.remove('locked-overlay');
                 workshopBtn.style.display = 'inline-block';
             }
@@ -469,7 +503,7 @@
 
         async function loadProjects() {
             try {
-                const { data: projects, error } = await supabase
+                const { data: projects, error } = await supabaseClient
                     .from('pitch_projects')
                     .select('*')
                     .eq('user_id', currentUser.id)
@@ -500,7 +534,7 @@
         // Logout handler
         logoutBtn.addEventListener('click', async () => {
             try {
-                const { error } = await supabase.auth.signOut();
+                const { error } = await supabaseClient.auth.signOut();
                 if (error) throw error;
                 window.location.href = 'login.html';
             } catch (error) {
@@ -513,6 +547,15 @@
         upgradeBtn.addEventListener('click', (e) => {
             e.preventDefault();
             alert('Upgrade-Funktion wird bald verfügbar sein!\n\nIn Kürze können Sie hier Ihren Plan upgraden.');
+        });
+
+        // Workshop button click handler (for free users)
+        workshopBtn.addEventListener('click', async (e) => {
+            const tier = userProfile?.subscription_tier || 'free';
+            if (tier === 'free') {
+                e.preventDefault();
+                alert('Der 12-Phasen Workshop ist nur für Premium-Nutzer verfügbar.\n\nUpgraden Sie Ihren Plan, um Zugriff zu erhalten!');
+            }
         });
 
         // Load dashboard on page load
