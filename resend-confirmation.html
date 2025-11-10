@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestätigungs-E-Mail erneut senden - PitchPerfect AI</title>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 440px;
+            padding: 48px 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🎯 PitchPerfect AI</h1>
+            <p>Bestätigungs-E-Mail erneut senden</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <form id="resendForm">
+            <div class="form-group">
+                <label for="email">E-Mail-Adresse</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    placeholder="max@beispiel.de"
+                >
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                    Geben Sie die E-Mail-Adresse ein, die Sie bei der Registrierung verwendet haben.
+                </p>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+                Bestätigungs-E-Mail senden
+            </button>
+        </form>
+
+        <div class="back-link">
+            <a href="login.html">← Zurück zur Anmeldung</a>
+        </div>
+    </div>
+
+    <script>
+        // ⚙️ CONFIGURATION - Replace with your actual Supabase values
+        const SUPABASE_URL = 'https://cfqwzxomkgvphlhywwpg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcXd6eG9ta2d2cGhsaHl3d3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NTQxMzksImV4cCI6MjA3ODMzMDEzOX0.cVBxieYS9yxvxxs9ct02sIgwGczngJ2lOE6Y-o7H-Zc';
+
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const form = document.getElementById('resendForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const alertContainer = document.getElementById('alertContainer');
+
+        function showAlert(message, type = 'error') {
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+        }
+
+        function setLoading(isLoading) {
+            submitBtn.disabled = isLoading;
+            submitBtn.innerHTML = isLoading 
+                ? '<span class="spinner"></span> Wird gesendet...'
+                : 'Bestätigungs-E-Mail senden';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+
+            if (!email) {
+                showAlert('Bitte geben Sie Ihre E-Mail-Adresse ein.');
+                return;
+            }
+
+            setLoading(true);
+            alertContainer.innerHTML = '';
+
+            try {
+                // Resend confirmation email
+                const { error } = await supabaseClient.auth.resend({
+                    type: 'signup',
+                    email: email,
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/dashboard.html`
+                    }
+                });
+
+                if (error) throw error;
+
+                showAlert(
+                    'Bestätigungs-E-Mail wurde gesendet! Bitte überprüfen Sie Ihren Posteingang und klicken Sie auf den Link.',
+                    'success'
+                );
+
+                // Clear form
+                document.getElementById('email').value = '';
+
+            } catch (error) {
+                console.error('Resend error:', error);
+                
+                if (error.message.includes('already confirmed')) {
+                    showAlert('Diese E-Mail-Adresse ist bereits bestätigt. Sie können sich jetzt anmelden!', 'success');
+                } else if (error.message.includes('not found')) {
+                    showAlert('Diese E-Mail-Adresse wurde nicht gefunden. Bitte überprüfen Sie die Eingabe.');
+                } else {
+                    showAlert(`Fehler: ${error.message}`);
+                }
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        console.log('✅ Resend confirmation page initialized');
+    </script>
+</body>
+</html>
