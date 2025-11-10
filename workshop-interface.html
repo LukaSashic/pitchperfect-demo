@@ -518,6 +518,269 @@
             background: var(--primary-dark);
         }
 
+        /* ========================================
+           METRICS DASHBOARD STYLES
+           ======================================== */
+
+        /* Metrics Toggle Button */
+        .metrics-toggle-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metrics-toggle-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.5);
+        }
+
+        /* Metrics Overlay */
+        .metrics-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .metrics-overlay.active {
+            display: flex;
+        }
+
+        /* Metrics Panel */
+        .metrics-panel {
+            background: var(--white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .metrics-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metrics-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .metrics-close {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .metrics-close:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .metrics-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .metrics-loading {
+            text-align: center;
+            color: var(--text-medium);
+            padding: 2rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 2px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .metric-value.success {
+            color: var(--success);
+        }
+
+        .metric-value.warning {
+            color: var(--primary);
+        }
+
+        .metric-subtext {
+            font-size: 0.8125rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Phase Breakdown */
+        .phase-metrics {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-metrics-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .phase-metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .phase-metric-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .phase-metric-label {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            font-weight: 600;
+        }
+
+        .phase-metric-value {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        /* Action Buttons */
+        .metrics-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .metrics-action-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .metrics-action-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .metrics-action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+        }
+
+        .metrics-action-btn.secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .metrics-action-btn.secondary:hover {
+            background: var(--border);
+        }
+
+        .metrics-action-btn.danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .metrics-action-btn.danger:hover {
+            background: #B91C1C;
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           MOBILE RESPONSIVE
+           ======================================== */
+
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -615,6 +878,45 @@
             .modal h3 {
                 font-size: 1.25rem;
             }
+
+            /* Metrics Mobile */
+            .metrics-toggle-btn {
+                bottom: 16px;
+                right: 16px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+
+            .metrics-panel {
+                max-width: 100%;
+                max-height: 95vh;
+                margin: 0.5rem;
+            }
+
+            .metrics-header {
+                padding: 1rem;
+            }
+
+            .metrics-header h3 {
+                font-size: 1.125rem;
+            }
+
+            .metrics-content {
+                padding: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-value {
+                font-size: 1.75rem;
+            }
+
+            .metrics-actions {
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 768px) and (orientation: landscape) {
@@ -686,6 +988,7 @@
         </div>
     </div>
 
+    <!-- Phase Completion Modal -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div class="modal-icon">✓</div>
@@ -697,6 +1000,23 @@
             </div>
         </div>
     </div>
+
+    <!-- METRICS DASHBOARD -->
+    <div id="metricsOverlay" class="metrics-overlay">
+        <div class="metrics-panel">
+            <div class="metrics-header">
+                <h3>📊 API Metrics Dashboard</h3>
+                <button class="metrics-close" onclick="toggleMetrics()">✕</button>
+            </div>
+            <div class="metrics-content" id="metricsContent">
+                <div class="metrics-loading">Loading metrics...</div>
+            </div>
+        </div>
+    </div>
+
+    <button id="metricsToggleBtn" class="metrics-toggle-btn" onclick="toggleMetrics()" title="Metrics Dashboard (Ctrl+M)">
+        📊
+    </button>
 
     <script>
         const PHASES = [
@@ -781,6 +1101,240 @@
             phaseCompletion: {}
         };
 
+        // ========================================
+        // METRICS SYSTEM
+        // ========================================
+
+        const MetricsSystem = {
+            data: {
+                totalCost: 0,
+                totalRequests: 0,
+                cacheHits: 0,
+                cacheMisses: 0,
+                totalLatency: 0,
+                totalInputTokens: 0,
+                totalOutputTokens: 0,
+                phaseMetrics: {},
+                sessionStart: Date.now()
+            },
+
+            init() {
+                // Load saved metrics from sessionStorage
+                const saved = sessionStorage.getItem('pitchperfect_metrics');
+                if (saved) {
+                    try {
+                        this.data = JSON.parse(saved);
+                    } catch (e) {
+                        console.error('Failed to parse saved metrics:', e);
+                    }
+                }
+
+                // Listen for metrics updates from PitchPerfect connector
+                window.addEventListener('pitchperfect:metrics', (event) => {
+                    this.update(event.detail);
+                });
+
+                console.log('📊 Metrics System Initialized');
+            },
+
+            update(metrics) {
+                console.log('📊 Metrics Update:', metrics);
+
+                this.data.totalCost += metrics.cost || 0;
+                this.data.totalRequests += 1;
+                
+                if (metrics.cacheHit) {
+                    this.data.cacheHits += 1;
+                } else {
+                    this.data.cacheMisses += 1;
+                }
+
+                this.data.totalLatency += metrics.latency || 0;
+                this.data.totalInputTokens += metrics.inputTokens || 0;
+                this.data.totalOutputTokens += metrics.outputTokens || 0;
+
+                // Track per-phase metrics
+                const phase = metrics.phase || state.currentPhase || 'unknown';
+                if (!this.data.phaseMetrics[phase]) {
+                    this.data.phaseMetrics[phase] = {
+                        requests: 0,
+                        cost: 0,
+                        latency: 0
+                    };
+                }
+
+                this.data.phaseMetrics[phase].requests += 1;
+                this.data.phaseMetrics[phase].cost += metrics.cost || 0;
+                this.data.phaseMetrics[phase].latency += metrics.latency || 0;
+
+                // Save to sessionStorage
+                sessionStorage.setItem('pitchperfect_metrics', JSON.stringify(this.data));
+
+                // Update display if metrics panel is open
+                if (document.getElementById('metricsOverlay').classList.contains('active')) {
+                    this.render();
+                }
+            },
+
+            render() {
+                const content = document.getElementById('metricsContent');
+                const cacheHitRate = this.data.totalRequests > 0 
+                    ? ((this.data.cacheHits / this.data.totalRequests) * 100).toFixed(1)
+                    : 0;
+                
+                const avgLatency = this.data.totalRequests > 0
+                    ? (this.data.totalLatency / this.data.totalRequests / 1000).toFixed(2)
+                    : 0;
+
+                const sessionDuration = Math.floor((Date.now() - this.data.sessionStart) / 1000 / 60);
+
+                content.innerHTML = `
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Total Cost</div>
+                            <div class="metric-value warning">$${this.data.totalCost.toFixed(4)}</div>
+                            <div class="metric-subtext">${this.data.totalRequests} requests</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-label">Cache Hit Rate</div>
+                            <div class="metric-value success">${cacheHitRate}%</div>
+                            <div class="metric-subtext">${this.data.cacheHits} hits / ${this.data.cacheMisses} misses</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-label">Avg Latency</div>
+                            <div class="metric-value">${avgLatency}s</div>
+                            <div class="metric-subtext">Per request</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-label">Total Tokens</div>
+                            <div class="metric-value">${(this.data.totalInputTokens + this.data.totalOutputTokens).toLocaleString()}</div>
+                            <div class="metric-subtext">${this.data.totalInputTokens.toLocaleString()} in / ${this.data.totalOutputTokens.toLocaleString()} out</div>
+                        </div>
+                    </div>
+
+                    ${this.renderPhaseBreakdown()}
+
+                    <div class="metrics-actions">
+                        <button class="metrics-action-btn secondary" onclick="MetricsSystem.exportMetrics()">
+                            📥 Export CSV
+                        </button>
+                        <button class="metrics-action-btn danger" onclick="MetricsSystem.reset()">
+                            🗑️ Reset Metrics
+                        </button>
+                    </div>
+                `;
+            },
+
+            renderPhaseBreakdown() {
+                const phases = Object.keys(this.data.phaseMetrics).sort((a, b) => {
+                    // Sort numerically if possible
+                    const aNum = parseInt(a);
+                    const bNum = parseInt(b);
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return aNum - bNum;
+                    }
+                    return a.localeCompare(b);
+                });
+                
+                if (phases.length === 0) {
+                    return '';
+                }
+
+                let html = '<div class="phase-metrics"><div class="phase-metrics-title">📈 Phase Breakdown</div>';
+                
+                phases.forEach(phase => {
+                    const metrics = this.data.phaseMetrics[phase];
+                    const avgLatency = (metrics.latency / metrics.requests / 1000).toFixed(2);
+                    html += `
+                        <div class="phase-metric-row">
+                            <div class="phase-metric-label">Phase ${phase}</div>
+                            <div class="phase-metric-value">
+                                ${metrics.requests} req • $${metrics.cost.toFixed(4)} • ${avgLatency}s avg
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                return html;
+            },
+
+            reset() {
+                if (confirm('⚠️ Are you sure you want to reset all metrics? This cannot be undone.')) {
+                    this.data = {
+                        totalCost: 0,
+                        totalRequests: 0,
+                        cacheHits: 0,
+                        cacheMisses: 0,
+                        totalLatency: 0,
+                        totalInputTokens: 0,
+                        totalOutputTokens: 0,
+                        phaseMetrics: {},
+                        sessionStart: Date.now()
+                    };
+                    sessionStorage.removeItem('pitchperfect_metrics');
+                    this.render();
+                }
+            },
+
+            exportMetrics() {
+                const csv = this.generateCSV();
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `pitchperfect-metrics-${Date.now()}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            },
+
+            generateCSV() {
+                let csv = 'Phase,Requests,Cost (USD),Avg Latency (s)\n';
+                
+                Object.keys(this.data.phaseMetrics).sort((a, b) => {
+                    const aNum = parseInt(a);
+                    const bNum = parseInt(b);
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return aNum - bNum;
+                    }
+                    return a.localeCompare(b);
+                }).forEach(phase => {
+                    const metrics = this.data.phaseMetrics[phase];
+                    const avgLatency = (metrics.latency / metrics.requests / 1000).toFixed(2);
+                    csv += `${phase},${metrics.requests},${metrics.cost.toFixed(4)},${avgLatency}\n`;
+                });
+
+                csv += `\nSummary\n`;
+                csv += `Total Cost,$${this.data.totalCost.toFixed(4)}\n`;
+                csv += `Total Requests,${this.data.totalRequests}\n`;
+                csv += `Cache Hit Rate,${((this.data.cacheHits / this.data.totalRequests) * 100).toFixed(1)}%\n`;
+                csv += `Total Tokens,${this.data.totalInputTokens + this.data.totalOutputTokens}\n`;
+                csv += `Input Tokens,${this.data.totalInputTokens}\n`;
+                csv += `Output Tokens,${this.data.totalOutputTokens}\n`;
+
+                return csv;
+            }
+        };
+
+        // Toggle metrics dashboard
+        function toggleMetrics() {
+            const overlay = document.getElementById('metricsOverlay');
+            overlay.classList.toggle('active');
+            
+            if (overlay.classList.contains('active')) {
+                MetricsSystem.render();
+            }
+        }
+
+        // ========================================
+        // WORKSHOP FUNCTIONALITY
+        // ========================================
+
         function initializeWorkshop() {
             const demoState = PitchPerfect.DemoState.load();
             
@@ -803,6 +1357,9 @@
             if (window.innerWidth <= 768) {
                 document.getElementById('menuToggle').style.display = 'flex';
             }
+
+            // Initialize metrics system
+            MetricsSystem.init();
         }
 
         function toggleSidebar() {
@@ -1058,6 +1615,7 @@
         function loadSavedMessages() {
             const demoState = PitchPerfect.DemoState.load();
             if (demoState.workshop.messages) {
+                // Messages are loaded per phase in loadPhaseMessages
             }
         }
 
@@ -1067,6 +1625,10 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }, 100);
         }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
 
         document.addEventListener('DOMContentLoaded', function() {
             const chatInput = document.getElementById('chatInput');
@@ -1094,6 +1656,21 @@
                     !menuToggle.contains(e.target)) {
                     toggleSidebar();
                 }
+            }
+        });
+
+        // Keyboard shortcut: Ctrl+M for metrics
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'm') {
+                e.preventDefault();
+                toggleMetrics();
+            }
+        });
+
+        // Close metrics on overlay click
+        document.getElementById('metricsOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'metricsOverlay') {
+                toggleMetrics();
             }
         });
 
