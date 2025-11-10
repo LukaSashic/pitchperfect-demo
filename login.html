@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anmelden - PitchPerfect AI</title>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         * {
             margin: 0;
@@ -179,6 +183,12 @@
             border: 1px solid #cfc;
         }
 
+        .alert-warning {
+            background: #fff8e1;
+            color: #f57c00;
+            border: 1px solid #ffe0b2;
+        }
+
         .spinner {
             display: inline-block;
             width: 16px;
@@ -246,9 +256,22 @@
         </div>
     </div>
 
-    <script type="module">
-        import { supabase } from './lib/supabase.js';
+    <script>
+        // ⚙️ CONFIGURATION - Replace with your actual Supabase values
+        const SUPABASE_URL = 'https://cfqwzxomkgvphlhywwpg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcXd6eG9ta2d2cGhsaHl3d3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NTQxMzksImV4cCI6MjA3ODMzMDEzOX0.cVBxieYS9yxvxxs9ct02sIgwGczngJ2lOE6Y-o7H-Zc';
 
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            }
+        });
+
+        // DOM elements
         const form = document.getElementById('loginForm');
         const submitBtn = document.getElementById('submitBtn');
         const alertContainer = document.getElementById('alertContainer');
@@ -269,6 +292,14 @@
                 : 'Anmelden';
         }
 
+        // Check if user is already logged in
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -284,14 +315,19 @@
             alertContainer.innerHTML = '';
 
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                console.log('Attempting login...');
+                
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
 
+                console.log('Login response:', data, error);
+
                 if (error) throw error;
 
                 if (data.session) {
+                    console.log('Login successful!');
                     showAlert('Erfolgreich angemeldet! Weiterleitung...', 'success');
                     
                     // Check if user came from a specific page
@@ -308,7 +344,9 @@
                 if (error.message.includes('Invalid login credentials')) {
                     showAlert('Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.');
                 } else if (error.message.includes('Email not confirmed')) {
-                    showAlert('Bitte bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden.');
+                    showAlert('Bitte bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden. Überprüfen Sie Ihren Posteingang.', 'warning');
+                } else if (error.message.includes('Email link is invalid')) {
+                    showAlert('Der Bestätigungslink ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen Link an.', 'warning');
                 } else {
                     showAlert(`Anmeldefehler: ${error.message}`);
                 }
@@ -329,7 +367,7 @@
             }
 
             try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                     redirectTo: `${window.location.origin}/reset-password.html`
                 });
 
@@ -345,12 +383,7 @@
             }
         });
 
-        // Check if user is already logged in
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                window.location.href = 'dashboard.html';
-            }
-        });
+        console.log('✅ Login page initialized');
     </script>
 </body>
 </html>
