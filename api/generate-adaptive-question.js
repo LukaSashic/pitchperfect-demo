@@ -1,6 +1,5 @@
 // api/generate-adaptive-question.js
-
-const Anthropic = require('@anthropic-ai/sdk');
+import Anthropic from '@anthropic-ai/sdk';
 
 // Initialize Anthropic client
 let anthropic;
@@ -78,7 +77,7 @@ OUTPUT FORMAT (reines JSON, keine Markdown):
     ]
 }`;
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -208,4 +207,4 @@ Antworte NUR mit dem JSON-Objekt, NICHTS anderes. Keine Markdown-Blöcke.`;
         const stepNumber = req.body?.stepNumber || 4;
         return res.status(200).json(FALLBACK_QUESTIONS[stepNumber] || FALLBACK_QUESTIONS[4]);
     }
-};
+}
