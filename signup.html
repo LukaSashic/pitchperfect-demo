@@ -322,7 +322,7 @@
 
             try {
                 console.log('Starting signup process...');
-                
+
                 // Sign up the user
                 const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
                     email: email,
@@ -333,17 +333,25 @@
                         },
                         emailRedirectTo: `${window.location.origin}/dashboard.html`
                     }
-                 });
+                });
 
                 console.log('Signup response:', authData, signUpError);
 
-                if (signUpError) throw signUpError;
+                // CRITICAL: Check for error first
+                if (signUpError) {
+                    console.log('ERROR DETECTED:', signUpError);
+                    console.log('Error message:', signUpError.message);
+                    console.log('Error code:', signUpError.code);
+                    throw signUpError;
+                }
 
+                // Check if user was created
                 if (authData.user) {
                     console.log('User created:', authData.user.id);
-                    
+
                     // Create profile in database
-                    const { error: profileError } = await supabaseClient
+                    console.log('Creating profile...');
+                    const { data: profileData, error: profileError } = await supabaseClient
                         .from('profiles')
                         .insert([
                             {
@@ -351,67 +359,73 @@
                                 email: email,
                                 full_name: fullName,
                                 subscription_tier: 'free',
-                                subscription_status: 'active',
-                                created_at: new Date().toISOString()
+                                subscription_status: 'active'
                             }
-                        ]);
+                        ])
+                        .select()
+                        .single();
+
+                    console.log('Profile creation result:', profileData, profileError);
 
                     if (profileError) {
-                        console.error('Profile creation error:', profileError);
-                        // Don't block - profile can be created later
-                    } else {
-                        console.log('Profile created successfully');
+                        console.error('Profile creation failed:', profileError);
+                        // Continue anyway - profile might already exist
                     }
 
-                    // Check if email confirmation is required
-                    if (authData.session) {
-                        // User is logged in immediately (email confirmation disabled)
-                        showAlert('Konto erfolgreich erstellt! Weiterleitung...', 'success');
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1500);
-                    } else {
-                        // Email confirmation required
-                        showAlert(
-                            'Konto erstellt! Bitte überprüfen Sie Ihre E-Mail zur Bestätigung.',
-                            'success'
-                        );
-                        setTimeout(() => {
-                            window.location.href = 'login.html';
-                        }, 3000);
-                    }
+                    // Show success message
+                    showAlert('Registrierung erfolgreich! Bitte bestaetigen Sie Ihre E-Mail-Adresse.', 'success');
+
+                    // Redirect after delay
+                    setTimeout(() => {
+                        console.log('Redirecting to login...');
+                        window.location.href = 'login.html';
+                    }, 3000);
+                } else {
+                    console.error('No user returned from signup');
+                    throw new Error('Registrierung fehlgeschlagen: Kein Benutzerkonto erstellt');
                 }
+
             } catch (error) {
-                console.error('Signup error:', error);
+                console.error('CAUGHT ERROR:', error);
+                console.error('Error type:', typeof error);
+                console.error('Error message:', error.message);
+                console.error('Full error object:', JSON.stringify(error, null, 2));
 
                 // Check for duplicate email
-                if (error.message.includes('already registered') ||
-                    error.message.includes('User already registered')) {
+                if (error.message && (error.message.includes('already') ||
+                    error.message.includes('User already') ||
+                    error.message.includes('exists'))) {
+                    console.log('Duplicate email detected');
                     showAlert('Diese E-Mail-Adresse ist bereits registriert. <a href="login.html" style="color: #667eea; font-weight: 600; text-decoration: underline;">Jetzt anmelden</a>');
                 }
                 // Check for password errors
-                else if (error.message.includes('Password should be at least') ||
-                    error.message.includes('Password')) {
+                else if (error.message && (error.message.includes('Password should be at least') ||
+                    error.message.includes('Password'))) {
+                    console.log('Password error detected');
                     showAlert('Passwort muss mindestens 8 Zeichen lang sein.');
                 }
                 // Check for email errors
-                else if (error.message.includes('email') || error.message.includes('Email')) {
+                else if (error.message && (error.message.includes('email') || error.message.includes('Email'))) {
+                    console.log('Email error detected');
                     showAlert('Bitte geben Sie eine gueltige E-Mail-Adresse ein.');
                 }
                 // Check for rate limiting
-                else if (error.message.includes('rate limit')) {
+                else if (error.message && error.message.includes('rate limit')) {
+                    console.log('Rate limit detected');
                     showAlert('Zu viele Anmeldeversuche. Bitte warten Sie einen Moment.');
                 }
                 // Generic error
                 else {
-                    showAlert('Fehler bei der Registrierung: ' + error.message);
+                    console.log('Generic error - showing message');
+                    showAlert('Fehler bei der Registrierung: ' + (error.message || 'Unbekannter Fehler'));
                 }
             } finally {
+                console.log('Signup process complete, resetting loading state');
                 setLoading(false);
             }
         });
 
-        console.log('✅ Signup page initialized');
+    console.log('✅ Signup page initialized');
     </script>
 </body>
 </html>
