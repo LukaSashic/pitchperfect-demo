@@ -1,5 +1,5 @@
 // PitchPerfect AI - Enhanced Connector with Feature Flags & Metrics
-// V2.1 - Optimized with caching support + Adaptive Questions
+// V2.1 - Optimized with caching support + Adaptive Questions + Personalized Diagnostics
 
 (function() {
     'use strict';
@@ -11,13 +11,15 @@
         apiEndpoint: '/api/chat',
         apiEndpointV2: '/api/chat-v2',
         apiAdaptiveQuestion: '/api/generate-adaptive-question',
+        apiPersonalizedDiagnostic: '/api/generate-personalized-diagnostic',
         
         // Feature flags
         features: {
-            useV2API: true,  // Toggle to enable/disable optimized API
+            useV2API: true,
             trackMetrics: true,
             useStructuredOutputs: true,
-            adaptiveQuestions: true  // NEW: Enable adaptive questions
+            adaptiveQuestions: true,
+            personalizedDiagnostics: true
         }
     };
 
@@ -35,7 +37,7 @@
                     currentPhase: 2, 
                     messages: {}, 
                     phaseCompletion: {},
-                    phaseScores: {} // NEW: Track completion scores
+                    phaseScores: {}
                 },
                 paymentIntent: false
             };
@@ -173,7 +175,6 @@
             }
 
             try {
-                // Choose API version based on feature flag
                 const endpoint = CONFIG.features.useV2API ? CONFIG.apiEndpointV2 : CONFIG.apiEndpoint;
                 
                 console.log(`🚀 Calling ${CONFIG.features.useV2API ? 'V2' : 'V1'} API for Phase ${phase}`);
@@ -197,13 +198,11 @@
 
                 const data = await response.json();
                 
-                // Handle V1 fallback if V2 fails
                 if (data.fallback && CONFIG.features.useV2API) {
                     console.log('⚠️ V2 fehlgeschlagen, fallback zu V1...');
                     return await this.getResponse(phase, message, conversationHistory);
                 }
 
-                // Track metrics if available
                 if (data.metrics && CONFIG.features.trackMetrics) {
                     Metrics.track(phase, data.metrics);
                 }
@@ -224,7 +223,7 @@
         },
 
         // ============================================
-        // NEW: ADAPTIVE QUESTION GENERATION
+        // ADAPTIVE QUESTION GENERATION
         // ============================================
         async generateAdaptiveQuestion(stepNumber, context) {
             if (!CONFIG.features.adaptiveQuestions) {
@@ -258,10 +257,9 @@
                 
                 console.log(`✅ Adaptive question generated in ${latency}ms:`, data.question);
                 
-                // Track metrics for adaptive questions
                 if (CONFIG.features.trackMetrics) {
                     Metrics.track(`diagnostic-q${stepNumber}`, {
-                        cost_usd: 0.002, // Estimated cost
+                        cost_usd: 0.002,
                         latency_ms: latency,
                         input_tokens: 500,
                         output_tokens: 150,
@@ -274,6 +272,58 @@
                 console.error('Error generating adaptive question:', error);
                 console.log('⚠️ Using fallback question');
                 return this._fallbackQuestion(stepNumber);
+            }
+        },
+
+        // ============================================
+        // PERSONALIZED DIAGNOSTIC GENERATION
+        // ============================================
+        async generatePersonalizedDiagnostic(formData) {
+            if (!CONFIG.features.personalizedDiagnostics) {
+                console.log('⚠️ Personalized diagnostics disabled, using fallback');
+                return this._demoResponse();
+            }
+
+            try {
+                console.log('🔍 Generating personalized diagnostic');
+                
+                const startTime = Date.now();
+                
+                const response = await fetch(CONFIG.apiPersonalizedDiagnostic, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        formData
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                const latency = Date.now() - startTime;
+                
+                console.log(`✅ Personalized diagnostic generated in ${latency}ms`);
+                
+                if (CONFIG.features.trackMetrics) {
+                    Metrics.track('diagnostic-final', {
+                        cost_usd: 0.015,
+                        latency_ms: latency,
+                        input_tokens: 2000,
+                        output_tokens: 800,
+                        cache_read_tokens: 0
+                    });
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Error generating personalized diagnostic:', error);
+                console.log('⚠️ Using fallback diagnostic');
+                return this._demoResponse();
             }
         },
 
@@ -326,13 +376,13 @@
                 warningIssues: 2,
                 strongAreas: 1,
                 issues: [
-                    { severity: 'critical', title: 'Problemstellung ist vage', description: 'Du hast nicht klar definiert, wer dieses Problem hat.' },
-                    { severity: 'critical', title: 'Keine Marktvalidierung', description: 'Keine Kundeninterviews, keine LOIs.' },
-                    { severity: 'critical', title: 'Schwaches Finanzmodell', description: 'Fehlend: CAC, LTV, Unit Economics.' },
-                    { severity: 'critical', title: 'Keine klare Differenzierung', description: 'Was macht dich 10x besser?' },
-                    { severity: 'warning', title: 'Marktgröße braucht Arbeit', description: 'Benötigt Bottom-up TAM/SAM/SOM.' },
-                    { severity: 'warning', title: 'Wettbewerbsanalyse oberflächlich', description: 'Zeige strategischen Vorteil.' },
-                    { severity: 'good', title: 'Starke Team-Story', description: 'Domain-Expertise ist klar.' }
+                    { severity: 'critical', title: 'Problemstellung ist vage', description: 'Du hast nicht klar definiert, wer dieses Problem hat.', impact: 'Investoren können keine Marktgröße berechnen', workshopPhase: 'Phase 2' },
+                    { severity: 'critical', title: 'Keine Marktvalidierung', description: 'Keine Kundeninterviews, keine LOIs.', impact: 'Ohne Beweise wird kein Investor investieren', workshopPhase: 'Phase 5' },
+                    { severity: 'critical', title: 'Schwaches Finanzmodell', description: 'Fehlend: CAC, LTV, Unit Economics.', impact: 'Unmöglich, Profitabilität zu prognostizieren', workshopPhase: 'Phase 8' },
+                    { severity: 'critical', title: 'Keine klare Differenzierung', description: 'Was macht dich 10x besser?', impact: 'Warum sollte jemand wechseln?', workshopPhase: 'Phase 3' },
+                    { severity: 'warning', title: 'Marktgröße braucht Arbeit', description: 'Benötigt Bottom-up TAM/SAM/SOM.', impact: 'Investoren zweifeln an Skalierbarkeit', workshopPhase: 'Phase 4' },
+                    { severity: 'warning', title: 'Wettbewerbsanalyse oberflächlich', description: 'Zeige strategischen Vorteil.', impact: 'Angst vor Kopierung', workshopPhase: 'Phase 7' },
+                    { severity: 'good', title: 'Starke Team-Story', description: 'Domain-Expertise ist klar.', impact: 'Gibt Vertrauen', workshopPhase: '-' }
                 ]
             };
         },
@@ -367,7 +417,7 @@
     // Initialize metrics on load
     Metrics.init();
 
-    console.log(`✅ PitchPerfect Geladen (V${CONFIG.features.useV2API ? '2.1' : '1'} - ${CONFIG.features.adaptiveQuestions ? 'Adaptive Questions Enabled' : 'Standard Mode'})`);
+    console.log(`✅ PitchPerfect Geladen (V2.1 - ${CONFIG.features.adaptiveQuestions ? 'Adaptive Questions' : 'Standard'} + ${CONFIG.features.personalizedDiagnostics ? 'Personalized Diagnostics' : 'Generic'})`);
     
     // Log metrics summary if available
     const summary = Metrics.getSummary();
