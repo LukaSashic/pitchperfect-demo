@@ -2463,7 +2463,7 @@
             }
 
             renderPhases();
-            loadSavedMessages();
+            //loadSavedMessages();
 
             if (window.innerWidth <= 768) {
                 document.getElementById('menuToggle').style.display = 'flex';
@@ -2479,6 +2479,20 @@
             });
 
             console.log('✅ Workshop fully initialized');
+            console.log('📺 Welcome screen should be visible');
+
+            console.log('✅ Workshop fully initialized');
+
+            // ✅ FORCE WELCOME SCREEN TO STAY VISIBLE
+            setTimeout(() => {
+                const welcomeScreen = document.getElementById('welcomeScreen');
+                if (welcomeScreen && !state.currentPhase) {
+                    welcomeScreen.style.display = 'flex';
+                    console.log('🎯 Welcome screen re-enforced');
+                }
+            }, 100);
+        } catch (error) {
+            console.error('❌ Workshop initialization error:', error);
         }
 
         // ========================================
