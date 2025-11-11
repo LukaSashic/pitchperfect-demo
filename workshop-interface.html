@@ -1011,510 +1011,507 @@
 
         .menu-toggle {
             display: none;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            /* Purple */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
 
-            .menu-toggle {
-                display: none;
-                width: 40px;
-                height: 40px;
-                background: var(--primary);
-                /* Purple */
-                color: white;
-                border: none;
-                border-radius: 8px;
-                font-size: 1.25rem;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                flex-shrink: 0;
-            }
+        .menu-toggle:hover {
+            background: var(--primary-dark);
+        }
 
-            .menu-toggle:hover {
-                background: var(--primary-dark);
-            }
-
-            /* ========================================
+        /* ========================================
            METRICS DASHBOARD STYLES
            ======================================== */
 
-            /* Metrics Toggle Button - HIDDEN BY DEFAULT */
-            .metrics-toggle-btn {
-                position: fixed;
-                bottom: 24px;
-                left: 24px;
-                width: 56px;
-                height: 56px;
-                background: linear-gradient(135deg, #6366F1, #4F46E5);
-                color: white;
-                border: none;
-                border-radius: 50%;
-                font-size: 1.5rem;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-                transition: all 0.3s ease;
-                z-index: 999;
-                display: none;
-                /* Hidden by default */
-                align-items: center;
-                justify-content: center;
+        /* Metrics Toggle Button - HIDDEN BY DEFAULT */
+        .metrics-toggle-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: none;
+            /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metrics-toggle-btn.visible {
+            display: flex;
+        }
+
+        .metrics-toggle-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Metrics Overlay */
+        .metrics-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .metrics-overlay.active {
+            display: flex;
+        }
+
+        /* Metrics Panel */
+        .metrics-panel {
+            background: var(--white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
             }
 
-            .metrics-toggle-btn.visible {
-                display: flex;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
 
-            .metrics-toggle-btn:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
-            }
+        .metrics-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            /* Metrics Overlay */
-            .metrics-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.6);
-                display: none;
-                align-items: center;
-                justify-content: center;
-                z-index: 1001;
-                padding: 1rem;
-                backdrop-filter: blur(4px);
-            }
+        .metrics-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
 
-            .metrics-overlay.active {
-                display: flex;
-            }
+        .metrics-close {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-            /* Metrics Panel */
-            .metrics-panel {
-                background: var(--white);
-                border-radius: 16px;
-                width: 100%;
-                max-width: 600px;
-                max-height: 90vh;
-                display: flex;
-                flex-direction: column;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                animation: slideUp 0.3s ease;
-            }
+        .metrics-close:hover {
+            background: var(--error);
+            color: white;
+        }
 
-            @keyframes slideUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(40px);
-                }
+        .metrics-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
 
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+        .metrics-loading {
+            text-align: center;
+            color: var(--text-medium);
+            padding: 2rem;
+        }
 
-            .metrics-header {
-                padding: 1.5rem;
-                border-bottom: 1px solid var(--border);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
 
-            .metrics-header h3 {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: var(--text-dark);
-                margin: 0;
-            }
+        .metric-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 2px solid var(--border);
+            transition: all 0.2s ease;
+        }
 
-            .metrics-close {
-                width: 32px;
-                height: 32px;
-                background: var(--bg-light);
-                border: none;
-                border-radius: 8px;
-                font-size: 1.25rem;
-                color: var(--text-medium);
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
+        .metric-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
 
-            .metrics-close:hover {
-                background: var(--error);
-                color: white;
-            }
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
 
-            .metrics-content {
-                flex: 1;
-                overflow-y: auto;
-                padding: 1.5rem;
-            }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+        }
 
-            .metrics-loading {
-                text-align: center;
-                color: var(--text-medium);
-                padding: 2rem;
-            }
+        .metric-value.success {
+            color: var(--success);
+        }
 
-            /* Metrics Grid */
-            .metrics-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-            }
+        .metric-value.warning {
+            color: var(--primary);
+        }
 
-            .metric-card {
-                background: var(--bg-light);
-                border-radius: 12px;
-                padding: 1.25rem;
-                border: 2px solid var(--border);
-                transition: all 0.2s ease;
-            }
+        .metric-subtext {
+            font-size: 0.8125rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
 
-            .metric-card:hover {
-                border-color: var(--primary);
-                transform: translateY(-2px);
-            }
+        /* Phase Breakdown */
+        .phase-metrics {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
 
-            .metric-label {
-                font-size: 0.875rem;
-                color: var(--text-medium);
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-bottom: 0.5rem;
-            }
+        .phase-metrics-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
 
-            .metric-value {
-                font-size: 2rem;
-                font-weight: 700;
-                color: var(--text-dark);
-                line-height: 1;
-            }
+        .phase-metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
 
-            .metric-value.success {
-                color: var(--success);
-            }
+        .phase-metric-row:last-child {
+            margin-bottom: 0;
+        }
 
-            .metric-value.warning {
-                color: var(--primary);
-            }
+        .phase-metric-label {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            font-weight: 600;
+        }
 
-            .metric-subtext {
-                font-size: 0.8125rem;
-                color: var(--text-light);
-                margin-top: 0.5rem;
-            }
+        .phase-metric-value {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
 
-            /* Phase Breakdown */
-            .phase-metrics {
-                background: var(--white);
-                border: 2px solid var(--border);
-                border-radius: 12px;
-                padding: 1.25rem;
-                margin-bottom: 1.5rem;
-            }
+        /* Action Buttons */
+        .metrics-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
 
-            .phase-metrics-title {
-                font-size: 1rem;
-                font-weight: 700;
-                color: var(--text-dark);
-                margin-bottom: 1rem;
-            }
+        .metrics-action-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-            .phase-metric-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.75rem;
-                background: var(--bg-light);
-                border-radius: 8px;
-                margin-bottom: 0.5rem;
-            }
+        .metrics-action-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
 
-            .phase-metric-row:last-child {
-                margin-bottom: 0;
-            }
+        .metrics-action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+        }
 
-            .phase-metric-label {
-                font-size: 0.875rem;
-                color: var(--text-medium);
-                font-weight: 600;
-            }
+        .metrics-action-btn.secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
 
-            .phase-metric-value {
-                font-size: 0.875rem;
-                color: var(--text-dark);
-                font-weight: 700;
-            }
+        .metrics-action-btn.secondary:hover {
+            background: var(--border);
+        }
 
-            /* Action Buttons */
-            .metrics-actions {
-                display: flex;
-                gap: 0.75rem;
-                padding-top: 1rem;
-                border-top: 1px solid var(--border);
-            }
+        .metrics-action-btn.danger {
+            background: var(--error);
+            color: white;
+        }
 
-            .metrics-action-btn {
-                flex: 1;
-                padding: 0.875rem;
-                border: none;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 0.875rem;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
+        .metrics-action-btn.danger:hover {
+            background: #B91C1C;
+            transform: translateY(-2px);
+        }
 
-            .metrics-action-btn.primary {
-                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-                color: white;
-            }
-
-            .metrics-action-btn.primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
-            }
-
-            .metrics-action-btn.secondary {
-                background: var(--bg-light);
-                color: var(--text-dark);
-            }
-
-            .metrics-action-btn.secondary:hover {
-                background: var(--border);
-            }
-
-            .metrics-action-btn.danger {
-                background: var(--error);
-                color: white;
-            }
-
-            .metrics-action-btn.danger:hover {
-                background: #B91C1C;
-                transform: translateY(-2px);
-            }
-
-            /* ========================================
+        /* ========================================
            MOBILE RESPONSIVE
            ======================================== */
 
-            @media (max-width: 768px) {
-                .sidebar {
-                    position: fixed;
-                    left: -320px;
-                    top: 0;
-                    height: 100vh;
-                    height: 100dvh;
-                    z-index: 100;
-                    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-                }
-
-                .sidebar.open {
-                    left: 0;
-                }
-
-                .main-area {
-                    width: 100%;
-                }
-
-                .chat-header {
-                    padding: 1rem;
-                    flex-wrap: wrap;
-                }
-
-                .chat-header-actions {
-                    width: 100%;
-                    margin-top: 0.5rem;
-                }
-
-                .restart-phase-btn {
-                    padding: 0.625rem 1.125rem;
-                    background: var(--white);
-                    color: var(--text-dark);
-                    border: 2px solid var(--border);
-                    border-radius: 10px;
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: none;
-                }
-
-                .restart-phase-btn:hover {
-                    background: var(--bg-cream);
-                    border-color: var(--primary);
-                    color: var(--primary);
-                    transform: translateY(-1px);
-                }
-
-                .restart-phase-btn.visible {
-                    display: block;
-                }
-
-                .chat-title {
-                    font-size: 1rem;
-                }
-
-                .chat-subtitle {
-                    font-size: 0.8125rem;
-                }
-
-                .chat-messages {
-                    flex: 1;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    padding: 2rem 1.5rem;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.5rem;
-                    -webkit-overflow-scrolling: touch;
-                    background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
-                }
-
-                /* Custom scrollbar for chat */
-                .chat-messages::-webkit-scrollbar {
-                    width: 8px;
-                }
-
-                .chat-messages::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-
-                .chat-messages::-webkit-scrollbar-thumb {
-                    background: rgba(102, 126, 234, 0.2);
-                    border-radius: 4px;
-                }
-
-                .chat-messages::-webkit-scrollbar-thumb:hover {
-                    background: rgba(102, 126, 234, 0.4);
-                }
-
-                .message-content {
-                    max-width: 85%;
-                }
-
-                .message-bubble {
-                    padding: 0.875rem 1rem;
-                    font-size: 0.9375rem;
-                }
-
-                .chat-input-container {
-                    padding: 0.875rem 1rem;
-                    padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
-                }
-
-                .chat-input {
-                    font-size: 16px;
-                    min-height: 44px;
-                }
-
-                .send-button {
-                    padding: 0.75rem 1rem;
-                    font-size: 0.9375rem;
-                }
-
-                .menu-toggle {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .welcome-screen {
-                    padding: 1.5rem;
-                }
-
-                .welcome-icon {
-                    width: 80px;
-                    height: 80px;
-                    background: var(--gradient-primary);
-                    /* Purple gradient */
-                    border-radius: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 2.5rem;
-                    margin-bottom: 1.5rem;
-                    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-                }
-
-                .welcome-screen h2 {
-                    font-size: 1.5rem;
-                }
-
-                .welcome-screen p {
-                    font-size: 0.9375rem;
-                }
-
-                .start-button {
-                    padding: 0.875rem 2rem;
-                    font-size: 1rem;
-                    width: 100%;
-                }
-
-                .modal {
-                    padding: 1.5rem;
-                }
-
-                .modal h3 {
-                    font-size: 1.25rem;
-                }
-
-                /* Metrics Mobile */
-                .metrics-toggle-btn {
-                    bottom: 16px;
-                    left: 16px;
-                    width: 48px;
-                    height: 48px;
-                    font-size: 1.25rem;
-                }
-
-                .metrics-panel {
-                    max-width: 100%;
-                    max-height: 95vh;
-                    margin: 0.5rem;
-                }
-
-                .metrics-header {
-                    padding: 1rem;
-                }
-
-                .metrics-header h3 {
-                    font-size: 1.125rem;
-                }
-
-                .metrics-content {
-                    padding: 1rem;
-                }
-
-                .metrics-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .metric-value {
-                    font-size: 1.75rem;
-                }
-
-                .metrics-actions {
-                    flex-direction: column;
-                }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -320px;
+                top: 0;
+                height: 100vh;
+                height: 100dvh;
+                z-index: 100;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             }
 
-            @media (max-width: 768px) and (orientation: landscape) {
-                .chat-messages {
-                    padding: 0.75rem;
-                }
-
-                .chat-input-container {
-                    padding: 0.5rem 1rem;
-                }
-
-                .chat-input {
-                    min-height: 40px;
-                    max-height: 60px;
-                }
+            .sidebar.open {
+                left: 0;
             }
+
+            .main-area {
+                width: 100%;
+            }
+
+            .chat-header {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .chat-header-actions {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            .restart-phase-btn {
+                padding: 0.625rem 1.125rem;
+                background: var(--white);
+                color: var(--text-dark);
+                border: 2px solid var(--border);
+                border-radius: 10px;
+                font-size: 0.875rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: none;
+            }
+
+            .restart-phase-btn:hover {
+                background: var(--bg-cream);
+                border-color: var(--primary);
+                color: var(--primary);
+                transform: translateY(-1px);
+            }
+
+            .restart-phase-btn.visible {
+                display: block;
+            }
+
+            .chat-title {
+                font-size: 1rem;
+            }
+
+            .chat-subtitle {
+                font-size: 0.8125rem;
+            }
+
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 2rem 1.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+                -webkit-overflow-scrolling: touch;
+                background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+            }
+
+            /* Custom scrollbar for chat */
+            .chat-messages::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .chat-messages::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .chat-messages::-webkit-scrollbar-thumb {
+                background: rgba(102, 126, 234, 0.2);
+                border-radius: 4px;
+            }
+
+            .chat-messages::-webkit-scrollbar-thumb:hover {
+                background: rgba(102, 126, 234, 0.4);
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .message-bubble {
+                padding: 0.875rem 1rem;
+                font-size: 0.9375rem;
+            }
+
+            .chat-input-container {
+                padding: 0.875rem 1rem;
+                padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+            }
+
+            .chat-input {
+                font-size: 16px;
+                min-height: 44px;
+            }
+
+            .send-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9375rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .welcome-screen {
+                padding: 1.5rem;
+            }
+
+            .welcome-icon {
+                width: 80px;
+                height: 80px;
+                background: var(--gradient-primary);
+                /* Purple gradient */
+                border-radius: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.5rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            }
+
+            .welcome-screen h2 {
+                font-size: 1.5rem;
+            }
+
+            .welcome-screen p {
+                font-size: 0.9375rem;
+            }
+
+            .start-button {
+                padding: 0.875rem 2rem;
+                font-size: 1rem;
+                width: 100%;
+            }
+
+            .modal {
+                padding: 1.5rem;
+            }
+
+            .modal h3 {
+                font-size: 1.25rem;
+            }
+
+            /* Metrics Mobile */
+            .metrics-toggle-btn {
+                bottom: 16px;
+                left: 16px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+
+            .metrics-panel {
+                max-width: 100%;
+                max-height: 95vh;
+                margin: 0.5rem;
+            }
+
+            .metrics-header {
+                padding: 1rem;
+            }
+
+            .metrics-header h3 {
+                font-size: 1.125rem;
+            }
+
+            .metrics-content {
+                padding: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-value {
+                font-size: 1.75rem;
+            }
+
+            .metrics-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .chat-messages {
+                padding: 0.75rem;
+            }
+
+            .chat-input-container {
+                padding: 0.5rem 1rem;
+            }
+
+            .chat-input {
+                min-height: 40px;
+                max-height: 60px;
+            }
+        }
     </style>
 </head>
 
