@@ -9,6 +9,8 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script src="pitchperfect-connector.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -618,19 +620,57 @@
             document.querySelector('.buttons').style.display = 'none';
             document.getElementById('results').classList.add('active');
 
-            // Save final answers
-            await saveProgress();
+            // Save final answers with completion flag
+            await saveFinalDiagnostic();
 
-            // ✅ CRITICAL: Mark diagnostic as completed in localStorage
-            const demoState = PitchPerfect.DemoState.load();
-            demoState.diagnostic.completed = true;
-            demoState.workshop.unlocked = true;
-            PitchPerfect.DemoState.save(demoState);
-
-            console.log('✅ Diagnostic marked as completed');
+            console.log('✅ Diagnostic marked as completed in database');
 
             // Generate AI-powered results
             await generateResults();
+        }
+
+        // Save final diagnostic with completion flag
+        async function saveFinalDiagnostic() {
+            try {
+                // Check if project exists
+                const { data: existing, error: fetchError } = await supabaseClient
+                    .from('pitch_projects')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    // Update existing project with completion flag
+                    await supabaseClient
+                        .from('pitch_projects')
+                        .update({
+                            diagnostic_data: answers,
+                            diagnostic_completed: true,  // ← NEW: Completion flag
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', existing[0].id);
+
+                    console.log('Diagnostic updated with completion flag');
+                } else {
+                    // Create new project with completion flag
+                    await supabaseClient
+                        .from('pitch_projects')
+                        .insert({
+                            user_id: currentUser.id,
+                            title: 'Mein Pitch-Projekt',
+                            pitch_type: answers[1] || 'unknown',
+                            diagnostic_data: answers,
+                            diagnostic_completed: true,  // ← NEW: Completion flag
+                            stage: answers[2] || null,
+                            target_duration: answers[3] || null
+                        });
+
+                    console.log('New project created with completion flag');
+                }
+            } catch (error) {
+                console.error('Failed to save final diagnostic:', error);
+            }
         }
 
         // Generate personalized results

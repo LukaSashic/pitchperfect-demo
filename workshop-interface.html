@@ -1611,6 +1611,270 @@
             }
         }
 
+
+        // ========================================
+        // SMART UPGRADE PROMPT
+        // ========================================
+
+        function showUpgradePrompt(attemptedPhase) {
+            const completedCount = getCompletedPhasesCount();
+            const progress = calculateProgress();
+
+            // Get what they've completed
+            const completedPhases = Object.keys(state.phaseCompletion)
+                .filter(key => state.phaseCompletion[key] === true)
+                .map(key => PHASES.find(p => p.number === parseInt(key)))
+                .filter(p => p);
+
+            // Build list of completed achievements
+            let achievementsList = '';
+            if (completedPhases.length > 0) {
+                achievementsList = completedPhases.map(phase =>
+                    `<div style="
+                        padding: 12px;
+                        background: #D1FAE5;
+                        border-radius: 8px;
+                        margin-bottom: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    ">
+                        <div style="
+                            width: 24px;
+                            height: 24px;
+                            background: #059669;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 14px;
+                            font-weight: 700;
+                            flex-shrink: 0;
+                        ">✓</div>
+                        <div style="flex: 1;">
+                            <strong style="color: #1F2937;">Phase ${phase.number}:</strong>
+                            <span style="color: #4B5563;"> ${phase.title}</span>
+                        </div>
+                    </div>`
+                ).join('');
+            }
+
+            // Track analytics
+            trackEvent('paywall_shown', {
+                attemptedPhase: attemptedPhase,
+                completedPhases: completedCount,
+                progress: progress,
+                userTier: userProfile?.tier || 'free'
+            });
+
+            const mainArea = document.querySelector('.main-area');
+            mainArea.innerHTML = `
+                <div style="
+                    height: 100%;
+                    overflow-y: auto;
+                    padding: 40px 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                ">
+                    <div style="
+                        max-width: 700px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 20px;
+                        padding: 48px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    ">
+                        <!-- Progress Header -->
+                        <div style="text-align: center; margin-bottom: 32px;">
+                            <div style="
+                                width: 80px;
+                                height: 80px;
+                                background: linear-gradient(135deg, #D97706, #B45309);
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 40px;
+                                margin: 0 auto 24px;
+                            ">🎉</div>
+                            <h2 style="
+                                font-size: 32px;
+                                font-weight: 700;
+                                color: #1F2937;
+                                margin-bottom: 12px;
+                            ">Du machst großartige Fortschritte!</h2>
+                            <p style="
+                                font-size: 18px;
+                                color: #6B7280;
+                            ">Du bist bereits ${progress}% durch deinen perfekten Pitch!</p>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div style="
+                            width: 100%;
+                            height: 12px;
+                            background: #E5E7EB;
+                            border-radius: 6px;
+                            overflow: hidden;
+                            margin-bottom: 40px;
+                        ">
+                            <div style="
+                                height: 100%;
+                                background: linear-gradient(90deg, #059669, #10B981);
+                                width: ${progress}%;
+                                transition: width 0.5s ease;
+                            "></div>
+                        </div>
+
+                        <!-- What You've Created -->
+                        ${completedPhases.length > 0 ? `
+                            <div style="
+                                background: #F9FAFB;
+                                border-radius: 12px;
+                                padding: 24px;
+                                margin-bottom: 32px;
+                            ">
+                                <h3 style="
+                                    font-size: 20px;
+                                    font-weight: 700;
+                                    color: #1F2937;
+                                    margin-bottom: 16px;
+                                ">✨ Was du bereits erstellt hast:</h3>
+                                ${achievementsList}
+                            </div>
+                        ` : ''}
+
+                        <!-- What's Next -->
+                        <div style="
+                            background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+                            border-left: 4px solid #D97706;
+                            border-radius: 12px;
+                            padding: 24px;
+                            margin-bottom: 32px;
+                        ">
+                            <h3 style="
+                                font-size: 20px;
+                                font-weight: 700;
+                                color: #1F2937;
+                                margin-bottom: 16px;
+                            ">🚀 Schalte die nächsten Phasen frei:</h3>
+                            <ul style="
+                                margin: 0;
+                                padding-left: 24px;
+                                color: #4B5563;
+                                line-height: 1.8;
+                            ">
+                                <li><strong>Marktchance</strong> - Validiere deine Marktgröße</li>
+                                <li><strong>Geschäftsmodell & Ökonomie</strong> - Beweise die Unit Economics</li>
+                                <li><strong>Traktion & Validierung</strong> - Zeige echte Zahlen</li>
+                                <li><strong>Team-Glaubwürdigkeit</strong> - Baue deine Gründer-Story</li>
+                                <li><strong>Wettbewerbslandschaft</strong> - Definiere deinen Vorteil</li>
+                                <li><strong>+ 4 weitere kritische Phasen</strong></li>
+                            </ul>
+                        </div>
+
+                        <!-- Value Proposition -->
+                        <div style="
+                            text-align: center;
+                            padding: 24px;
+                            background: #F9FAFB;
+                            border-radius: 12px;
+                            margin-bottom: 32px;
+                        ">
+                            <div style="
+                                font-size: 48px;
+                                font-weight: 700;
+                                color: #D97706;
+                                margin-bottom: 8px;
+                            ">€29<span style="font-size: 20px; color: #6B7280;">/Monat</span></div>
+                            <p style="
+                                font-size: 16px;
+                                color: #6B7280;
+                                margin: 0;
+                            ">Jederzeit kündbar • 7 Tage Geld-zurück-Garantie</p>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button onclick="upgradeNow()" style="
+                                width: 100%;
+                                padding: 18px;
+                                background: linear-gradient(135deg, #D97706, #B45309);
+                                color: white;
+                                border: none;
+                                border-radius: 12px;
+                                font-size: 18px;
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+                            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(217, 119, 6, 0.5)'"
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(217, 119, 6, 0.4)'">
+                                Meinen Pitch vervollständigen →
+                            </button>
+                            
+                            <button onclick="saveAndDecideLater()" style="
+                                width: 100%;
+                                padding: 16px;
+                                background: white;
+                                color: #4B5563;
+                                border: 2px solid #E5E7EB;
+                                border-radius: 12px;
+                                font-size: 16px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.background='#F9FAFB'; this.style.borderColor='#D1D5DB'"
+                               onmouseout="this.style.background='white'; this.style.borderColor='#E5E7EB'">
+                                Fortschritt speichern & später entscheiden
+                            </button>
+                        </div>
+
+                        <!-- Social Proof -->
+                        <div style="
+                            text-align: center;
+                            margin-top: 32px;
+                            padding-top: 32px;
+                            border-top: 1px solid #E5E7EB;
+                        ">
+                            <p style="
+                                font-size: 14px;
+                                color: #9CA3AF;
+                                margin-bottom: 12px;
+                            ">Bereits genutzt von</p>
+                            <p style="
+                                font-size: 24px;
+                                font-weight: 700;
+                                color: #1F2937;
+                                margin: 0;
+                            ">2,847+ Gründern</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function upgradeNow() {
+            trackEvent('upgrade_button_clicked', {
+                source: 'workshop_paywall',
+                completedPhases: getCompletedPhasesCount(),
+                userTier: userProfile?.tier || 'free'
+            });
+
+            // Redirect to pricing page
+            window.location.href = '/pricing.html';
+        }
+
+        function saveAndDecideLater() {
+            trackEvent('save_and_decide_later', {
+                completedPhases: getCompletedPhasesCount(),
+                userTier: userProfile?.tier || 'free'
+            });
+
+            // Go back to dashboard
+            window.location.href = '/dashboard.html';
+        }
+
         function applyDiagnosticData(diagnosticData) {
             console.log('📊 Applying diagnostic data:', diagnosticData);
 
@@ -1625,17 +1889,37 @@
             state.diagnosticData = diagnosticData;
         }
 
+
         // ========================================
-        // WORKSHOP FUNCTIONALITY
+        // WORKSHOP INITIALIZATION
         // ========================================
 
-        function initializeWorkshop() {
-            const demoState = PitchPerfect.DemoState.load();
+        async function initializeWorkshop() {
+            console.log('🚀 Initializing workshop...');
 
-            if (!demoState.workshop.unlocked && !demoState.diagnostic.completed) {
-                window.location.href = 'diagnostic-questionnaire.html';
+            // Initialize authentication
+            const isAuthenticated = await initWorkshopAuth();
+            if (!isAuthenticated) {
+                return; // Already redirected to login
+            }
+
+            // Check if user has completed diagnostic
+            if (!currentProject) {
+                console.log('❌ No project found - redirecting to diagnostic');
+                window.location.href = '/diagnostic-questionnaire.html';
                 return;
             }
+
+            if (!currentProject.diagnostic_completed) {
+                console.log('❌ Diagnostic not completed - redirecting to diagnostic');
+                window.location.href = '/diagnostic-questionnaire.html';
+                return;
+            }
+
+            console.log('✅ Diagnostic completed - workshop unlocked');
+
+            // Continue with workshop initialization
+            const demoState = PitchPerfect?.DemoState?.load() || { workshop: {}, diagnostic: {} };
 
             if (demoState.workshop.currentPhase) {
                 state.currentPhase = demoState.workshop.currentPhase;
@@ -1654,7 +1938,39 @@
 
             // Initialize metrics system
             MetricsSystem.init();
+
+            // Track workshop session started
+            trackEvent('workshop_session_started', {
+                completedPhases: getCompletedPhasesCount(),
+                progress: calculateProgress()
+            });
+
+            console.log('✅ Workshop fully initialized');
         }
+
+        // ========================================
+        // ANALYTICS
+        // ========================================
+
+        function trackEvent(eventName, properties = {}) {
+            const event = {
+                event: eventName,
+                timestamp: new Date().toISOString(),
+                userTier: userProfile?.tier || 'free',
+                userId: currentUser?.id || 'anonymous',
+                ...properties
+            };
+
+            console.log('📊 Analytics Event:', event);
+
+            // Store in localStorage for later sync
+            const events = JSON.parse(localStorage.getItem('analytics_events') || '[]');
+            events.push(event);
+            localStorage.setItem('analytics_events', JSON.stringify(events));
+
+            // TODO: Send to analytics service (Google Analytics, Mixpanel, etc.)
+        }
+
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -1664,27 +1980,35 @@
             const phasesList = document.getElementById('phasesList');
             phasesList.innerHTML = '';
 
+            const userTier = userProfile?.tier || 'free';
+
             PHASES.forEach(phase => {
                 const isCompleted = state.phaseCompletion[phase.number] === true;
-                const isUnlocked = phase.unlocked || isCompleted;
+                const hasAccess = canAccessPhase(userTier, phase.number);
                 const isActive = state.currentPhase === phase.number;
 
                 const card = document.createElement('div');
-                card.className = `phase-card ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}`;
+                card.className = `phase-card ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${!hasAccess ? 'locked' : ''}`;
 
-                if (isUnlocked) {
+                if (hasAccess) {
                     card.onclick = () => {
                         selectPhase(phase.number);
                         if (window.innerWidth <= 768) {
                             toggleSidebar();
                         }
                     };
+                } else {
+                    card.onclick = () => {
+                        showUpgradePrompt(phase.number);
+                    };
                 }
+
+                const lockIcon = !hasAccess ? ' 🔒' : '';
 
                 card.innerHTML = `
                     <div class="phase-header">
                         <div class="phase-number">${isCompleted ? '✓' : phase.number}</div>
-                        <div class="phase-title">${phase.title}</div>
+                        <div class="phase-title">${phase.title}${lockIcon}</div>
                     </div>
                     <div class="phase-description">${phase.description}</div>
                 `;
@@ -1694,6 +2018,15 @@
         }
 
         function selectPhase(phaseNumber) {
+            // Check if user has access to this phase
+            const userTier = userProfile?.tier || 'free';
+
+            if (!canAccessPhase(userTier, phaseNumber)) {
+                console.log(`🔒 Phase ${phaseNumber} locked for ${userTier} tier`);
+                showUpgradePrompt(phaseNumber);
+                return;
+            }
+
             state.currentPhase = phaseNumber;
             state.messages = [];
 
@@ -1711,6 +2044,12 @@
 
             renderPhases();
             loadPhaseMessages(phaseNumber);
+
+            // Track phase started
+            trackEvent('phase_started', {
+                phase: phaseNumber,
+                userTier: userTier
+            });
 
             const demoState = PitchPerfect.DemoState.load();
             demoState.workshop.currentPhase = phaseNumber;
