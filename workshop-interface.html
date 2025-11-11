@@ -79,6 +79,123 @@
             background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
         }
 
+        /* ========================================
+           PROGRESS BAR IN SIDEBAR
+           ======================================== */
+
+        .sidebar-progress {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8f7ff 0%, #ffffff 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-label {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-percentage {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            animation: numberPulse 0.5s ease;
+        }
+
+        @keyframes numberPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent);
+            animation: progressShimmer 2s infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .progress-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.8125rem;
+            color: var(--text-medium);
+            font-weight: 500;
+        }
+
+        .progress-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
         .logo {
             font-size: 1.125rem;
             font-weight: 700;
@@ -831,567 +948,645 @@
             background: #B91C1C;
         }
 
-        .menu-toggle {
-            display: none;
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            /* Purple */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .menu-toggle:hover {
-            background: var(--primary-dark);
+        .modal-button.danger:hover {
+            background: #B91C1C;
         }
 
         /* ========================================
-           METRICS DASHBOARD STYLES
+           CONFETTI CELEBRATION
            ======================================== */
 
-        /* Metrics Toggle Button - HIDDEN BY DEFAULT */
-        .metrics-toggle-btn {
+        .confetti {
             position: fixed;
-            bottom: 24px;
-            left: 24px;
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #6366F1, #4F46E5);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s ease;
-            z-index: 999;
-            display: none;
-            /* Hidden by default */
-            align-items: center;
-            justify-content: center;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            animation: confettiFall 3s linear forwards;
+            z-index: 9999;
         }
 
-        .metrics-toggle-btn.visible {
-            display: flex;
-        }
-
-        .metrics-toggle-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
-        }
-
-        /* Metrics Overlay */
-        .metrics-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-            padding: 1rem;
-            backdrop-filter: blur(4px);
-        }
-
-        .metrics-overlay.active {
-            display: flex;
-        }
-
-        /* Metrics Panel */
-        .metrics-panel {
-            background: var(--white);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-
-            to {
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
                 opacity: 1;
-                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
             }
         }
 
-        .metrics-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .milestone-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            text-align: center;
+            animation: milestonePopIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
         }
 
-        .metrics-header h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
+        @keyframes milestonePopIn {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .milestone-message h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
             color: var(--text-dark);
+        }
+
+        .milestone-message p {
+            font-size: 1.125rem;
+            color: var(--text-medium);
             margin: 0;
         }
 
-        .metrics-close {
-            width: 32px;
-            height: 32px;
-            background: var(--bg-light);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.25rem;
-            color: var(--text-medium);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .metrics-close:hover {
-            background: var(--error);
-            color: white;
-        }
-
-        .metrics-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .metrics-loading {
-            text-align: center;
-            color: var(--text-medium);
-            padding: 2rem;
-        }
-
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .metric-card {
-            background: var(--bg-light);
-            border-radius: 12px;
-            padding: 1.25rem;
-            border: 2px solid var(--border);
-            transition: all 0.2s ease;
-        }
-
-        .metric-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .metric-label {
-            font-size: 0.875rem;
-            color: var(--text-medium);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            line-height: 1;
-        }
-
-        .metric-value.success {
-            color: var(--success);
-        }
-
-        .metric-value.warning {
-            color: var(--primary);
-        }
-
-        .metric-subtext {
-            font-size: 0.8125rem;
-            color: var(--text-light);
-            margin-top: 0.5rem;
-        }
-
-        /* Phase Breakdown */
-        .phase-metrics {
-            background: var(--white);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .phase-metrics-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-        }
-
-        .phase-metric-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background: var(--bg-light);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-
-        .phase-metric-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .phase-metric-label {
-            font-size: 0.875rem;
-            color: var(--text-medium);
-            font-weight: 600;
-        }
-
-        .phase-metric-value {
-            font-size: 0.875rem;
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-
-        /* Action Buttons */
-        .metrics-actions {
-            display: flex;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .metrics-action-btn {
-            flex: 1;
-            padding: 0.875rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .metrics-action-btn.primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-
-        .metrics-action-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
-        }
-
-        .metrics-action-btn.secondary {
-            background: var(--bg-light);
-            color: var(--text-dark);
-        }
-
-        .metrics-action-btn.secondary:hover {
-            background: var(--border);
-        }
-
-        .metrics-action-btn.danger {
-            background: var(--error);
-            color: white;
-        }
-
-        .metrics-action-btn.danger:hover {
-            background: #B91C1C;
-            transform: translateY(-2px);
-        }
-
-        /* ========================================
-           MOBILE RESPONSIVE
-           ======================================== */
-
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -320px;
-                top: 0;
-                height: 100vh;
-                height: 100dvh;
-                z-index: 100;
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .sidebar.open {
-                left: 0;
-            }
-
-            .main-area {
-                width: 100%;
-            }
-
-            .chat-header {
-                padding: 1rem;
-                flex-wrap: wrap;
-            }
-
-            .chat-header-actions {
-                width: 100%;
-                margin-top: 0.5rem;
-            }
-
-            .restart-phase-btn {
-                padding: 0.625rem 1.125rem;
-                background: var(--white);
-                color: var(--text-dark);
-                border: 2px solid var(--border);
-                border-radius: 10px;
-                font-size: 0.875rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: none;
-            }
-
-            .restart-phase-btn:hover {
-                background: var(--bg-cream);
-                border-color: var(--primary);
-                color: var(--primary);
-                transform: translateY(-1px);
-            }
-
-            .restart-phase-btn.visible {
-                display: block;
-            }
-
-            .chat-title {
-                font-size: 1rem;
-            }
-
-            .chat-subtitle {
-                font-size: 0.8125rem;
-            }
-
-            .chat-messages {
-                flex: 1;
-                overflow-y: auto;
-                overflow-x: hidden;
-                padding: 2rem 1.5rem;
-                display: flex;
-                flex-direction: column;
-                gap: 1.5rem;
-                -webkit-overflow-scrolling: touch;
-                background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
-            }
-
-            /* Custom scrollbar for chat */
-            .chat-messages::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .chat-messages::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            .chat-messages::-webkit-scrollbar-thumb {
-                background: rgba(102, 126, 234, 0.2);
-                border-radius: 4px;
-            }
-
-            .chat-messages::-webkit-scrollbar-thumb:hover {
-                background: rgba(102, 126, 234, 0.4);
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            .message-bubble {
-                padding: 0.875rem 1rem;
-                font-size: 0.9375rem;
-            }
-
-            .chat-input-container {
-                padding: 0.875rem 1rem;
-                padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
-            }
-
-            .chat-input {
-                font-size: 16px;
-                min-height: 44px;
-            }
-
-            .send-button {
-                padding: 0.75rem 1rem;
-                font-size: 0.9375rem;
-            }
+        .menu-toggle {
+            display: none;
 
             .menu-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .welcome-screen {
-                padding: 1.5rem;
-            }
-
-            .welcome-icon {
-                width: 80px;
-                height: 80px;
-                background: var(--gradient-primary);
-                /* Purple gradient */
-                border-radius: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2.5rem;
-                margin-bottom: 1.5rem;
-                box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-            }
-
-            .welcome-screen h2 {
-                font-size: 1.5rem;
-            }
-
-            .welcome-screen p {
-                font-size: 0.9375rem;
-            }
-
-            .start-button {
-                padding: 0.875rem 2rem;
-                font-size: 1rem;
-                width: 100%;
-            }
-
-            .modal {
-                padding: 1.5rem;
-            }
-
-            .modal h3 {
+                display: none;
+                width: 40px;
+                height: 40px;
+                background: var(--primary);
+                /* Purple */
+                color: white;
+                border: none;
+                border-radius: 8px;
                 font-size: 1.25rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                flex-shrink: 0;
             }
 
-            /* Metrics Mobile */
+            .menu-toggle:hover {
+                background: var(--primary-dark);
+            }
+
+            /* ========================================
+           METRICS DASHBOARD STYLES
+           ======================================== */
+
+            /* Metrics Toggle Button - HIDDEN BY DEFAULT */
             .metrics-toggle-btn {
-                bottom: 16px;
-                left: 16px;
-                width: 48px;
-                height: 48px;
-                font-size: 1.25rem;
+                position: fixed;
+                bottom: 24px;
+                left: 24px;
+                width: 56px;
+                height: 56px;
+                background: linear-gradient(135deg, #6366F1, #4F46E5);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                font-size: 1.5rem;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+                transition: all 0.3s ease;
+                z-index: 999;
+                display: none;
+                /* Hidden by default */
+                align-items: center;
+                justify-content: center;
             }
 
+            .metrics-toggle-btn.visible {
+                display: flex;
+            }
+
+            .metrics-toggle-btn:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
+            }
+
+            /* Metrics Overlay */
+            .metrics-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                z-index: 1001;
+                padding: 1rem;
+                backdrop-filter: blur(4px);
+            }
+
+            .metrics-overlay.active {
+                display: flex;
+            }
+
+            /* Metrics Panel */
             .metrics-panel {
-                max-width: 100%;
-                max-height: 95vh;
-                margin: 0.5rem;
+                background: var(--white);
+                border-radius: 16px;
+                width: 100%;
+                max-width: 600px;
+                max-height: 90vh;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideUp 0.3s ease;
+            }
+
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(40px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
 
             .metrics-header {
-                padding: 1rem;
+                padding: 1.5rem;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
 
             .metrics-header h3 {
-                font-size: 1.125rem;
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--text-dark);
+                margin: 0;
+            }
+
+            .metrics-close {
+                width: 32px;
+                height: 32px;
+                background: var(--bg-light);
+                border: none;
+                border-radius: 8px;
+                font-size: 1.25rem;
+                color: var(--text-medium);
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .metrics-close:hover {
+                background: var(--error);
+                color: white;
             }
 
             .metrics-content {
-                padding: 1rem;
+                flex: 1;
+                overflow-y: auto;
+                padding: 1.5rem;
             }
 
+            .metrics-loading {
+                text-align: center;
+                color: var(--text-medium);
+                padding: 2rem;
+            }
+
+            /* Metrics Grid */
             .metrics-grid {
-                grid-template-columns: 1fr;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .metric-card {
+                background: var(--bg-light);
+                border-radius: 12px;
+                padding: 1.25rem;
+                border: 2px solid var(--border);
+                transition: all 0.2s ease;
+            }
+
+            .metric-card:hover {
+                border-color: var(--primary);
+                transform: translateY(-2px);
+            }
+
+            .metric-label {
+                font-size: 0.875rem;
+                color: var(--text-medium);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.5rem;
             }
 
             .metric-value {
-                font-size: 1.75rem;
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--text-dark);
+                line-height: 1;
             }
 
-            .metrics-actions {
-                flex-direction: column;
+            .metric-value.success {
+                color: var(--success);
             }
-        }
 
-        @media (max-width: 768px) and (orientation: landscape) {
-            .chat-messages {
+            .metric-value.warning {
+                color: var(--primary);
+            }
+
+            .metric-subtext {
+                font-size: 0.8125rem;
+                color: var(--text-light);
+                margin-top: 0.5rem;
+            }
+
+            /* Phase Breakdown */
+            .phase-metrics {
+                background: var(--white);
+                border: 2px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .phase-metrics-title {
+                font-size: 1rem;
+                font-weight: 700;
+                color: var(--text-dark);
+                margin-bottom: 1rem;
+            }
+
+            .phase-metric-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 padding: 0.75rem;
+                background: var(--bg-light);
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
             }
 
-            .chat-input-container {
-                padding: 0.5rem 1rem;
+            .phase-metric-row:last-child {
+                margin-bottom: 0;
             }
 
-            .chat-input {
-                min-height: 40px;
-                max-height: 60px;
+            .phase-metric-label {
+                font-size: 0.875rem;
+                color: var(--text-medium);
+                font-weight: 600;
             }
-        }
+
+            .phase-metric-value {
+                font-size: 0.875rem;
+                color: var(--text-dark);
+                font-weight: 700;
+            }
+
+            /* Action Buttons */
+            .metrics-actions {
+                display: flex;
+                gap: 0.75rem;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border);
+            }
+
+            .metrics-action-btn {
+                flex: 1;
+                padding: 0.875rem;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.875rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .metrics-action-btn.primary {
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+                color: white;
+            }
+
+            .metrics-action-btn.primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+            }
+
+            .metrics-action-btn.secondary {
+                background: var(--bg-light);
+                color: var(--text-dark);
+            }
+
+            .metrics-action-btn.secondary:hover {
+                background: var(--border);
+            }
+
+            .metrics-action-btn.danger {
+                background: var(--error);
+                color: white;
+            }
+
+            .metrics-action-btn.danger:hover {
+                background: #B91C1C;
+                transform: translateY(-2px);
+            }
+
+            /* ========================================
+           MOBILE RESPONSIVE
+           ======================================== */
+
+            @media (max-width: 768px) {
+                .sidebar {
+                    position: fixed;
+                    left: -320px;
+                    top: 0;
+                    height: 100vh;
+                    height: 100dvh;
+                    z-index: 100;
+                    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+                }
+
+                .sidebar.open {
+                    left: 0;
+                }
+
+                .main-area {
+                    width: 100%;
+                }
+
+                .chat-header {
+                    padding: 1rem;
+                    flex-wrap: wrap;
+                }
+
+                .chat-header-actions {
+                    width: 100%;
+                    margin-top: 0.5rem;
+                }
+
+                .restart-phase-btn {
+                    padding: 0.625rem 1.125rem;
+                    background: var(--white);
+                    color: var(--text-dark);
+                    border: 2px solid var(--border);
+                    border-radius: 10px;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: none;
+                }
+
+                .restart-phase-btn:hover {
+                    background: var(--bg-cream);
+                    border-color: var(--primary);
+                    color: var(--primary);
+                    transform: translateY(-1px);
+                }
+
+                .restart-phase-btn.visible {
+                    display: block;
+                }
+
+                .chat-title {
+                    font-size: 1rem;
+                }
+
+                .chat-subtitle {
+                    font-size: 0.8125rem;
+                }
+
+                .chat-messages {
+                    flex: 1;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    padding: 2rem 1.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                    -webkit-overflow-scrolling: touch;
+                    background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+                }
+
+                /* Custom scrollbar for chat */
+                .chat-messages::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                .chat-messages::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .chat-messages::-webkit-scrollbar-thumb {
+                    background: rgba(102, 126, 234, 0.2);
+                    border-radius: 4px;
+                }
+
+                .chat-messages::-webkit-scrollbar-thumb:hover {
+                    background: rgba(102, 126, 234, 0.4);
+                }
+
+                .message-content {
+                    max-width: 85%;
+                }
+
+                .message-bubble {
+                    padding: 0.875rem 1rem;
+                    font-size: 0.9375rem;
+                }
+
+                .chat-input-container {
+                    padding: 0.875rem 1rem;
+                    padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+                }
+
+                .chat-input {
+                    font-size: 16px;
+                    min-height: 44px;
+                }
+
+                .send-button {
+                    padding: 0.75rem 1rem;
+                    font-size: 0.9375rem;
+                }
+
+                .menu-toggle {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .welcome-screen {
+                    padding: 1.5rem;
+                }
+
+                .welcome-icon {
+                    width: 80px;
+                    height: 80px;
+                    background: var(--gradient-primary);
+                    /* Purple gradient */
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 2.5rem;
+                    margin-bottom: 1.5rem;
+                    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+                }
+
+                .welcome-screen h2 {
+                    font-size: 1.5rem;
+                }
+
+                .welcome-screen p {
+                    font-size: 0.9375rem;
+                }
+
+                .start-button {
+                    padding: 0.875rem 2rem;
+                    font-size: 1rem;
+                    width: 100%;
+                }
+
+                .modal {
+                    padding: 1.5rem;
+                }
+
+                .modal h3 {
+                    font-size: 1.25rem;
+                }
+
+                /* Metrics Mobile */
+                .metrics-toggle-btn {
+                    bottom: 16px;
+                    left: 16px;
+                    width: 48px;
+                    height: 48px;
+                    font-size: 1.25rem;
+                }
+
+                .metrics-panel {
+                    max-width: 100%;
+                    max-height: 95vh;
+                    margin: 0.5rem;
+                }
+
+                .metrics-header {
+                    padding: 1rem;
+                }
+
+                .metrics-header h3 {
+                    font-size: 1.125rem;
+                }
+
+                .metrics-content {
+                    padding: 1rem;
+                }
+
+                .metrics-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .metric-value {
+                    font-size: 1.75rem;
+                }
+
+                .metrics-actions {
+                    flex-direction: column;
+                }
+            }
+
+            @media (max-width: 768px) and (orientation: landscape) {
+                .chat-messages {
+                    padding: 0.75rem;
+                }
+
+                .chat-input-container {
+                    padding: 0.5rem 1rem;
+                }
+
+                .chat-input {
+                    min-height: 40px;
+                    max-height: 60px;
+                }
+            }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a href="index.html" class="logo">
-                    <div class="logo-icon">PP</div>
-                    PitchPerfect AI
-                </a>
-            </div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">PP</div>
+                PitchPerfect AI
+            </a>
 
-            <div class="sidebar-content" id="phasesList">
-            </div>
-        </div>
-
-        <div class="main-area">
-            <div class="chat-header" id="chatHeader">
-                <div class="chat-header-content">
-                    <div class="chat-title">Wähle eine Phase zum Starten</div>
-                    <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
+            <div class="sidebar-progress" id="sidebarProgress">
+                <div class="progress-header">
+                    <span class="progress-label">Dein Fortschritt</span>
+                    <span class="progress-percentage" id="progressPercentage">0%</span>
                 </div>
-                <div class="chat-header-actions">
-                    <button class="restart-phase-btn" id="restartPhaseBtn" onclick="confirmRestartPhase()">
-                        🔄 Phase neu starten
-                    </button>
-                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
-                        ☰
-                    </button>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
                 </div>
-            </div>
-
-            <div class="welcome-screen" id="welcomeScreen">
-                <div class="welcome-badge">Diagnose abgeschlossen</div>
-                <div class="welcome-icon">💪</div>
-                <h2>Willkommen im Pitch-Workshop</h2>
-                <p>
-                    Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen.
-                    Jede Phase fokussiert auf ein kritisches Element und verwendet Expertenbefragung,
-                    um deine Geschichte zu stärken.
-                </p>
-                <button class="start-button" onclick="selectPhase(2)">Phase 2 starten: Fatale Fehler beheben</button>
-            </div>
-
-            <div class="chat-messages" id="chatMessages" style="display: none;">
-            </div>
-
-            <div class="chat-input-container" id="chatInputContainer" style="display: none;">
-                <div class="chat-input-wrapper">
-                    <textarea class="chat-input" id="chatInput" placeholder="Schreibe deine Antwort..."
-                        rows="1"></textarea>
-                    <button class="send-button" id="sendButton" onclick="sendMessage()">
-                        Senden
-                    </button>
+                <div class="progress-stats">
+                    <span class="progress-stat">
+                        <span class="progress-icon">✓</span>
+                        <span id="completedCount">0</span> von 12 Phasen
+                    </span>
                 </div>
             </div>
         </div>
+
+        <div class="sidebar-content" id="phasesList">
+        </div>
+    </div>
+
+    <div class="main-area">
+        <div class="chat-header" id="chatHeader">
+            <div class="chat-header-content">
+                <div class="chat-title">Wähle eine Phase zum Starten</div>
+                <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="restart-phase-btn" id="restartPhaseBtn" onclick="confirmRestartPhase()">
+                    🔄 Phase neu starten
+                </button>
+                <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
+                    ☰
+                </button>
+            </div>
+        </div>
+
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-badge">Diagnose abgeschlossen</div>
+            <div class="welcome-icon">💪</div>
+            <h2>Willkommen im Pitch-Workshop</h2>
+            <p>
+                Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen.
+                Jede Phase fokussiert auf ein kritisches Element und verwendet Expertenbefragung,
+                um deine Geschichte zu stärken.
+            </p>
+            <button class="start-button" onclick="selectPhase(2)">Phase 2 starten: Fatale Fehler beheben</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages" style="display: none;">
+        </div>
+
+        <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+            <div class="chat-input-wrapper">
+                <textarea class="chat-input" id="chatInput" placeholder="Schreibe deine Antwort..." rows="1"></textarea>
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    Senden
+                </button>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Phase Completion Modal -->
@@ -2336,6 +2531,41 @@
 
                 phasesList.appendChild(card);
             });
+            updateProgressBar();
+        }
+
+        // ========================================
+        // PROGRESS BAR UPDATES
+        // ========================================
+
+        function updateProgressBar() {
+            const completedCount = getCompletedPhasesCount();
+            const totalPhases = PHASES.length;
+            const percentage = calculateProgress();
+
+            // Update percentage text with animation
+            const percentageEl = document.getElementById('progressPercentage');
+            if (percentageEl) {
+                percentageEl.textContent = `${percentage}%`;
+                percentageEl.style.animation = 'none';
+                setTimeout(() => {
+                    percentageEl.style.animation = 'numberPulse 0.5s ease';
+                }, 10);
+            }
+
+            // Update progress bar width
+            const progressBarFill = document.getElementById('progressBarFill');
+            if (progressBarFill) {
+                progressBarFill.style.width = `${percentage}%`;
+            }
+
+            // Update completed count
+            const completedCountEl = document.getElementById('completedCount');
+            if (completedCountEl) {
+                completedCountEl.textContent = completedCount;
+            }
+
+            console.log(`📊 Progress updated: ${completedCount}/${totalPhases} (${percentage}%)`);
         }
 
         function selectPhase(phaseNumber) {
@@ -2543,7 +2773,74 @@
             }
 
             renderPhases();
+
+            triggerPhaseCompletionCelebration();
+
             document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function triggerPhaseCompletionCelebration() {
+            const completedCount = getCompletedPhasesCount();
+            const percentage = calculateProgress();
+
+            // Update progress bar with celebration
+            updateProgressBar();
+
+            // Show confetti
+            showConfetti();
+
+            // Track milestone achievements
+            if (completedCount === 3) {
+                showMilestoneMessage('🎉 Erste 3 Phasen abgeschlossen!', 'Du bist auf einem großartigen Weg!');
+            } else if (completedCount === 6) {
+                showMilestoneMessage('🔥 Halbzeit erreicht!', 'Du bist schon bei 50%!');
+            } else if (completedCount === 9) {
+                showMilestoneMessage('⚡ Nur noch 3 Phasen!', 'Du bist fast am Ziel!');
+            } else if (completedCount === 12) {
+                showMilestoneMessage('🎊 Alle Phasen abgeschlossen!', 'Dein Pitch ist jetzt perfekt!');
+            }
+
+            // Track analytics
+            trackEvent('phase_completed', {
+                phase: state.currentPhase,
+                totalCompleted: completedCount,
+                progress: percentage,
+                userTier: userProfile?.tier || 'free'
+            });
+        }
+
+        function showConfetti() {
+            const colors = ['#667eea', '#764ba2', '#D97706', '#059669', '#DC2626'];
+            const confettiCount = 50;
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showMilestoneMessage(title, message) {
+            const milestone = document.createElement('div');
+            milestone.className = 'milestone-message';
+            milestone.innerHTML = `
+                <h3>${title}</h3>
+                <p>${message}</p>
+            `;
+
+            document.body.appendChild(milestone);
+
+            setTimeout(() => {
+                milestone.style.animation = 'milestonePopIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) reverse forwards';
+                setTimeout(() => milestone.remove(), 300);
+            }, 2500);
         }
 
         function closeModal() {
