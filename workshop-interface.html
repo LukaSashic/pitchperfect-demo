@@ -2434,6 +2434,23 @@
 
             console.log('✅ Diagnostic completed - workshop unlocked');
 
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInputContainer');
+
+            if (welcomeScreen && chatMessages && chatInput) {
+                welcomeScreen.style.display = 'flex';
+                chatMessages.style.display = 'none';
+                chatInput.style.display = 'none';
+                console.log('✅ Welcome screen displayed');
+            } else {
+                console.error('❌ UI elements not found:', {
+                    welcomeScreen: !!welcomeScreen,
+                    chatMessages: !!chatMessages,
+                    chatInput: !!chatInput
+                });
+            }
+
             // Continue with workshop initialization
             const demoState = PitchPerfect?.DemoState?.load() || { workshop: {}, diagnostic: {} };
 
