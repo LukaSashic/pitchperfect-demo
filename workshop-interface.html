@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pitch Workshop - PitchPerfect AI</title>
     <script src="pitchperfect-connector.js"></script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth-guard.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -241,8 +245,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.user {
@@ -320,12 +331,25 @@
             animation: typing 1.4s infinite;
         }
 
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
 
         @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-10px);
+            }
         }
 
         .chat-input-container {
@@ -579,7 +603,8 @@
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
             transition: all 0.3s ease;
             z-index: 999;
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
             align-items: center;
             justify-content: center;
         }
@@ -631,6 +656,7 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -990,6 +1016,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar" id="sidebar">
@@ -1024,7 +1051,9 @@
                 <div class="welcome-icon">💪</div>
                 <h2>Willkommen im Pitch-Workshop</h2>
                 <p>
-                    Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen. Jede Phase fokussiert auf ein kritisches Element und verwendet Expertenbefragung, um deine Geschichte zu stärken.
+                    Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen. Jede Phase
+                    fokussiert auf ein kritisches Element und verwendet Expertenbefragung, um deine Geschichte zu
+                    stärken.
                 </p>
                 <button class="start-button" onclick="selectPhase(2)">Phase 2 starten: Fatale Fehler beheben</button>
             </div>
@@ -1034,12 +1063,8 @@
 
             <div class="chat-input-container" id="chatInputContainer" style="display: none;">
                 <div class="chat-input-wrapper">
-                    <textarea 
-                        class="chat-input" 
-                        id="chatInput" 
-                        placeholder="Schreibe deine Antwort..."
-                        rows="1"
-                    ></textarea>
+                    <textarea class="chat-input" id="chatInput" placeholder="Schreibe deine Antwort..."
+                        rows="1"></textarea>
                     <button class="send-button" id="sendButton" onclick="sendMessage()">
                         Senden
                     </button>
@@ -1066,7 +1091,8 @@
         <div class="modal">
             <div class="modal-icon warning">⚠️</div>
             <h3>Phase neu starten?</h3>
-            <p>Möchtest du diese Phase wirklich neu starten? Alle bisherigen Nachrichten werden gelöscht und du beginnst von vorne.</p>
+            <p>Möchtest du diese Phase wirklich neu starten? Alle bisherigen Nachrichten werden gelöscht und du beginnst
+                von vorne.</p>
             <div class="modal-buttons">
                 <button class="modal-button danger" onclick="restartPhase()">Ja, neu starten</button>
                 <button class="modal-button secondary" onclick="closeRestartModal()">Abbrechen</button>
@@ -1087,7 +1113,8 @@
         </div>
     </div>
 
-    <button id="metricsToggleBtn" class="metrics-toggle-btn" onclick="toggleMetrics()" title="Metrics Dashboard (Ctrl+Shift+M)">
+    <button id="metricsToggleBtn" class="metrics-toggle-btn" onclick="toggleMetrics()"
+        title="Metrics Dashboard (Ctrl+Shift+M)">
         📊
     </button>
 
@@ -1166,7 +1193,62 @@
                 unlocked: false
             }
         ];
+        // ========================================
+        // FEATURE FLAGS & TIER CONFIGURATION
+        // ========================================
 
+        const TIER_ACCESS = {
+            free: {
+                allowedPhases: [2, 3, 4],  // FREE: First 3 phases
+                displayName: "Free",
+                features: {
+                    diagnosticAccess: true,
+                    workshopPhases: 3,
+                    projectLimit: 1,
+                    exportPDF: false,
+                    aiFeedback: false
+                }
+            },
+            core: {
+                allowedPhases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  // ALL phases
+                displayName: "Core",
+                features: {
+                    diagnosticAccess: true,
+                    workshopPhases: 12,
+                    projectLimit: 10,
+                    exportPDF: true,
+                    aiFeedback: true
+                }
+            },
+            professional: {
+                allowedPhases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  // ALL phases
+                displayName: "Professional",
+                features: {
+                    diagnosticAccess: true,
+                    workshopPhases: 12,
+                    projectLimit: Infinity,
+                    exportPDF: true,
+                    aiFeedback: true,
+                    prioritySupport: true,
+                    customBranding: true
+                }
+            }
+        };
+
+        function canAccessPhase(userTier, phaseNumber) {
+            const tierConfig = TIER_ACCESS[userTier] || TIER_ACCESS.free;
+            return tierConfig.allowedPhases.includes(phaseNumber);
+        }
+
+        function getCompletedPhasesCount() {
+            return Object.keys(state.phaseCompletion).filter(key => state.phaseCompletion[key] === true).length;
+        }
+
+        function calculateProgress() {
+            const completed = getCompletedPhasesCount();
+            const total = PHASES.length;
+            return Math.round((completed / total) * 100);
+        }
         let state = {
             currentPhase: null,
             messages: [],
@@ -1244,7 +1326,7 @@
 
                 this.data.totalCost += metrics.cost || 0;
                 this.data.totalRequests += 1;
-                
+
                 if (metrics.cacheHit) {
                     this.data.cacheHits += 1;
                 } else {
@@ -1280,10 +1362,10 @@
 
             render() {
                 const content = document.getElementById('metricsContent');
-                const cacheHitRate = this.data.totalRequests > 0 
+                const cacheHitRate = this.data.totalRequests > 0
                     ? ((this.data.cacheHits / this.data.totalRequests) * 100).toFixed(1)
                     : 0;
-                
+
                 const avgLatency = this.data.totalRequests > 0
                     ? (this.data.totalLatency / this.data.totalRequests / 1000).toFixed(2)
                     : 0;
@@ -1339,13 +1421,13 @@
                     }
                     return a.localeCompare(b);
                 });
-                
+
                 if (phases.length === 0) {
                     return '';
                 }
 
                 let html = '<div class="phase-metrics"><div class="phase-metrics-title">📈 Phase Breakdown</div>';
-                
+
                 phases.forEach(phase => {
                     const metrics = this.data.phaseMetrics[phase];
                     const avgLatency = (metrics.latency / metrics.requests / 1000).toFixed(2);
@@ -1396,7 +1478,7 @@
 
             generateCSV() {
                 let csv = 'Phase,Requests,Cost (USD),Avg Latency (s)\n';
-                
+
                 Object.keys(this.data.phaseMetrics).sort((a, b) => {
                     const aNum = parseInt(a);
                     const bNum = parseInt(b);
@@ -1426,7 +1508,7 @@
         function toggleMetrics() {
             const overlay = document.getElementById('metricsOverlay');
             overlay.classList.toggle('active');
-            
+
             if (overlay.classList.contains('active')) {
                 MetricsSystem.render();
             }
@@ -1449,7 +1531,7 @@
 
             // Clear messages for this phase
             state.messages = [];
-            
+
             // Clear from localStorage
             const demoState = PitchPerfect.DemoState.load();
             if (demoState.workshop.messages && demoState.workshop.messages[state.currentPhase]) {
@@ -1465,12 +1547,91 @@
         }
 
         // ========================================
+        // AUTHENTICATION & USER STATE
+        // ========================================
+
+        let currentUser = null;
+        let userProfile = null;
+        let currentProject = null;
+
+        async function initWorkshopAuth() {
+            console.log('🔐 Initializing workshop authentication...');
+
+            // Check authentication
+            const authData = await getCurrentUserWithProfile();
+            if (!authData) {
+                console.log('❌ Not authenticated, redirecting to login');
+                return false;
+            }
+
+            currentUser = authData.user;
+            userProfile = authData.profile;
+
+            console.log('✅ User authenticated:', {
+                email: currentUser.email,
+                tier: userProfile.tier,
+                name: userProfile.full_name
+            });
+
+            // Load their project data
+            await loadProjectData();
+
+            return true;
+        }
+
+        async function loadProjectData() {
+            try {
+                console.log('📂 Loading project data...');
+
+                const { data: projects, error } = await supabaseClient
+                    .from('pitch_projects')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (error) {
+                    console.error('Error loading project:', error);
+                    return;
+                }
+
+                if (projects && projects.length > 0) {
+                    currentProject = projects[0];
+                    console.log('✅ Project loaded:', currentProject.title);
+
+                    // Apply diagnostic data if exists
+                    if (currentProject.diagnostic_data) {
+                        applyDiagnosticData(currentProject.diagnostic_data);
+                    }
+                } else {
+                    console.log('ℹ️ No project found - user should complete diagnostic first');
+                }
+            } catch (error) {
+                console.error('Error loading project:', error);
+            }
+        }
+
+        function applyDiagnosticData(diagnosticData) {
+            console.log('📊 Applying diagnostic data:', diagnosticData);
+
+            // You can customize the workshop based on their diagnostic answers
+            const pitchGoal = diagnosticData['1']; // investor/speaking/sales/networking
+            const stage = diagnosticData['2'];     // idea/mvp/traction/growth
+            const duration = diagnosticData['3'];  // 60s/3min/10min/20min
+
+            console.log(`🎯 User Profile: ${pitchGoal} | ${stage} | ${duration}`);
+
+            // Store in state for later use
+            state.diagnosticData = diagnosticData;
+        }
+
+        // ========================================
         // WORKSHOP FUNCTIONALITY
         // ========================================
 
         function initializeWorkshop() {
             const demoState = PitchPerfect.DemoState.load();
-            
+
             if (!demoState.workshop.unlocked && !demoState.diagnostic.completed) {
                 window.location.href = 'diagnostic-questionnaire.html';
                 return;
@@ -1486,7 +1647,7 @@
 
             renderPhases();
             loadSavedMessages();
-            
+
             if (window.innerWidth <= 768) {
                 document.getElementById('menuToggle').style.display = 'flex';
             }
@@ -1510,7 +1671,7 @@
 
                 const card = document.createElement('div');
                 card.className = `phase-card ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}`;
-                
+
                 if (isUnlocked) {
                     card.onclick = () => {
                         selectPhase(phase.number);
@@ -1537,7 +1698,7 @@
             state.messages = [];
 
             const phase = PHASES.find(p => p.number === phaseNumber);
-            
+
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('chatMessages').style.display = 'flex';
             document.getElementById('chatInputContainer').style.display = 'block';
@@ -1550,7 +1711,7 @@
 
             renderPhases();
             loadPhaseMessages(phaseNumber);
-            
+
             const demoState = PitchPerfect.DemoState.load();
             demoState.workshop.currentPhase = phaseNumber;
             PitchPerfect.DemoState.save(demoState);
@@ -1601,10 +1762,10 @@
 
         function addMessage(role, content) {
             state.messages.push({ role, content, timestamp: new Date() });
-            
+
             const messageEl = createMessageElement(role, content);
             document.getElementById('chatMessages').appendChild(messageEl);
-            
+
             saveMessages();
             scrollToBottom();
         }
@@ -1612,10 +1773,10 @@
         function createMessageElement(role, content) {
             const div = document.createElement('div');
             div.className = `message ${role}`;
-            
+
             const avatar = role === 'assistant' ? 'AI' : 'DU';
             const time = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-            
+
             div.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
                 <div class="message-content">
@@ -1623,7 +1784,7 @@
                     <div class="message-time">${time}</div>
                 </div>
             `;
-            
+
             return div;
         }
 
@@ -1668,9 +1829,9 @@
 
             input.value = '';
             input.style.height = 'auto';
-            
+
             addMessage('user', message);
-            
+
             state.isTyping = true;
             document.getElementById('sendButton').disabled = true;
             showTypingIndicator();
@@ -1707,17 +1868,17 @@
 
         function completePhase() {
             state.phaseCompletion[state.currentPhase] = true;
-            
+
             const demoState = PitchPerfect.DemoState.load();
             demoState.workshop.phaseCompletion = state.phaseCompletion;
             PitchPerfect.DemoState.save(demoState);
 
             const nextPhaseNumber = state.currentPhase + 1;
             const nextPhase = PHASES.find(p => p.number === nextPhaseNumber);
-            
+
             if (nextPhase) {
                 nextPhase.unlocked = true;
-                document.getElementById('modalMessage').textContent = 
+                document.getElementById('modalMessage').textContent =
                     `Großartige Arbeit! Du hast "${PHASES.find(p => p.number === state.currentPhase).title}" abgeschlossen. Bereit für die nächste?`;
             }
 
@@ -1733,7 +1894,7 @@
             closeModal();
             const nextPhaseNumber = state.currentPhase + 1;
             const nextPhase = PHASES.find(p => p.number === nextPhaseNumber);
-            
+
             if (nextPhase) {
                 selectPhase(nextPhaseNumber);
             }
@@ -1766,9 +1927,9 @@
         // EVENT LISTENERS
         // ========================================
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const chatInput = document.getElementById('chatInput');
-            
+
             chatInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -1776,19 +1937,19 @@
                 }
             });
 
-            chatInput.addEventListener('input', function() {
+            chatInput.addEventListener('input', function () {
                 this.style.height = 'auto';
                 this.style.height = Math.min(this.scrollHeight, 120) + 'px';
             });
         });
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
                 const menuToggle = document.getElementById('menuToggle');
-                
-                if (sidebar.classList.contains('open') && 
-                    !sidebar.contains(e.target) && 
+
+                if (sidebar.classList.contains('open') &&
+                    !sidebar.contains(e.target) &&
                     !menuToggle.contains(e.target)) {
                     toggleSidebar();
                 }
@@ -1826,8 +1987,8 @@
         });
 
         window.addEventListener('load', initializeWorkshop);
-        
-        window.addEventListener('resize', function() {
+
+        window.addEventListener('resize', function () {
             if (window.innerWidth <= 768) {
                 document.getElementById('menuToggle').style.display = 'flex';
             } else {
@@ -1837,4 +1998,5 @@
         });
     </script>
 </body>
+
 </html>
