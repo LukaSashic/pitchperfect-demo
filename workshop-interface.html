@@ -18,18 +18,31 @@
         }
 
         :root {
-            --primary: #D97706;
-            --primary-dark: #B45309;
+            /* PRIMARY: Purple gradient (matches diagnostic) */
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --primary-light: #818cf8;
+
+            /* ACCENT: Keep orange for special highlights */
+            --accent: #D97706;
+            --accent-dark: #B45309;
+
+            /* NEUTRALS */
             --secondary: #065F46;
             --text-dark: #1F2937;
             --text-medium: #4B5563;
             --text-light: #6B7280;
-            --bg-cream: #FFFBEB;
+            --bg-cream: #F8F7FF;
+            /* Changed to light purple */
             --bg-light: #F9FAFB;
             --white: #FFFFFF;
             --error: #DC2626;
             --success: #059669;
             --border: #E5E7EB;
+
+            /* GRADIENTS */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-accent: linear-gradient(135deg, #D97706, #B45309);
         }
 
         body {
@@ -78,7 +91,8 @@
         .logo-icon {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--gradient-primary);
+            /* Changed from orange */
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -111,7 +125,10 @@
 
         .phase-card.active {
             background: var(--bg-cream);
+            /* Light purple instead of cream */
             border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            /* Purple glow */
         }
 
         .phase-card.completed {
@@ -141,7 +158,9 @@
             font-weight: 700;
             font-size: 0.875rem;
             color: var(--primary);
+            /* Purple instead of orange */
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
         }
 
         .phase-card.completed .phase-number {
@@ -273,7 +292,8 @@
         }
 
         .message.assistant .message-avatar {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--gradient-primary);
+            /* Purple gradient */
             color: white;
         }
 
@@ -307,6 +327,7 @@
 
         .message.user .message-bubble {
             background: var(--primary);
+            /* Purple instead of orange */
             color: white;
             margin-left: auto;
         }
@@ -390,7 +411,8 @@
 
         .send-button {
             padding: 0.875rem 1.25rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--gradient-primary);
+            /* Purple gradient */
             color: white;
             border: none;
             border-radius: 12px;
@@ -403,7 +425,8 @@
 
         .send-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+            /* Purple shadow */
         }
 
         .send-button:disabled {
@@ -451,7 +474,8 @@
 
         .start-button {
             padding: 1rem 2.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--gradient-primary);
+            /* Purple gradient */
             color: white;
             border: none;
             border-radius: 12px;
@@ -463,7 +487,7 @@
 
         .start-button:hover {
             transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
         }
 
         .modal-overlay {
@@ -570,6 +594,7 @@
             width: 40px;
             height: 40px;
             background: var(--primary);
+            /* Purple */
             color: white;
             border: none;
             border-radius: 8px;
@@ -933,9 +958,17 @@
             }
 
             .welcome-icon {
-                width: 64px;
-                height: 64px;
-                font-size: 2rem;
+                width: 80px;
+                height: 80px;
+                background: var(--gradient-primary);
+                /* Purple gradient */
+                border-radius: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.5rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
             }
 
             .welcome-screen h2 {
