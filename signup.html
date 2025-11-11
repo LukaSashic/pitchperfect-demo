@@ -371,15 +371,14 @@
 
                 // Show success message
                 showAlert(
-                    'Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail-Adresse. ' +
-                    'Prüfen Sie auch Ihren Spam-Ordner.',
+                    'Registrierung erfolgreich! Sie werden automatisch angemeldet...',
                     'success'
                 );
 
-                // Redirect after delay
+                // Redirect to dashboard (no email confirmation needed)
                 setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 4000);
+                    window.location.href = 'dashboard.html';
+                }, 2000);
 
             } catch (error) {
                 console.error('Signup error:', error);
