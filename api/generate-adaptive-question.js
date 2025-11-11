@@ -101,7 +101,6 @@ export default async function handler(req, res) {
 
         const focusArea = focusAreas[stepNumber] || 'Business';
 
-        // SOLUTION 5: Reduced pitch draft length (800 chars instead of 1500)
         let contextPrompt = `KONTEXT:
 Pitch-Typ: ${context.pitchType || 'nicht angegeben'}
 Phase: ${context.stage || 'nicht angegeben'}
@@ -110,7 +109,7 @@ Fokusbereich: ${focusArea}
 `;
 
         if (context.pitchDraft && context.pitchDraft !== '[Kein Pitch-Entwurf vorhanden]') {
-            const pitchPreview = context.pitchDraft.substring(0, 800); // Reduced from 1500
+            const pitchPreview = context.pitchDraft.substring(0, 800);
             contextPrompt += `PITCH:
 ${pitchPreview}
 
@@ -120,7 +119,7 @@ ${pitchPreview}
         contextPrompt += `Generiere ${focusArea}-Frage mit 3 Optionen.
 NUR JSON, keine Markdown.`;
 
-        // SOLUTION 5: Reduced max_tokens (500 instead of 800) & timeout (7s instead of 10s)
+        // **RESPONSE PREFILLING** - Force JSON output
         const prefill = '{';
 
         const response = await Promise.race([
@@ -130,17 +129,20 @@ NUR JSON, keine Markdown.`;
                 system: SYSTEM_PROMPT,
                 messages: [
                     { role: 'user', content: contextPrompt },
-                    { role: 'assistant', content: prefill }  // ← Prefill
+                    { role: 'assistant', content: prefill }
                 ]
             }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 7000))
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout')), 7000)
+            )
         ]);
 
-        let context = prefill + response.content[0].text;
+        // Prepend prefill to response
+        let responseContent = prefill + response.content[0].text;
 
         let questionData;
         try {
-            let cleanContent = context.trim();
+            let cleanContent = responseContent.trim();
             if (cleanContent.startsWith('```')) {
                 cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
             }

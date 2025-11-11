@@ -11,7 +11,7 @@
         apiEndpoint: '/api/chat',
         apiEndpointV2: '/api/chat-v2',
         apiAdaptiveQuestion: '/api/generate-adaptive-question',
-        apiPersonalizedDiagnostic: '/api/generate-personalized-diagnostic',
+        apiAnalyzePitch: '/api/analyze-pitch',
 
         // Feature flags
         features: {
@@ -276,55 +276,17 @@
         },
 
         // ============================================
-        // PERSONALIZED DIAGNOSTIC GENERATION
+        // PITCH ANALYSIS (Uses optimized analyze-pitch endpoint)
         // ============================================
         async generatePersonalizedDiagnostic(formData) {
-            if (!CONFIG.features.personalizedDiagnostics) {
-                console.log('⚠️ Personalized diagnostics disabled, using fallback');
-                return this._demoResponse();
-            }
+            // Redirect to the new analyzePitch method
+            console.log('⚠️ generatePersonalizedDiagnostic is deprecated, using analyzePitch instead');
 
-            try {
-                console.log('🔍 Generating personalized diagnostic');
+            const pitchContent = formData.pitchDraft || formData.pitch || '';
+            const pitchType = formData.pitchType || 'investor_deck';
+            const fundingStage = formData.stage || 'seed';
 
-                const startTime = Date.now();
-
-                const response = await fetch(CONFIG.apiPersonalizedDiagnostic, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        formData
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                const latency = Date.now() - startTime;
-
-                console.log(`✅ Personalized diagnostic generated in ${latency}ms`);
-
-                if (CONFIG.features.trackMetrics) {
-                    Metrics.track('diagnostic-final', {
-                        cost_usd: 0.015,
-                        latency_ms: latency,
-                        input_tokens: 2000,
-                        output_tokens: 800,
-                        cache_read_tokens: 0
-                    });
-                }
-
-                return data;
-            } catch (error) {
-                console.error('Error generating personalized diagnostic:', error);
-                console.log('⚠️ Using fallback diagnostic');
-                return this._demoResponse();
-            }
+            return this.analyzePitch(pitchContent, pitchType, fundingStage);
         },
 
         _fallbackQuestion(stepNumber) {
