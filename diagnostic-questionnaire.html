@@ -418,16 +418,18 @@
                     .select('diagnostic_data')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false })
-                    .limit(1)
-                    .single();
+                    .limit(1);
 
-                if (data && data.diagnostic_data) {
-                    answers = data.diagnostic_data;
+                // Check if we got any data
+                if (data && data.length > 0 && data[0].diagnostic_data) {
+                    answers = data[0].diagnostic_data;
                     console.log('Loaded saved progress:', answers);
+                } else {
+                    console.log('No saved progress found, starting fresh');
                 }
             } catch (error) {
-                // No saved progress, start fresh
-                console.log('No saved progress found');
+                // No saved progress or error loading - just start fresh
+                console.log('Could not load progress, starting fresh:', error.message);
             }
         }
 
@@ -570,15 +572,14 @@
         async function saveProgress() {
             try {
                 // Check if project exists
-                const { data: existing } = await supabaseClient
+                const { data: existing, error: fetchError } = await supabaseClient
                     .from('pitch_projects')
                     .select('id')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false })
-                    .limit(1)
-                    .single();
+                    .limit(1);
 
-                if (existing) {
+                if (existing && existing.length > 0) {
                     // Update existing
                     await supabaseClient
                         .from('pitch_projects')
@@ -586,7 +587,9 @@
                             diagnostic_data: answers,
                             updated_at: new Date().toISOString()
                         })
-                        .eq('id', existing.id);
+                        .eq('id', existing[0].id);
+
+                    console.log('Progress updated');
                 } else {
                     // Create new
                     await supabaseClient
@@ -595,8 +598,12 @@
                             user_id: currentUser.id,
                             title: 'Mein Pitch-Projekt',
                             pitch_type: answers[1] || 'unknown',
-                            diagnostic_data: answers
+                            diagnostic_data: answers,
+                            stage: answers[2] || null,
+                            target_duration: answers[3] || null
                         });
+
+                    console.log('New project created');
                 }
             } catch (error) {
                 console.error('Failed to save progress:', error);
