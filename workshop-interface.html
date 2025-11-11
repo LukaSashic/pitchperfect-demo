@@ -440,55 +440,144 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             text-align: center;
             height: 100%;
+            background: linear-gradient(135deg, #f8f7ff 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .welcome-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 20px;
+            width: 96px;
+            height: 96px;
+            background: var(--gradient-primary);
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.25);
+            animation: welcomeIconFloat 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes welcomeIconFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         .welcome-screen h2 {
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-dark);
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-screen p {
-            font-size: 1rem;
+            font-size: 1.125rem;
             color: var(--text-medium);
-            margin-bottom: 2rem;
-            max-width: 600px;
-            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            max-width: 640px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
         }
 
         .start-button {
-            padding: 1rem 2.5rem;
+            padding: 1.125rem 3rem;
             background: var(--gradient-primary);
-            /* Purple gradient */
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 1.125rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
 
         .start-button:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
         }
+
+        .start-button:hover::before {
+            left: 100%;
+        }
+
+        .start-button:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+
+        .welcome-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 100px;
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-badge::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
 
         .modal-overlay {
             position: fixed;
@@ -1081,12 +1170,13 @@
             </div>
 
             <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-badge">Diagnose abgeschlossen</div>
                 <div class="welcome-icon">💪</div>
                 <h2>Willkommen im Pitch-Workshop</h2>
                 <p>
-                    Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen. Jede Phase
-                    fokussiert auf ein kritisches Element und verwendet Expertenbefragung, um deine Geschichte zu
-                    stärken.
+                    Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen.
+                    Jede Phase fokussiert auf ein kritisches Element und verwendet Expertenbefragung,
+                    um deine Geschichte zu stärken.
                 </p>
                 <button class="start-button" onclick="selectPhase(2)">Phase 2 starten: Fatale Fehler beheben</button>
             </div>
