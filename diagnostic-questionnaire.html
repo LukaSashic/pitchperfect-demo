@@ -621,6 +621,14 @@
             // Save final answers
             await saveProgress();
 
+            // ✅ CRITICAL: Mark diagnostic as completed in localStorage
+            const demoState = PitchPerfect.DemoState.load();
+            demoState.diagnostic.completed = true;
+            demoState.workshop.unlocked = true;
+            PitchPerfect.DemoState.save(demoState);
+
+            console.log('✅ Diagnostic marked as completed');
+
             // Generate AI-powered results
             await generateResults();
         }
