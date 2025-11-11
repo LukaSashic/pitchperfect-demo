@@ -121,23 +121,26 @@ ${pitchPreview}
 NUR JSON, keine Markdown.`;
 
         // SOLUTION 5: Reduced max_tokens (500 instead of 800) & timeout (7s instead of 10s)
+        const prefill = '{';
+
         const response = await Promise.race([
             anthropic.messages.create({
                 model: 'claude-sonnet-4-20250514',
                 max_tokens: 500,
                 system: SYSTEM_PROMPT,
-                messages: [{ role: 'user', content: contextPrompt }]
+                messages: [
+                    { role: 'user', content: contextPrompt },
+                    { role: 'assistant', content: prefill }  // ← Prefill
+                ]
             }),
-            new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Timeout')), 7000)
-            )
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 7000))
         ]);
 
-        const content = response.content[0].text;
-        
+        let context = prefill + response.content[0].text;
+
         let questionData;
         try {
-            let cleanContent = content.trim();
+            let cleanContent = context.trim();
             if (cleanContent.startsWith('```')) {
                 cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
             }

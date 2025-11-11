@@ -138,6 +138,27 @@ Identifiziere verbleibende Lücken und gib Gesamtscore.`,
 };
 
 // ============================================
+// RESPONSE PREFILLING HELPER
+// ============================================
+function getPrefillForPhase(phase) {
+  const prefills = {
+    2: '<phase_status>\n<complete>',
+    3: '<phase_status>\n<complete>',
+    4: '<phase_status>\n<complete>',
+    5: '<phase_status>\n<complete>',
+    6: '<phase_status>\n<complete>',
+    7: '<phase_status>\n<complete>',
+    8: '<phase_status>\n<complete>',
+    9: '<phase_status>\n<complete>',
+    10: '<phase_status>\n<complete>',
+    11: '<phase_status>\n<complete>',
+    12: '<phase_status>\n<complete>',
+    13: '<phase_status>\n<complete>'
+  };
+  return prefills[phase] || null;
+}
+
+// ============================================
 // MAIN HANDLER
 // ============================================
 export default async function handler(req, res) {
@@ -198,12 +219,21 @@ Am Ende deiner Antwort, wenn du glaubst, dass die Phase abgeschlossen ist, füge
       }
     ];
 
-    // Build messages
+    // Build messages with prefilling
     const messages = conversationHistory || [];
     messages.push({
       role: 'user',
       content: message
     });
+
+    // Add response prefill if available
+    const prefill = getPrefillForPhase(phase);
+    if (prefill) {
+      messages.push({
+        role: 'assistant',
+        content: prefill
+      });
+    }
 
     // Call Claude with caching enabled
     const response = await anthropic.messages.create({
@@ -211,21 +241,19 @@ Am Ende deiner Antwort, wenn du glaubst, dass die Phase abgeschlossen ist, füge
       max_tokens: 2000,
       temperature: 0.7,
       system: systemPrompt,
-      messages: messages,
-      // Enable extended thinking for diagnostic phases
-      ...(phase === 2 || phase === 13 ? {
-        thinking: {
-          type: "enabled",
-          budget: { tokens: 5000 }
-        }
-      } : {})
+      messages: messages
     });
 
-    const aiResponse = response.content.find(block => block.type === 'text')?.text || '';
-    
+    let aiResponse = response.content.find(block => block.type === 'text')?.text || '';
+
+    // Prepend prefill if it was used
+    if (prefill) {
+      aiResponse = prefill + aiResponse;
+    }
+
     // Extract structured phase status
     const phaseStatus = extractPhaseStatus(aiResponse);
-    
+
     // Calculate latency
     const latency = Date.now() - startTime;
 
@@ -252,7 +280,7 @@ Am Ende deiner Antwort, wenn du glaubst, dass die Phase abgeschlossen ist, füge
 
   } catch (error) {
     console.error('API v2 Fehler:', error);
-    
+
     return res.status(500).json({
       error: 'KI-Antwort fehlgeschlagen',
       message: error.message,
@@ -269,11 +297,11 @@ function extractPhaseStatus(text) {
   const match = text.match(/<phase_status>([\s\S]*?)<\/phase_status>/);
   if (!match) {
     // Fallback to keyword detection
-    const hasCompleteKeywords = 
+    const hasCompleteKeywords =
       text.includes('Phase abgeschlossen') ||
       text.includes('bereit für die nächste') ||
       text.includes('nächste Phase');
-    
+
     return {
       complete: hasCompleteKeywords,
       completion_score: hasCompleteKeywords ? 85 : 50,
@@ -282,11 +310,11 @@ function extractPhaseStatus(text) {
   }
 
   const statusXML = match[1];
-  const complete = /<complete>(true|false)<\/complete>/.test(statusXML) && 
-                   RegExp.$1 === 'true';
+  const complete = /<complete>(true|false)<\/complete>/.test(statusXML) &&
+    RegExp.$1 === 'true';
   const scoreMatch = statusXML.match(/<completion_score>(\d+)<\/completion_score>/);
   const score = scoreMatch ? parseInt(scoreMatch[1]) : 50;
-  
+
   const elementsMatch = statusXML.match(/<missing_elements>(.*?)<\/missing_elements>/);
   const elements = elementsMatch ? elementsMatch[1].split(',').map(e => e.trim()).filter(Boolean) : [];
 
@@ -302,6 +330,6 @@ function calculateCost(usage) {
   const outputCost = (usage.output_tokens / 1000000) * 15;
   const cacheWriteCost = ((usage.cache_creation_input_tokens || 0) / 1000000) * 3.75;
   const cacheReadCost = ((usage.cache_read_input_tokens || 0) / 1000000) * 0.30;
-  
+
   return (inputCost + outputCost + cacheWriteCost + cacheReadCost).toFixed(6);
 }

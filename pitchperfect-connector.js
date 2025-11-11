@@ -1,7 +1,7 @@
 // PitchPerfect AI - Enhanced Connector with Feature Flags & Metrics
 // V2.1 - Optimized with caching support + Adaptive Questions + Personalized Diagnostics
 
-(function() {
+(function () {
     'use strict';
 
     const CONFIG = {
@@ -12,7 +12,7 @@
         apiEndpointV2: '/api/chat-v2',
         apiAdaptiveQuestion: '/api/generate-adaptive-question',
         apiPersonalizedDiagnostic: '/api/generate-personalized-diagnostic',
-        
+
         // Feature flags
         features: {
             useV2API: true,
@@ -32,10 +32,10 @@
             return data ? JSON.parse(data) : {
                 user: { email: '', createdAt: new Date().toISOString() },
                 diagnostic: { completed: false, answers: {}, results: null },
-                workshop: { 
-                    unlocked: false, 
-                    currentPhase: 2, 
-                    messages: {}, 
+                workshop: {
+                    unlocked: false,
+                    currentPhase: 2,
+                    messages: {},
                     phaseCompletion: {},
                     phaseScores: {}
                 },
@@ -53,7 +53,7 @@
     const Metrics = {
         init() {
             if (!CONFIG.features.trackMetrics) return;
-            
+
             const metrics = this.load();
             if (!metrics.sessionStart) {
                 metrics.sessionStart = new Date().toISOString();
@@ -86,22 +86,22 @@
                 phase: phase,
                 ...responseMetrics
             });
-            
+
             // Calculate totals
             metrics.totalCost = metrics.requests.reduce((sum, r) => sum + parseFloat(r.cost_usd || 0), 0);
             metrics.totalLatency = metrics.requests.reduce((sum, r) => sum + (r.latency_ms || 0), 0);
-            
+
             // Calculate cache hit rate
-            const totalCacheableTokens = metrics.requests.reduce((sum, r) => 
+            const totalCacheableTokens = metrics.requests.reduce((sum, r) =>
                 sum + (r.cache_read_tokens || 0) + (r.input_tokens || 0), 0);
-            const totalCacheHits = metrics.requests.reduce((sum, r) => 
+            const totalCacheHits = metrics.requests.reduce((sum, r) =>
                 sum + (r.cache_read_tokens || 0), 0);
-            metrics.cacheHitRate = totalCacheableTokens > 0 
+            metrics.cacheHitRate = totalCacheableTokens > 0
                 ? (totalCacheHits / totalCacheableTokens * 100).toFixed(1)
                 : 0;
 
             this.save(metrics);
-            
+
             // Dispatch event for metrics dashboard
             window.dispatchEvent(new CustomEvent('pitchperfect:metrics', {
                 detail: {
@@ -113,7 +113,7 @@
                     outputTokens: responseMetrics.output_tokens || 0
                 }
             }));
-            
+
             // Log to console for debugging
             console.log('📊 Metrics Update:', {
                 phase: phase,
@@ -127,7 +127,7 @@
         getSummary() {
             const metrics = this.load();
             const requestCount = metrics.requests.length;
-            
+
             if (requestCount === 0) return null;
 
             return {
@@ -176,7 +176,7 @@
 
             try {
                 const endpoint = CONFIG.features.useV2API ? CONFIG.apiEndpointV2 : CONFIG.apiEndpoint;
-                
+
                 console.log(`🚀 Calling ${CONFIG.features.useV2API ? 'V2' : 'V1'} API for Phase ${phase}`);
 
                 const response = await fetch(endpoint, {
@@ -197,7 +197,7 @@
                 }
 
                 const data = await response.json();
-                
+
                 if (data.fallback && CONFIG.features.useV2API) {
                     console.log('⚠️ V2 fehlgeschlagen, fallback zu V1...');
                     return await this.getResponse(phase, message, conversationHistory);
@@ -233,9 +233,9 @@
 
             try {
                 console.log(`🔍 Generating adaptive question for step ${stepNumber}`);
-                
+
                 const startTime = Date.now();
-                
+
                 const response = await fetch(CONFIG.apiAdaptiveQuestion, {
                     method: 'POST',
                     headers: {
@@ -252,11 +252,11 @@
                 }
 
                 const data = await response.json();
-                
+
                 const latency = Date.now() - startTime;
-                
+
                 console.log(`✅ Adaptive question generated in ${latency}ms:`, data.question);
-                
+
                 if (CONFIG.features.trackMetrics) {
                     Metrics.track(`diagnostic-q${stepNumber}`, {
                         cost_usd: 0.002,
@@ -266,7 +266,7 @@
                         cache_read_tokens: 0
                     });
                 }
-                
+
                 return data;
             } catch (error) {
                 console.error('Error generating adaptive question:', error);
@@ -286,9 +286,9 @@
 
             try {
                 console.log('🔍 Generating personalized diagnostic');
-                
+
                 const startTime = Date.now();
-                
+
                 const response = await fetch(CONFIG.apiPersonalizedDiagnostic, {
                     method: 'POST',
                     headers: {
@@ -304,11 +304,11 @@
                 }
 
                 const data = await response.json();
-                
+
                 const latency = Date.now() - startTime;
-                
+
                 console.log(`✅ Personalized diagnostic generated in ${latency}ms`);
-                
+
                 if (CONFIG.features.trackMetrics) {
                     Metrics.track('diagnostic-final', {
                         cost_usd: 0.015,
@@ -318,7 +318,7 @@
                         cache_read_tokens: 0
                     });
                 }
-                
+
                 return data;
             } catch (error) {
                 console.error('Error generating personalized diagnostic:', error);
@@ -366,7 +366,7 @@
                     ]
                 }
             };
-            
+
             return fallbacks[stepNumber] || fallbacks[4];
         },
 
@@ -404,21 +404,71 @@
         }
     };
 
+
+// ============================================
+        // PITCH ANALYSIS (NEW)
+        // ============================================
+        async analyzePitch(pitchContent, pitchType = 'investor_deck', fundingStage = 'seed') {
+        try {
+            console.log('🔍 Analyzing pitch...');
+
+            const startTime = Date.now();
+
+            const response = await fetch('/api/analyze-pitch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    pitchContent,
+                    pitchType,
+                    fundingStage
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            const latency = Date.now() - startTime;
+
+            console.log(`✅ Pitch analysis completed in ${latency}ms`);
+            console.log(`📊 Overall Score: ${data.report.overallScore}/100`);
+
+            if (CONFIG.features.trackMetrics && !data.demo) {
+                Metrics.track('pitch-analysis', {
+                    cost_usd: 0.02,
+                    latency_ms: latency,
+                    input_tokens: 3000,
+                    output_tokens: 1000,
+                    cache_read_tokens: data.cached ? 2500 : 0
+                });
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Error analyzing pitch:', error);
+            throw error;
+        }
+    },
+
     // ============================================
     // EXPORT TO WINDOW
     // ============================================
-    window.PitchPerfect = { 
-        DemoState, 
-        AI, 
-        CONFIG, 
-        Metrics 
+    window.PitchPerfect = {
+        DemoState,
+        AI,
+        CONFIG,
+        Metrics
     };
 
     // Initialize metrics on load
     Metrics.init();
 
     console.log(`✅ PitchPerfect Geladen (V2.1 - ${CONFIG.features.adaptiveQuestions ? 'Adaptive Questions' : 'Standard'} + ${CONFIG.features.personalizedDiagnostics ? 'Personalized Diagnostics' : 'Generic'})`);
-    
+
     // Log metrics summary if available
     const summary = Metrics.getSummary();
     if (summary) {
