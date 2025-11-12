@@ -1513,71 +1513,74 @@
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="index.html" class="logo">
-                <div class="logo-icon">PP</div>
-                PitchPerfect AI
-            </a>
+    <div class="container"> <!-- ✅ ADD THIS LINE -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">PP</div>
+                    PitchPerfect AI
+                </a>
 
-            <div class="sidebar-progress" id="sidebarProgress">
-                <div class="progress-header">
-                    <span class="progress-label">Dein Fortschritt</span>
-                    <span class="progress-percentage" id="progressPercentage">0%</span>
+                <div class="sidebar-progress" id="sidebarProgress">
+                    <div class="progress-header">
+                        <span class="progress-label">Dein Fortschritt</span>
+                        <span class="progress-percentage" id="progressPercentage">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span class="progress-stat">
+                            <span class="progress-icon">✓</span>
+                            <span id="completedCount">0</span> von 12 Phasen
+                        </span>
+                    </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" id="progressBarFill"></div>
-                </div>
-                <div class="progress-stats">
-                    <span class="progress-stat">
-                        <span class="progress-icon">✓</span>
-                        <span id="completedCount">0</span> von 12 Phasen
-                    </span>
-                </div>
+            </div>
+
+            <div class="sidebar-content" id="phasesList">
             </div>
         </div>
 
-        <div class="sidebar-content" id="phasesList">
-        </div>
-    </div>
-
-    <div class="main-area">
-        <div class="chat-header" id="chatHeader">
-            <div class="chat-header-content">
-                <div class="chat-title">Wähle eine Phase zum Starten</div>
-                <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
+        <div class="main-area">
+            <div class="chat-header" id="chatHeader">
+                <div class="chat-header-content">
+                    <div class="chat-title">Wähle eine Phase zum Starten</div>
+                    <div class="chat-subtitle">Systematische Pitch-Verfeinerung in 12 Phasen</div>
+                </div>
+                <div class="chat-header-actions">
+                    <button class="restart-phase-btn" id="restartPhaseBtn" onclick="confirmRestartPhase()">
+                        🔄 Phase neu starten
+                    </button>
+                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
+                        ☰
+                    </button>
+                </div>
             </div>
-            <div class="chat-header-actions">
-                <button class="restart-phase-btn" id="restartPhaseBtn" onclick="confirmRestartPhase()">
-                    🔄 Phase neu starten
-                </button>
-                <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" style="display: none;">
-                    ☰
-                </button>
+
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-badge">Diagnose abgeschlossen</div>
+                <div class="welcome-icon">💪</div>
+                <h2>Willkommen im Pitch-Workshop</h2>
+                <p>
+                    Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen.
+                    Jede Phase fokussiert auf ein kritisches Element und verwendet Expertenbefragung,
+                    um deine Geschichte zu stärken.
+                </p>
+                <button class="start-button" onclick="selectPhase(2)">Phase 2 starten: Fatale Fehler beheben</button>
             </div>
-        </div>
 
-        <div class="welcome-screen" id="welcomeScreen">
-            <div class="welcome-badge">Diagnose abgeschlossen</div>
-            <div class="welcome-icon">💪</div>
-            <h2>Willkommen im Pitch-Workshop</h2>
-            <p>
-                Du bist dabei, deinen Pitch durch 12 systematische Verfeinerungs-Phasen zu bringen.
-                Jede Phase fokussiert auf ein kritisches Element und verwendet Expertenbefragung,
-                um deine Geschichte zu stärken.
-            </p>
-            <button class="start-button" onclick="selectPhase(2)">Phase 2 starten: Fatale Fehler beheben</button>
-        </div>
+            <div class="chat-messages" id="chatMessages" style="display: none;">
+            </div>
 
-        <div class="chat-messages" id="chatMessages" style="display: none;">
-        </div>
-
-        <div class="chat-input-container" id="chatInputContainer" style="display: none;">
-            <div class="chat-input-wrapper">
-                <textarea class="chat-input" id="chatInput" placeholder="Schreibe deine Antwort..." rows="1"></textarea>
-                <button class="send-button" id="sendButton" onclick="sendMessage()">
-                    Senden
-                </button>
+            <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chatInput" placeholder="Schreibe deine Antwort..."
+                        rows="1"></textarea>
+                    <button class="send-button" id="sendButton" onclick="sendMessage()">
+                        Senden
+                    </button>
+                </div>
             </div>
         </div>
     </div>
