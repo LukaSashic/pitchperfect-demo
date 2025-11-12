@@ -1509,72 +1509,6 @@
                 max-height: 60px;
             }
         }
-
-        /* ========================================
-   TIER BADGES & VISUAL ENHANCEMENTS
-   ======================================== */
-
-        .tier-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.6875rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-left: 0.5rem;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        .tier-badge.core {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .tier-badge.professional {
-            background: linear-gradient(135deg, #D97706, #B45309);
-            color: white;
-            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
-        }
-
-        .phase-card.locked .tier-badge {
-            opacity: 0.95;
-        }
-
-        .phase-estimated-time {
-            font-size: 0.75rem;
-            color: #9CA3AF;
-            margin-left: 2.75rem;
-            margin-top: 0.25rem;
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .phase-lock-icon {
-            font-size: 0.875rem;
-            opacity: 0.7;
-        }
-
-        /* Enhanced locked phase styling */
-        .phase-card.locked {
-            opacity: 0.75;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .phase-card.locked:hover {
-            opacity: 0.9;
-            background: #F9FAFB;
-            transform: translateX(4px);
-        }
-
-        .phase-card.locked .phase-title {
-            color: #6B7280;
-        }
     </style>
 </head>
 
@@ -1702,96 +1636,72 @@
                 number: 2,
                 title: "Fatale Fehler Diagnose",
                 description: "Behebe kritische Lücken aus deiner Diagnose",
-                tier: "free",  // ✅ Added
-                estimatedTime: "20-30 min",  // ✅ Added
                 unlocked: true
             },
             {
                 number: 3,
                 title: "Problem-Befragung",
                 description: "Mache deine Problemstellung kristallklar",
-                tier: "free",  // ✅ Added
-                estimatedTime: "25-35 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 4,
                 title: "Lösungsklarheit",
                 description: "Stelle sicher, dass deine Lösung einleuchtend ist",
-                tier: "free",  // ✅ Added
-                estimatedTime: "20-30 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 5,
                 title: "Marktchance",
                 description: "Validiere und quantifiziere deine Marktgröße",
-                tier: "core",  // ✅ Added - CORE STARTS HERE
-                estimatedTime: "30-40 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 6,
                 title: "Geschäftsmodell & Ökonomie",
                 description: "Beweise, dass die Unit Economics funktionieren",
-                tier: "core",  // ✅ Added
-                estimatedTime: "35-45 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 7,
                 title: "Traktion & Validierung",
                 description: "Zeige Beweise, dass Leute das wollen",
-                tier: "core",  // ✅ Added
-                estimatedTime: "30-40 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 8,
                 title: "Team-Glaubwürdigkeit",
                 description: "Baue eine überzeugende Gründer-Story",
-                tier: "core",  // ✅ Added
-                estimatedTime: "25-35 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 9,
                 title: "Wettbewerbslandschaft",
                 description: "Definiere deinen unfairen Vorteil",
-                tier: "professional",  // ✅ Added - PROFESSIONAL STARTS HERE
-                estimatedTime: "35-45 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 10,
                 title: "Die Anfrage & Mittel",
                 description: "Artikuliere deinen Kapitalbedarf klar",
-                tier: "professional",  // ✅ Added
-                estimatedTime: "30-40 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 11,
                 title: "Narrativer Fluss",
                 description: "Optimiere deine Story-Architektur",
-                tier: "professional",  // ✅ Added
-                estimatedTime: "40-50 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 12,
                 title: "Q&A Vorbereitung",
                 description: "Bereite auf harte Investorenfragen vor",
-                tier: "professional",  // ✅ Added
-                estimatedTime: "35-45 min",  // ✅ Added
                 unlocked: false
             },
             {
                 number: 13,
                 title: "Finale Überprüfung",
                 description: "Umfassende Pitch-Bewertung & Export",
-                tier: "professional",  // ✅ Added
-                estimatedTime: "25-35 min",  // ✅ Added
                 unlocked: false
             }
         ];
@@ -1802,7 +1712,7 @@
 
         const TIER_ACCESS = {
             free: {
-                allowedPhases: [2, 3, 4],  // ✅ FREE: First 3 phases (Fatal Errors, Problem, Solution)
+                allowedPhases: [2, 3, 4],  // FREE: First 3 phases
                 displayName: "Free",
                 features: {
                     diagnosticAccess: true,
@@ -1813,18 +1723,18 @@
                 }
             },
             core: {
-                allowedPhases: [2, 3, 4, 5, 6, 7, 8],  // ✅ CORE: 7 phases (adds Market, Traction, Model, Team)
+                allowedPhases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  // ALL phases
                 displayName: "Core",
                 features: {
                     diagnosticAccess: true,
-                    workshopPhases: 7,  // ✅ Fixed from 12 to 7
+                    workshopPhases: 12,
                     projectLimit: 10,
                     exportPDF: true,
                     aiFeedback: true
                 }
             },
             professional: {
-                allowedPhases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  // ✅ PRO: All 12 phases
+                allowedPhases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  // ALL phases
                 displayName: "Professional",
                 features: {
                     diagnosticAccess: true,
@@ -1833,9 +1743,7 @@
                     exportPDF: true,
                     aiFeedback: true,
                     prioritySupport: true,
-                    customBranding: true,
-                    advancedPhases: true,  // ✅ Added feature flag
-                    collaboration: true     // ✅ Added feature flag
+                    customBranding: true
                 }
             }
         };
@@ -2224,7 +2132,6 @@
         function showUpgradePrompt(attemptedPhase) {
             const completedCount = getCompletedPhasesCount();
             const progress = calculateProgress();
-            const userTier = userProfile?.tier || 'free';
 
             // Get what they've completed
             const completedPhases = Object.keys(state.phaseCompletion)
@@ -2237,306 +2144,227 @@
             if (completedPhases.length > 0) {
                 achievementsList = completedPhases.map(phase =>
                     `<div style="
-                padding: 12px;
-                background: #D1FAE5;
-                border-radius: 8px;
-                margin-bottom: 8px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            ">
-                <div style="
-                    width: 24px;
-                    height: 24px;
-                    background: #059669;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-size: 14px;
-                    font-weight: 700;
-                    flex-shrink: 0;
-                ">✓</div>
-                <div style="flex: 1;">
-                    <strong style="color: #1F2937;">Phase ${phase.number}:</strong>
-                    <span style="color: #4B5563;"> ${phase.title}</span>
-                </div>
-            </div>`
+                        padding: 12px;
+                        background: #D1FAE5;
+                        border-radius: 8px;
+                        margin-bottom: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    ">
+                        <div style="
+                            width: 24px;
+                            height: 24px;
+                            background: #059669;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 14px;
+                            font-weight: 700;
+                            flex-shrink: 0;
+                        ">✓</div>
+                        <div style="flex: 1;">
+                            <strong style="color: #1F2937;">Phase ${phase.number}:</strong>
+                            <span style="color: #4B5563;"> ${phase.title}</span>
+                        </div>
+                    </div>`
                 ).join('');
             }
 
-            // Different messages based on tier and attempted phase
-            let upgradeMessage = {
-                title: '',
-                subtitle: '',
-                nextPhases: [],
-                price: '',
-                period: '',
-                valueProps: [],
-                targetTier: ''
-            };
-
-            // FREE → CORE upgrade (attempting phases 5-8)
-            if (userTier === 'free' && attemptedPhase >= 5 && attemptedPhase <= 8) {
-                upgradeMessage = {
-                    title: '🎉 Großartige Arbeit! Du hast die Basis geschaffen.',
-                    subtitle: `Du bist bereits ${Math.round(progress)}% durch deinen Pitch!`,
-                    nextPhases: [
-                        '<strong>Phase 5:</strong> Marktchance - Validiere deine Marktgröße',
-                        '<strong>Phase 6:</strong> Geschäftsmodell - Unit Economics zeigen',
-                        '<strong>Phase 7:</strong> Traktion - Beweise mit echten Zahlen',
-                        '<strong>Phase 8:</strong> Team - Baue Glaubwürdigkeit auf'
-                    ],
-                    price: '€29',
-                    period: '/Monat',
-                    valueProps: [
-                        '💰 Weniger als 1 BNI-Frühstück pro Monat',
-                        '⏱️ Spart 10+ Stunden Pitch-Arbeit',
-                        '📊 Export als professionelles Script',
-                        '✅ Vollständiger investor-ready Pitch'
-                    ],
-                    targetTier: 'core'
-                };
-            }
-
-            // CORE → PROFESSIONAL upgrade (attempting phases 9-13)
-            else if (userTier === 'core' && attemptedPhase >= 9) {
-                upgradeMessage = {
-                    title: '🚀 Du bist fast investor-ready!',
-                    subtitle: 'Top-Investoren erwarten diese fortgeschrittenen Elemente:',
-                    nextPhases: [
-                        '<strong>Phase 9:</strong> Wettbewerbslandschaft - Unfairer Vorteil',
-                        '<strong>Phase 10:</strong> Die Anfrage - Kapitalbedarf artikulieren',
-                        '<strong>Phase 11:</strong> Narrativer Fluss - Story optimieren',
-                        '<strong>Phase 12:</strong> Q&A Vorbereitung - Harte Fragen meistern',
-                        '<strong>Phase 13:</strong> Finale Überprüfung - Export & Polish'
-                    ],
-                    price: '€79',
-                    period: '/Monat',
-                    valueProps: [
-                        '📈 80% günstiger als Coaching (€1.000-2.500)',
-                        '🎯 Unit Economics Deep-Dive (CAC, LTV)',
-                        '⚡ Competitive Intelligence Analyse',
-                        '🔥 Q&A Prep für kritische Investorenfragen',
-                        '💎 Professional Export (Script + Outline + Slides)'
-                    ],
-                    targetTier: 'professional'
-                };
-            }
-
-            // Fallback for any other case
-            else {
-                upgradeMessage = {
-                    title: '🔒 Diese Phase ist gesperrt',
-                    subtitle: 'Upgrade für vollen Zugriff auf alle Workshop-Phasen',
-                    nextPhases: ['Alle restlichen Phasen'],
-                    price: '€29',
-                    period: '/Monat',
-                    valueProps: ['Vollständiger Pitch-Workshop'],
-                    targetTier: 'core'
-                };
-            }
+            // Track analytics
+            trackEvent('paywall_shown', {
+                attemptedPhase: attemptedPhase,
+                completedPhases: completedCount,
+                progress: progress,
+                userTier: userProfile?.tier || 'free'
+            });
 
             const mainArea = document.querySelector('.main-area');
             mainArea.innerHTML = `
-        <div style="
-            height: 100%;
-            overflow-y: auto;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        ">
-            <div style="
-                max-width: 700px;
-                margin: 0 auto;
-                background: white;
-                border-radius: 20px;
-                padding: 48px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            ">
-                <!-- Progress Header -->
-                <div style="text-align: center; margin-bottom: 32px;">
-                    <div style="
-                        width: 80px;
-                        height: 80px;
-                        background: linear-gradient(135deg, #D97706, #B45309);
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 40px;
-                        margin: 0 auto 24px;
-                        box-shadow: 0 8px 16px rgba(217, 119, 6, 0.3);
-                    ">🎯</div>
-                    <h2 style="
-                        font-size: 28px;
-                        font-weight: 700;
-                        color: #1F2937;
-                        margin-bottom: 12px;
-                        line-height: 1.3;
-                    ">${upgradeMessage.title}</h2>
-                    <p style="
-                        font-size: 16px;
-                        color: #6B7280;
-                    ">${upgradeMessage.subtitle}</p>
-                </div>
-
-                <!-- Progress Bar -->
                 <div style="
-                    width: 100%;
-                    height: 12px;
-                    background: #E5E7EB;
-                    border-radius: 6px;
-                    overflow: hidden;
-                    margin-bottom: 40px;
+                    height: 100%;
+                    overflow-y: auto;
+                    padding: 40px 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 ">
                     <div style="
-                        height: 100%;
-                        background: linear-gradient(90deg, #059669, #10B981);
-                        width: ${Math.round(progress)}%;
-                        transition: width 0.5s ease;
-                    "></div>
-                </div>
-
-                <!-- What You've Created -->
-                ${completedPhases.length > 0 ? `
-                    <div style="
-                        background: #F9FAFB;
-                        border-radius: 12px;
-                        padding: 24px;
-                        margin-bottom: 32px;
-                    ">
-                        <h3 style="
-                            font-size: 18px;
-                            font-weight: 700;
-                            color: #1F2937;
-                            margin-bottom: 16px;
-                        ">✨ Was du bereits erstellt hast:</h3>
-                        ${achievementsList}
-                    </div>
-                ` : ''}
-
-                <!-- What's Next -->
-                <div style="
-                    background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
-                    border-left: 4px solid #D97706;
-                    border-radius: 12px;
-                    padding: 24px;
-                    margin-bottom: 32px;
-                ">
-                    <h3 style="
-                        font-size: 18px;
-                        font-weight: 700;
-                        color: #1F2937;
-                        margin-bottom: 16px;
-                    ">🚀 Schalte die nächsten Phasen frei:</h3>
-                    <ul style="
-                        margin: 0;
-                        padding-left: 20px;
-                        color: #4B5563;
-                        line-height: 1.8;
-                    ">
-                        ${upgradeMessage.nextPhases.map(phase => `<li style="margin-bottom: 8px;">${phase}</li>`).join('')}
-                    </ul>
-                </div>
-
-                <!-- Pricing -->
-                <div style="
-                    text-align: center;
-                    padding: 24px;
-                    background: #F9FAFB;
-                    border-radius: 12px;
-                    margin-bottom: 24px;
-                ">
-                    <div style="
-                        font-size: 48px;
-                        font-weight: 700;
-                        color: #D97706;
-                        margin-bottom: 8px;
-                    ">${upgradeMessage.price}<span style="font-size: 20px; color: #6B7280;">${upgradeMessage.period}</span></div>
-                    <p style="
-                        font-size: 14px;
-                        color: #6B7280;
-                        margin: 0;
-                    ">Jederzeit kündbar • 7 Tage Geld-zurück-Garantie</p>
-                </div>
-
-                <!-- Value Props -->
-                <div style="
-                    background: white;
-                    border: 2px solid #E5E7EB;
-                    border-radius: 12px;
-                    padding: 20px;
-                    margin-bottom: 32px;
-                ">
-                    ${upgradeMessage.valueProps.map((prop, index) => `
-                        <div style="
-                            padding: 12px 0;
-                            ${index < upgradeMessage.valueProps.length - 1 ? 'border-bottom: 1px solid #F3F4F6;' : ''}
-                            font-size: 15px;
-                            color: #4B5563;
-                        ">${prop}</div>
-                    `).join('')}
-                </div>
-
-                <!-- CTA Buttons -->
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button onclick="window.location.href='/pricing.html'" style="
-                        width: 100%;
-                        padding: 18px;
-                        background: linear-gradient(135deg, #D97706, #B45309);
-                        color: white;
-                        border: none;
-                        border-radius: 12px;
-                        font-size: 18px;
-                        font-weight: 700;
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
-                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(217, 119, 6, 0.5)'"
-                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(217, 119, 6, 0.4)'">
-                        Jetzt auf ${upgradeMessage.targetTier === 'core' ? 'Core' : 'Professional'} upgraden →
-                    </button>
-                    
-                    <button onclick="location.reload()" style="
-                        width: 100%;
-                        padding: 16px;
+                        max-width: 700px;
+                        margin: 0 auto;
                         background: white;
-                        color: #4B5563;
-                        border: 2px solid #E5E7EB;
-                        border-radius: 12px;
-                        font-size: 16px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                    " onmouseover="this.style.background='#F9FAFB'; this.style.borderColor='#D1D5DB'"
-                       onmouseout="this.style.background='white'; this.style.borderColor='#E5E7EB'">
-                        Zurück zum Workshop
-                    </button>
-                </div>
+                        border-radius: 20px;
+                        padding: 48px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    ">
+                        <!-- Progress Header -->
+                        <div style="text-align: center; margin-bottom: 32px;">
+                            <div style="
+                                width: 80px;
+                                height: 80px;
+                                background: linear-gradient(135deg, #D97706, #B45309);
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 40px;
+                                margin: 0 auto 24px;
+                            ">🎉</div>
+                            <h2 style="
+                                font-size: 32px;
+                                font-weight: 700;
+                                color: #1F2937;
+                                margin-bottom: 12px;
+                            ">Du machst großartige Fortschritte!</h2>
+                            <p style="
+                                font-size: 18px;
+                                color: #6B7280;
+                            ">Du bist bereits ${progress}% durch deinen perfekten Pitch!</p>
+                        </div>
 
-                <!-- Social Proof -->
-                <div style="
-                    text-align: center;
-                    margin-top: 32px;
-                    padding-top: 32px;
-                    border-top: 1px solid #E5E7EB;
-                ">
-                    <p style="
-                        font-size: 13px;
-                        color: #9CA3AF;
-                        margin-bottom: 8px;
-                    ">Bereits genutzt von</p>
-                    <p style="
-                        font-size: 24px;
-                        font-weight: 700;
-                        color: #1F2937;
-                        margin: 0;
-                    ">2,847+ Gründern</p>
+                        <!-- Progress Bar -->
+                        <div style="
+                            width: 100%;
+                            height: 12px;
+                            background: #E5E7EB;
+                            border-radius: 6px;
+                            overflow: hidden;
+                            margin-bottom: 40px;
+                        ">
+                            <div style="
+                                height: 100%;
+                                background: linear-gradient(90deg, #059669, #10B981);
+                                width: ${progress}%;
+                                transition: width 0.5s ease;
+                            "></div>
+                        </div>
+
+                        <!-- What You've Created -->
+                        ${completedPhases.length > 0 ? `
+                            <div style="
+                                background: #F9FAFB;
+                                border-radius: 12px;
+                                padding: 24px;
+                                margin-bottom: 32px;
+                            ">
+                                <h3 style="
+                                    font-size: 20px;
+                                    font-weight: 700;
+                                    color: #1F2937;
+                                    margin-bottom: 16px;
+                                ">✨ Was du bereits erstellt hast:</h3>
+                                ${achievementsList}
+                            </div>
+                        ` : ''}
+
+                        <!-- What's Next -->
+                        <div style="
+                            background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+                            border-left: 4px solid #D97706;
+                            border-radius: 12px;
+                            padding: 24px;
+                            margin-bottom: 32px;
+                        ">
+                            <h3 style="
+                                font-size: 20px;
+                                font-weight: 700;
+                                color: #1F2937;
+                                margin-bottom: 16px;
+                            ">🚀 Schalte die nächsten Phasen frei:</h3>
+                            <ul style="
+                                margin: 0;
+                                padding-left: 24px;
+                                color: #4B5563;
+                                line-height: 1.8;
+                            ">
+                                <li><strong>Marktchance</strong> - Validiere deine Marktgröße</li>
+                                <li><strong>Geschäftsmodell & Ökonomie</strong> - Beweise die Unit Economics</li>
+                                <li><strong>Traktion & Validierung</strong> - Zeige echte Zahlen</li>
+                                <li><strong>Team-Glaubwürdigkeit</strong> - Baue deine Gründer-Story</li>
+                                <li><strong>Wettbewerbslandschaft</strong> - Definiere deinen Vorteil</li>
+                                <li><strong>+ 4 weitere kritische Phasen</strong></li>
+                            </ul>
+                        </div>
+
+                        <!-- Value Proposition -->
+                        <div style="
+                            text-align: center;
+                            padding: 24px;
+                            background: #F9FAFB;
+                            border-radius: 12px;
+                            margin-bottom: 32px;
+                        ">
+                            <div style="
+                                font-size: 48px;
+                                font-weight: 700;
+                                color: #D97706;
+                                margin-bottom: 8px;
+                            ">€29<span style="font-size: 20px; color: #6B7280;">/Monat</span></div>
+                            <p style="
+                                font-size: 16px;
+                                color: #6B7280;
+                                margin: 0;
+                            ">Jederzeit kündbar • 7 Tage Geld-zurück-Garantie</p>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button onclick="upgradeNow()" style="
+                                width: 100%;
+                                padding: 18px;
+                                background: linear-gradient(135deg, #D97706, #B45309);
+                                color: white;
+                                border: none;
+                                border-radius: 12px;
+                                font-size: 18px;
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+                            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(217, 119, 6, 0.5)'"
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(217, 119, 6, 0.4)'">
+                                Meinen Pitch vervollständigen →
+                            </button>
+                            
+                            <button onclick="saveAndDecideLater()" style="
+                                width: 100%;
+                                padding: 16px;
+                                background: white;
+                                color: #4B5563;
+                                border: 2px solid #E5E7EB;
+                                border-radius: 12px;
+                                font-size: 16px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.background='#F9FAFB'; this.style.borderColor='#D1D5DB'"
+                               onmouseout="this.style.background='white'; this.style.borderColor='#E5E7EB'">
+                                Fortschritt speichern & später entscheiden
+                            </button>
+                        </div>
+
+                        <!-- Social Proof -->
+                        <div style="
+                            text-align: center;
+                            margin-top: 32px;
+                            padding-top: 32px;
+                            border-top: 1px solid #E5E7EB;
+                        ">
+                            <p style="
+                                font-size: 14px;
+                                color: #9CA3AF;
+                                margin-bottom: 12px;
+                            ">Bereits genutzt von</p>
+                            <p style="
+                                font-size: 24px;
+                                font-weight: 700;
+                                color: #1F2937;
+                                margin: 0;
+                            ">2,847+ Gründern</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    `;
+            `;
         }
 
         function upgradeNow() {
@@ -2722,40 +2550,18 @@
                     };
                 }
 
-                // ✅ Build tier badge for locked phases
-                let tierBadge = '';
-                if (!hasAccess && phase.tier) {
-                    const badgeClass = phase.tier === 'core' ? 'core' : 'professional';
-                    const badgeText = phase.tier === 'core' ? 'Core' : 'Pro';
-                    tierBadge = `<span class="tier-badge ${badgeClass}">${badgeText}</span>`;
-                }
-
-                // ✅ Build lock icon
-                const lockIcon = !hasAccess ? '<span class="phase-lock-icon">🔒</span>' : '';
-
-                // ✅ Build estimated time display
-                const timeInfo = phase.estimatedTime ?
-                    `<div class="phase-estimated-time">
-                <span>⏱️</span>
-                <span>${phase.estimatedTime}</span>
-            </div>` : '';
+                const lockIcon = !hasAccess ? ' 🔒' : '';
 
                 card.innerHTML = `
-            <div class="phase-header">
-                <div class="phase-number">${isCompleted ? '✓' : phase.number}</div>
-                <div class="phase-title">
-                    ${phase.title}
-                    ${tierBadge}
-                    ${lockIcon}
-                </div>
-            </div>
-            <div class="phase-description">${phase.description}</div>
-            ${timeInfo}
-        `;
+                    <div class="phase-header">
+                        <div class="phase-number">${isCompleted ? '✓' : phase.number}</div>
+                        <div class="phase-title">${phase.title}${lockIcon}</div>
+                    </div>
+                    <div class="phase-description">${phase.description}</div>
+                `;
 
                 phasesList.appendChild(card);
             });
-
             updateProgressBar();
         }
 
@@ -2856,79 +2662,6 @@
         function loadPhaseMessages(phaseNumber) {
             console.log(`📥 Loading messages for Phase ${phaseNumber}`);
 
-            // ✅ NEW: Special handling for Phase 2 with pitch analysis
-            if (phaseNumber === 2) {
-                const pitchDraft = localStorage.getItem('userPitchDraft');
-                const analysisData = localStorage.getItem('pitchAnalysis');
-
-                if (pitchDraft && analysisData) {
-                    try {
-                        const analysis = JSON.parse(analysisData).analysis;
-
-                        // Store in global context for AI system prompt
-                        window.pitchContext = {
-                            draft: pitchDraft,
-                            score: analysis.overallScore,
-                            errors: analysis.fatalErrors,
-                            strengths: analysis.strengths || []
-                        };
-
-                        console.log('✅ Loaded pitch context for Phase 2:', window.pitchContext);
-
-                        // Check if we already have saved messages for this phase
-                        const demoState = PitchPerfect.DemoState.load();
-                        const savedMessages = demoState.workshop.messages[phaseNumber] || [];
-
-                        if (savedMessages.length > 0) {
-                            // User is returning to Phase 2 - load their conversation
-                            state.messages = savedMessages;
-                            renderMessages();
-                            console.log('✅ Rendered saved Phase 2 messages');
-                            return;
-                        }
-
-                        // Build custom initial message referencing their specific errors
-                        const errorsList = analysis.fatalErrors
-                            .map((err, i) => {
-                                let errorText = `**${i + 1}. ${err.title}**\n   ${err.impact}`;
-
-                                // Add evidence quote if available
-                                if (err.evidence) {
-                                    errorText += `\n   \n   📝 *"${err.evidence}"*`;
-                                }
-
-                                return errorText;
-                            })
-                            .join('\n\n');
-
-                        const initialMessage = `Willkommen in Phase 2! 🎯
-
-Ich habe deinen Pitch analysiert und **${analysis.fatalErrors.length} kritische Fehler** gefunden, die wir jetzt gemeinsam beheben werden.
-
-**Deine aktuellen Fehler:**
-
-${errorsList}
-
-Lass uns mit dem ersten Fehler beginnen: **${analysis.fatalErrors[0].title}**
-
-${analysis.fatalErrors[0].fix}
-
-Bist du bereit, diesen Fehler anzugehen?`;
-
-                        // Add initial message to state and display
-                        addMessage('assistant', initialMessage);
-                        console.log('✅ Added custom Phase 2 intro with specific errors');
-
-                        return; // Exit early - we've handled Phase 2 specially
-
-                    } catch (error) {
-                        console.error('Error loading pitch analysis:', error);
-                        // Fall through to default behavior
-                    }
-                }
-            }
-
-            // ✅ DEFAULT BEHAVIOR: For all other phases or if no analysis
             const demoState = PitchPerfect.DemoState.load();
             const savedMessages = demoState.workshop.messages[phaseNumber] || [];
 

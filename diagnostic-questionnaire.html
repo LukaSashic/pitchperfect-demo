@@ -612,7 +612,7 @@
             }
         }
 
-        // Finish diagnostic and generate results
+        // Finish diagnostic and redirect to pitch input
         async function finishDiagnostic() {
             // Hide questions, show loading
             document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
@@ -623,10 +623,15 @@
             // Save final answers with completion flag
             await saveFinalDiagnostic();
 
-            console.log('✅ Diagnostic marked as completed in database');
+            // ✅ ALSO save to localStorage for pitch-input page
+            localStorage.setItem('diagnosticData', JSON.stringify(answers));
 
-            // Generate AI-powered results
-            await generateResults();
+            console.log('✅ Diagnostic completed, saved to DB and localStorage');
+
+            // Small delay to ensure save completes
+            setTimeout(() => {
+                window.location.href = '/pitch-input.html';
+            }, 500);
         }
 
         // Save final diagnostic with completion flag

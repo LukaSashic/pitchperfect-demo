@@ -1,69 +1,77 @@
-// api/analyze-pitch.js - Pitch Diagnostic Analysis with Response Prefilling
+// api/analyze-pitch.js - Enhanced pitch analysis with structured errors
 import Anthropic from '@anthropic-ai/sdk';
 
-let anthropic;
-try {
-    anthropic = new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
-    });
-} catch (error) {
-    console.error('Failed to initialize Anthropic client:', error);
+const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+function buildAnalysisPrompt(pitchText, diagnosticData) {
+    const pitchType = diagnosticData?.pitch_purpose || 'investor';
+
+    return `You are an expert pitch coach analyzing a founder's pitch draft.
+
+<pitch_text>
+${pitchText}
+</pitch_text>
+
+<pitch_context>
+Purpose: ${pitchType}
+Stage: ${diagnosticData?.business_stage || 'unknown'}
+</pitch_context>
+
+<analysis_task>
+Identify 3-5 FATAL ERRORS in this pitch that would cause investors to reject it immediately.
+
+Focus on errors like:
+- Vague problem statements (no specific persona or quantified pain)
+- Missing or unclear solution
+- No market sizing or unrealistic numbers
+- Weak differentiation (sounds like everyone else)
+- No clear ask or vague funding request
+- Missing traction/validation
+- Confusing language or jargon
+
+For each error, provide:
+1. Error name (short, punchy) - IN GERMAN
+2. What's wrong (quote the problematic part) - IN GERMAN
+3. Why it's fatal (investor perspective) - IN GERMAN
+4. How to fix it (specific, actionable) - IN GERMAN
+
+**IMPORTANT: ALL output must be in German language. Error titles, descriptions, impact statements, and fixes should all be in German.**
+
+Output ONLY valid JSON in this exact format (no markdown, no code blocks):
+{
+  "overallScore": <number 0-100>,
+  "canProceedToWorkshop": <boolean>,
+  "fatalErrors": [
+    {
+      "id": "vague_problem",
+      "title": "<Kurzer Fehlername auf Deutsch>",
+      "severity": "critical|high|medium",
+      "evidence": "<Zitat aus dem Pitch auf Deutsch>",
+      "impact": "<Warum das den Pitch killt - 1 Satz auf Deutsch>",
+      "fix": "<Spezifische umsetzbare Lösung - 1-2 Sätze auf Deutsch>"
+    }
+  ],
+  "strengths": ["<Dinge die gut gemacht sind - auf Deutsch>"],
+  "nextSteps": "<Was der Nutzer zuerst fokussieren sollte - auf Deutsch>",
+  "estimatedWorkshopTime": "<z.B., 2-3 Stunden>"
+}
+</analysis_task>
+
+**REMEMBER: Respond ENTIRELY in German. This is for a German founder.**
+
+Analyze the pitch and return ONLY the JSON object.`;
 }
 
-const DIAGNOSTIC_SYSTEM_PROMPT = `Du bist ein Elite-Pitch-Diagnostik-System, das Startup-Pitches über 10 Kernelemente analysiert.
-
-**Die 10 Kernelemente:**
-1. Problem-Klarheit (0-10)
-2. Lösungs-Durchführbarkeit (0-10)
-3. Marktchance (0-10)
-4. Wettbewerbsvorteil (0-10)
-5. Geschäftsmodell (0-10)
-6. Traktions-Beweis (0-10)
-7. Team-Stärke (0-10)
-8. Narrativer Fluss (0-10)
-9. Delivery-Impact (0-10)
-10. Investor-Bereitschaft (0-10)
-
-**Bewertung:**
-- 8-10: STARK ✅
-- 5-7: WARNUNG ⚠️
-- 0-4: KRITISCH 🔴
-
-**Output-Format:**
-Gib NUR valides XML zurück, beginnend mit <diagnostic_report>. Keine Einleitung.`;
-
-// Fallback demo response
-const DEMO_RESPONSE = {
-    overallScore: 52,
-    elements: {
-        problemClarity: { score: 4, status: 'CRITICAL', feedback: 'Problem ist zu vage definiert', actionItems: ['Spezifische Persona definieren', 'Problem quantifizieren'] },
-        solutionViability: { score: 6, status: 'WARNING', feedback: 'Lösung braucht mehr Differenzierung', actionItems: ['Unique Value Proposition schärfen'] },
-        marketOpportunity: { score: 5, status: 'WARNING', feedback: 'Marktgröße benötigt Bottom-up-Berechnung', actionItems: ['TAM/SAM/SOM erstellen'] },
-        competitiveAdvantage: { score: 4, status: 'CRITICAL', feedback: 'Kein klarer Burggraben erkennbar', actionItems: ['Unfairen Vorteil identifizieren'] },
-        businessModel: { score: 3, status: 'CRITICAL', feedback: 'Unit Economics fehlen komplett', actionItems: ['CAC und LTV berechnen'] },
-        tractionEvidence: { score: 5, status: 'WARNING', feedback: 'Erste Erfolge, aber keine harten Zahlen', actionItems: ['MRR/Nutzerzahlen dokumentieren'] },
-        teamStrength: { score: 8, status: 'STRONG', feedback: 'Starkes Team mit Domain-Expertise', actionItems: [] },
-        narrativeFlow: { score: 6, status: 'WARNING', feedback: 'Story braucht stärkeren Hook', actionItems: ['Eröffnung optimieren'] },
-        deliveryImpact: { score: 5, status: 'WARNING', feedback: 'Präsentation okay, könnte kraftvoller sein', actionItems: ['Delivery üben'] },
-        investorReadiness: { score: 4, status: 'CRITICAL', feedback: 'Nicht bereit für Investor-Meetings', actionItems: ['Kritische Lücken schließen'] }
-    },
-    criticalGaps: ['Problem-Klarheit', 'Wettbewerbsvorteil', 'Geschäftsmodell', 'Investor-Bereitschaft'],
-    warningAreas: ['Lösungs-Durchführbarkeit', 'Marktchance', 'Traktions-Beweis'],
-    strengths: ['Team-Stärke'],
-    recommendedPhases: [2, 3, 4, 6, 10],
-    estimatedWorkTime: '8-10 Stunden'
-};
-
 export default async function handler(req, res) {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Credentials', true);
+    // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
     if (req.method !== 'POST') {
@@ -71,150 +79,65 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { pitchContent, pitchType = 'investor_deck', fundingStage = 'seed' } = req.body;
+        const { pitchText, diagnosticData } = req.body;
 
-        // Fallback if no API key or no pitch content
-        if (!pitchContent || !process.env.ANTHROPIC_API_KEY || !anthropic) {
-            console.log('⚠️ Using demo diagnostic response');
-            return res.status(200).json({
-                success: true,
-                report: DEMO_RESPONSE,
-                demo: true
+        if (!pitchText || pitchText.length < 50) {
+            return res.status(400).json({
+                error: 'Pitch text too short (minimum 50 characters)'
             });
         }
 
-        const userMessage = `Analysiere diesen ${pitchType}-Pitch für ein ${fundingStage}-Startup:
+        console.log('\n🔍 Analyzing pitch draft...');
 
-<pitch>
-${pitchContent.substring(0, 3000)}
-</pitch>
+        // Build analysis prompt
+        const analysisPrompt = buildAnalysisPrompt(pitchText, diagnosticData);
 
-Gib eine umfassende Diagnose-Analyse.`;
-
-        // **RESPONSE PREFILLING** - Force structured XML output
-        const prefill = '<diagnostic_report>\n<overall_score>';
-
-        const messages = [
-            {
+        // Call Claude
+        const response = await anthropic.messages.create({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 3000,
+            temperature: 0.5,
+            messages: [{
                 role: 'user',
-                content: userMessage
-            },
-            {
-                role: 'assistant',
-                content: prefill  // ← Prefill forces XML structure
-            }
-        ];
+                content: analysisPrompt
+            }]
+        });
 
-        const response = await Promise.race([
-            anthropic.messages.create({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 3000,
-                temperature: 0,
-                system: [
-                    {
-                        type: 'text',
-                        text: DIAGNOSTIC_SYSTEM_PROMPT,
-                        cache_control: { type: 'ephemeral' }
-                    }
-                ],
-                messages: messages
-            }),
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout')), 15000)
-            )
-        ]);
+        // Parse response
+        let analysis;
+        try {
+            const responseText = response.content[0].text.trim();
+            const jsonText = responseText
+                .replace(/```json\n?/g, '')
+                .replace(/```\n?/g, '')
+                .trim();
 
-        // Prepend prefill to response
-        let diagnosticXML = prefill + response.content[0].text;
-
-        // Ensure closing tag
-        if (!diagnosticXML.includes('</diagnostic_report>')) {
-            diagnosticXML += '\n</diagnostic_report>';
+            analysis = JSON.parse(jsonText);
+        } catch (parseError) {
+            console.error('❌ JSON Parse Error:', parseError);
+            console.error('Response:', response.content[0].text);
+            return res.status(500).json({
+                error: 'Failed to parse analysis',
+                details: parseError.message
+            });
         }
 
-        // Parse XML to structured JSON
-        const diagnosticReport = parseDiagnosticXML(diagnosticXML);
+        console.log(`✅ Analysis complete: ${analysis.fatalErrors.length} errors found`);
 
+        // Return analysis
         return res.status(200).json({
             success: true,
-            report: diagnosticReport,
-            rawXML: diagnosticXML,
-            usage: response.usage,
-            cached: (response.usage.cache_read_input_tokens || 0) > 0
+            analysis,
+            pitchLength: pitchText.length,
+            timestamp: new Date().toISOString()
         });
 
     } catch (error) {
-        console.error('❌ Diagnostic analysis error:', error.message);
-
-        // Fallback to demo response
-        return res.status(200).json({
-            success: true,
-            report: DEMO_RESPONSE,
-            demo: true,
-            error: error.message
+        console.error('❌ Analysis Error:', error);
+        return res.status(500).json({
+            error: 'Analysis failed',
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
-}
-
-// ============================================
-// XML PARSING HELPERS
-// ============================================
-function parseDiagnosticXML(xml) {
-    try {
-        return {
-            overallScore: parseInt(extractTag(xml, 'overall_score')) || 50,
-            elements: {
-                problemClarity: parseElement(xml, 'problem_clarity'),
-                solutionViability: parseElement(xml, 'solution_viability'),
-                marketOpportunity: parseElement(xml, 'market_opportunity'),
-                competitiveAdvantage: parseElement(xml, 'competitive_advantage'),
-                businessModel: parseElement(xml, 'business_model'),
-                tractionEvidence: parseElement(xml, 'traction_evidence'),
-                teamStrength: parseElement(xml, 'team_strength'),
-                narrativeFlow: parseElement(xml, 'narrative_flow'),
-                deliveryImpact: parseElement(xml, 'delivery_impact'),
-                investorReadiness: parseElement(xml, 'investor_readiness')
-            },
-            criticalGaps: extractList(xml, 'critical_gaps'),
-            warningAreas: extractList(xml, 'warning_areas'),
-            strengths: extractList(xml, 'strengths'),
-            recommendedPhases: extractList(xml, 'recommended_phases'),
-            estimatedWorkTime: extractTag(xml, 'estimated_work_time') || '6-8 Stunden'
-        };
-    } catch (error) {
-        console.error('XML parsing error:', error);
-        return DEMO_RESPONSE;
-    }
-}
-
-function parseElement(xml, elementName) {
-    const elementXML = extractTag(xml, elementName);
-    if (!elementXML) return null;
-
-    const score = parseInt(extractTag(elementXML, 'score')) || 5;
-    let status = 'WARNING';
-    if (score >= 8) status = 'STRONG';
-    else if (score <= 4) status = 'CRITICAL';
-
-    return {
-        score: score,
-        status: status,
-        feedback: extractTag(elementXML, 'feedback') || 'Keine Bewertung verfügbar',
-        actionItems: extractTag(elementXML, 'action_items')?.split('\n').filter(a => a.trim()) || []
-    };
-}
-
-function extractTag(text, tag) {
-    const regex = new RegExp(`<${tag}>(.*?)</${tag}>`, 's');
-    const match = text.match(regex);
-    return match ? match[1].trim() : null;
-}
-
-function extractList(xml, listTag) {
-    const listXML = extractTag(xml, listTag);
-    if (!listXML) return [];
-
-    const itemRegex = /<item>(.*?)<\/item>/gs;
-    const matches = [...listXML.matchAll(itemRegex)];
-    return matches.map(m => m[1].trim());
 }

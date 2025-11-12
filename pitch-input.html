@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch-Eingabe | PitchPerfect AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f9fafb;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .success-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+
+        .recommendation-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .recommendation-box strong {
+            display: block;
+            color: var(--text);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .path-selection {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .path-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .path-card:hover {
+            border-color: var(--primary);
+            background: #fafafa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .path-card.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .path-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .path-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .path-description {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .path-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .pitch-input-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pitch-input-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pitch-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+
+        .pitch-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .helper-text {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .button-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-secondary {
+            background: white;
+            color: var(--text);
+            border: 2px solid var(--border);
+            margin-top: 12px;
+        }
+
+        .button-secondary:hover {
+            background: var(--bg);
+            border-color: var(--text-light);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">PP</div>
+            <div class="logo-text">PitchPerfect AI</div>
+        </div>
+
+        <div class="success-badge">
+            ✓ Diagnose abgeschlossen
+        </div>
+
+        <h1>Bereit für deinen perfekten Pitch?</h1>
+        <p class="subtitle">Wähle deinen Startpunkt basierend auf deinem aktuellen Stand</p>
+
+        <div class="recommendation-box" id="recommendationBox">
+            <strong>Empfohlener Track:</strong>
+            <span id="recommendedTrack">Wird geladen...</span>
+        </div>
+
+        <!-- Path Selection -->
+        <div id="pathSelection" class="path-selection">
+            <div class="path-card" onclick="selectPath('has-draft')">
+                <div class="path-icon">✍️</div>
+                <div class="path-title">Ich habe einen Pitch-Entwurf</div>
+                <div class="path-description">
+                    Du hast bereits einen Pitch (Script, Bullets, Deck-Notes) und möchtest ihn optimieren.
+                    Wir zeigen dir sofort, was verbessert werden muss.
+                </div>
+                <span class="path-badge">Schnellster Weg</span>
+            </div>
+
+            <div class="path-card" onclick="selectPath('no-draft')">
+                <div class="path-icon">🚀</div>
+                <div class="path-title">Hilf mir, einen zu erstellen</div>
+                <div class="path-description">
+                    Du startest von Grund auf. Wir führen dich durch strukturierte Fragen
+                    und erstellen gemeinsam deinen ersten Pitch-Entwurf.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pitch Input Section (shown when "has-draft" selected) -->
+        <div id="pitchInputSection" class="pitch-input-section">
+            <h2 style="font-size: 24px; margin-bottom: 16px;">Füge deinen Pitch-Entwurf ein</h2>
+            <p class="helper-text">
+                Das Format spielt keine Rolle - füge dein Script, Bullet Points, Deck-Notes
+                oder sogar nur Gedanken ein. Wir analysieren es und zeigen dir, was optimiert werden muss.
+            </p>
+
+            <textarea id="pitchDraft" class="pitch-textarea" placeholder="Beispiel:
+
+Wir sind [Firmenname] und lösen [Problem] für [Zielgruppe].
+
+Aktuell nutzen sie [Alternative], was [Kosten/Schmerz] verursacht.
+
+Unsere Lösung ist [Beschreibung]...
+
+Wir bitten um [Betrag] für [Verwendung]..."></textarea>
+
+            <button class="button button-primary" onclick="analyzePitch()" id="analyzeBtn">
+                Meinen Pitch analysieren →
+            </button>
+            <button class="button button-secondary" onclick="backToSelection()">
+                ← Zurück zur Auswahl
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <p style="color: var(--text-light);">Analysiere deinen Pitch...</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedPath = null;
+        let diagnosticData = null;
+
+        // Load diagnostic data
+        window.addEventListener('DOMContentLoaded', () => {
+            const stored = localStorage.getItem('diagnosticData');
+            if (!stored) {
+                alert('Keine Diagnose-Daten gefunden. Bitte starte die Diagnose erneut.');
+                window.location.href = '/diagnostic-questionnaire.html';
+                return;
+            }
+
+            diagnosticData = JSON.parse(stored);
+
+            // Show recommendation based on diagnostic
+            const trackName = getTrackName(diagnosticData);
+            document.getElementById('recommendedTrack').textContent = trackName;
+        });
+
+        function getTrackName(data) {
+            const purpose = data.pitch_purpose || '';
+            if (purpose.includes('investor')) return '10-Minuten Investor Pitch';
+            if (purpose.includes('speaking')) return 'BNI 60-Sekunden Pitch';
+            if (purpose.includes('sales')) return 'Kunden-Akquise Pitch';
+            if (purpose.includes('competition')) return 'Pitch-Competition Präsentation';
+            return 'Standard Investor Pitch';
+        }
+
+        function selectPath(path) {
+            selectedPath = path;
+
+            if (path === 'has-draft') {
+                // Show pitch input section
+                document.getElementById('pathSelection').style.display = 'none';
+                document.getElementById('pitchInputSection').classList.add('active');
+            } else if (path === 'no-draft') {
+                // Go to pitch builder
+                localStorage.setItem('builderFlow', 'true');
+                window.location.href = '/pitch-builder.html';
+            }
+        }
+
+        function backToSelection() {
+            document.getElementById('pathSelection').style.display = 'grid';
+            document.getElementById('pitchInputSection').classList.remove('active');
+            selectedPath = null;
+        }
+
+        async function analyzePitch() {
+            const pitchDraft = document.getElementById('pitchDraft').value.trim();
+
+            if (!pitchDraft || pitchDraft.length < 50) {
+                alert('Bitte füge einen Pitch-Entwurf mit mindestens 50 Zeichen ein.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('pitchInputSection').style.display = 'none';
+            document.getElementById('loadingState').classList.add('active');
+
+            try {
+                // Call API to analyze pitch
+                const response = await fetch('/api/analyze-pitch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pitchText: pitchDraft,
+                        diagnosticData: diagnosticData
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Analysis failed');
+                }
+
+                const result = await response.json();
+
+                // Store pitch and analysis
+                localStorage.setItem('userPitchDraft', pitchDraft);
+                localStorage.setItem('pitchAnalysis', JSON.stringify(result));
+
+                // Go to results page
+                window.location.href = '/diagnostic-results.html';
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                alert('Fehler bei der Analyse. Bitte versuche es erneut.');
+                document.getElementById('loadingState').classList.remove('active');
+                document.getElementById('pitchInputSection').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch-Analyse | PitchPerfect AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f9fafb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 32px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fef3c7, #fcd34d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text);
+            border: 8px solid #fffbeb;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .errors-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .error-card {
+            background: white;
+            border-left: 4px solid var(--danger);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .error-icon {
+            width: 40px;
+            height: 40px;
+            background: #fee2e2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .error-content {
+            flex: 1;
+        }
+
+        .error-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 4px;
+        }
+
+        .error-impact {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .error-evidence {
+            background: var(--bg);
+            border-left: 3px solid var(--border);
+            padding: 12px;
+            margin-bottom: 12px;
+            font-style: italic;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .error-fix {
+            background: #ecfdf5;
+            border-left: 3px solid var(--success);
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .error-fix strong {
+            color: var(--success);
+        }
+
+        .strengths-box {
+            background: white;
+            border-left: 4px solid var(--success);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .strength-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            font-size: 16px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            margin-top: 12px;
+        }
+
+        .button-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .time-estimate {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="score-circle" id="scoreCircle">--</div>
+            <h1>Deine Pitch-Analyse</h1>
+            <p class="subtitle" id="subtitle">Wir haben deinen Pitch analysiert</p>
+        </div>
+
+        <div class="errors-section">
+            <h2 class="section-title">❌ Kritische Fehler</h2>
+            <div id="errorsList"></div>
+        </div>
+
+        <div class="strengths-box" id="strengthsBox">
+            <h3 style="color: var(--success); margin-bottom: 16px; font-size: 18px;">✓ Was bereits gut funktioniert</h3>
+            <div id="strengthsList"></div>
+        </div>
+
+        <div class="cta-section">
+            <div class="cta-title">Bereit, diese Fehler zu beheben?</div>
+            <div class="cta-subtitle">
+                Unser KI-Workshop führt dich Schritt für Schritt durch die Optimierung.
+                <span id="nextSteps"></span>
+            </div>
+            <a href="/workshop-interface.html" class="button button-primary">
+                Jetzt Fehler beheben - KOSTENLOS →
+            </a>
+            <div class="time-estimate">
+                ⏱️ Geschätzte Zeit: <span id="timeEstimate">2-3 Stunden</span>
+            </div>
+            <br>
+            <a href="/pricing.html" class="button button-secondary">
+                Oder direkt zum Premium-Workshop (€29/Monat)
+            </a>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const analysisData = localStorage.getItem('pitchAnalysis');
+
+            if (!analysisData) {
+                alert('Keine Analyse-Daten gefunden.');
+                window.location.href = '/pitch-input.html';
+                return;
+            }
+
+            const data = JSON.parse(analysisData);
+            const analysis = data.analysis;
+
+            // Display score
+            document.getElementById('scoreCircle').textContent = analysis.overallScore || '--';
+            document.getElementById('subtitle').textContent =
+                `Aktueller Pitch-Score: ${analysis.overallScore}/100`;
+
+            // Display errors
+            const errorsList = document.getElementById('errorsList');
+            if (analysis.fatalErrors && analysis.fatalErrors.length > 0) {
+                analysis.fatalErrors.forEach(error => {
+                    const card = document.createElement('div');
+                    card.className = 'error-card';
+                    card.innerHTML = `
+                        <div class="error-header">
+                            <div class="error-icon">❌</div>
+                            <div class="error-content">
+                                <div class="error-title">${error.title}</div>
+                                <div class="error-impact">${error.impact}</div>
+                            </div>
+                        </div>
+                        ${error.evidence ? `
+                            <div class="error-evidence">
+                                "${error.evidence}"
+                            </div>
+                        ` : ''}
+                        <div class="error-fix">
+                            <strong>So behebst du es:</strong> ${error.fix}
+                        </div>
+                    `;
+                    errorsList.appendChild(card);
+                });
+            }
+
+            // Display strengths
+            const strengthsList = document.getElementById('strengthsList');
+            if (analysis.strengths && analysis.strengths.length > 0) {
+                analysis.strengths.forEach(strength => {
+                    const item = document.createElement('div');
+                    item.className = 'strength-item';
+                    item.innerHTML = `
+                        <span style="color: var(--success); font-size: 20px;">✓</span>
+                        <span>${strength}</span>
+                    `;
+                    strengthsList.appendChild(item);
+                });
+            } else {
+                document.getElementById('strengthsBox').style.display = 'none';
+            }
+
+            // Display next steps
+            if (analysis.nextSteps) {
+                document.getElementById('nextSteps').textContent = analysis.nextSteps;
+            }
+
+            // Display time estimate
+            if (analysis.estimatedWorkshopTime) {
+                document.getElementById('timeEstimate').textContent = analysis.estimatedWorkshopTime;
+            }
+
+            // Store that user has completed analysis (for workshop context)
+            localStorage.setItem('hasCompletedAnalysis', 'true');
+        });
+    </script>
+</body>
+
+</html>
