@@ -250,21 +250,6 @@
             background: rgba(102, 126, 234, 0.4);
         }
 
-        .logo {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .logo:hover {
-            transform: translateX(2px);
-        }
-
         .phase-header {
             display: flex;
             align-items: center;
@@ -488,17 +473,6 @@
             background: linear-gradient(135deg, #f8f7ff 0%, #e8e7ff 100%);
             color: var(--primary);
             border: 2px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .message.assistant .message-avatar {
-            background: var(--gradient-primary);
-            /* Purple gradient */
-            color: white;
-        }
-
-        .message.user .message-avatar {
-            background: var(--bg-light);
-            color: var(--text-dark);
         }
 
         .message-content {
@@ -948,10 +922,6 @@
             background: #B91C1C;
         }
 
-        .modal-button.danger:hover {
-            background: #B91C1C;
-        }
-
         /* ========================================
            CONFETTI CELEBRATION
            ======================================== */
@@ -1298,6 +1268,29 @@
         }
 
         /* ========================================
+           CRITICAL: Prevent display conflicts
+           ======================================== */
+
+        .chat-messages[style*="display: flex"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .chat-input-container[style*="display: block"] {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .welcome-screen[style*="display: none"] {
+            display: none !important;
+        }
+
+        .welcome-screen[style*="display: flex"] {
+            display: flex !important;
+        }
+
+        /* ========================================
    MOBILE RESPONSIVE
    ======================================== */
 
@@ -1588,7 +1581,6 @@
             </div>
         </div>
     </div>
-    </div>
 
     <!-- Phase Completion Modal -->
     <div class="modal-overlay" id="modalOverlay">
@@ -1710,6 +1702,7 @@
                 unlocked: false
             }
         ];
+
         // ========================================
         // FEATURE FLAGS & TIER CONFIGURATION
         // ========================================
@@ -1766,6 +1759,7 @@
             const total = PHASES.length;
             return Math.round((completed / total) * 100);
         }
+
         let state = {
             currentPhase: null,
             messages: [],
@@ -2128,7 +2122,6 @@
             }
         }
 
-
         // ========================================
         // SMART UPGRADE PROMPT
         // ========================================
@@ -2406,9 +2399,8 @@
             state.diagnosticData = diagnosticData;
         }
 
-
         // ========================================
-        // WORKSHOP INITIALIZATION
+        // WORKSHOP INITIALIZATION (✅ FIXED)
         // ========================================
 
         async function initializeWorkshop() {
@@ -2435,24 +2427,7 @@
 
             console.log('✅ Diagnostic completed - workshop unlocked');
 
-            const welcomeScreen = document.getElementById('welcomeScreen');
-            const chatMessages = document.getElementById('chatMessages');
-            const chatInput = document.getElementById('chatInputContainer');
-
-            if (welcomeScreen && chatMessages && chatInput) {
-                welcomeScreen.style.display = 'flex';
-                chatMessages.style.display = 'none';
-                chatInput.style.display = 'none';
-                console.log('✅ Welcome screen displayed');
-            } else {
-                console.error('❌ UI elements not found:', {
-                    welcomeScreen: !!welcomeScreen,
-                    chatMessages: !!chatMessages,
-                    chatInput: !!chatInput
-                });
-            }
-
-            // Continue with workshop initialization
+            // Load saved state
             const demoState = PitchPerfect?.DemoState?.load() || { workshop: {}, diagnostic: {} };
 
             if (demoState.workshop.currentPhase) {
@@ -2463,9 +2438,40 @@
                 state.phaseCompletion = demoState.workshop.phaseCompletion;
             }
 
+            // Render sidebar phases
             renderPhases();
-            //loadSavedMessages();
 
+            // ✅ FIX 1: Check if we need to restore a phase or show welcome
+            if (state.currentPhase) {
+                console.log(`🔄 Restoring Phase ${state.currentPhase}`);
+
+                // Restore chat interface
+                document.getElementById('welcomeScreen').style.display = 'none';
+                document.getElementById('chatMessages').style.display = 'flex';
+                document.getElementById('chatInputContainer').style.display = 'block';
+                document.getElementById('restartPhaseBtn').classList.add('visible');
+
+                // Update header
+                const phase = PHASES.find(p => p.number === state.currentPhase);
+                if (phase) {
+                    document.querySelector('.chat-title').textContent = `Phase ${state.currentPhase}: ${phase.title}`;
+                    document.querySelector('.chat-subtitle').textContent = phase.description;
+                }
+
+                // Load messages for this phase
+                loadPhaseMessages(state.currentPhase);
+
+            } else {
+                console.log('📺 Showing welcome screen');
+
+                // Show welcome screen for new users
+                document.getElementById('welcomeScreen').style.display = 'flex';
+                document.getElementById('chatMessages').style.display = 'none';
+                document.getElementById('chatInputContainer').style.display = 'none';
+                document.getElementById('restartPhaseBtn').classList.remove('visible');
+            }
+
+            // Mobile menu toggle
             if (window.innerWidth <= 768) {
                 document.getElementById('menuToggle').style.display = 'flex';
             }
@@ -2473,26 +2479,18 @@
             // Initialize metrics system
             MetricsSystem.init();
 
-            // Track workshop session started
+            // Track analytics
             trackEvent('workshop_session_started', {
                 completedPhases: getCompletedPhasesCount(),
-                progress: calculateProgress()
+                progress: calculateProgress(),
+                hasCurrentPhase: !!state.currentPhase
             });
 
-            console.log('✅ Workshop fully initialized');
-            console.log('📺 Welcome screen should be visible');
-
-            // ✅ FORCE WELCOME SCREEN TO STAY VISIBLE
-            setTimeout(() => {
-                const welcomeScreen = document.getElementById('welcomeScreen');
-                if (welcomeScreen && !state.currentPhase) {
-                    welcomeScreen.style.display = 'flex';
-                    console.log('🎯 Welcome screen re-enforced');
-                }
-            }, 100);
+            console.log('✅ Workshop fully initialized', {
+                currentPhase: state.currentPhase,
+                completedPhases: getCompletedPhasesCount()
+            });
         }
-
-
 
         // ========================================
         // ANALYTICS
@@ -2599,6 +2597,8 @@
         }
 
         function selectPhase(phaseNumber) {
+            console.log(`🎯 selectPhase called with phase ${phaseNumber}`);
+
             // Check if user has access to this phase
             const userTier = userProfile?.tier || 'free';
 
@@ -2608,46 +2608,78 @@
                 return;
             }
 
+            console.log(`✅ Access granted to Phase ${phaseNumber}`);
+
             state.currentPhase = phaseNumber;
             state.messages = [];
 
             const phase = PHASES.find(p => p.number === phaseNumber);
 
-            document.getElementById('welcomeScreen').style.display = 'none';
-            document.getElementById('chatMessages').style.display = 'flex';
-            document.getElementById('chatInputContainer').style.display = 'block';
+            console.log('🎨 Updating UI elements...');
 
-            // Show restart button
-            document.getElementById('restartPhaseBtn').classList.add('visible');
+            // ✅ CRITICAL: Set display explicitly and verify
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInputContainer');
+            const restartBtn = document.getElementById('restartPhaseBtn');
 
+            welcomeScreen.style.display = 'none';
+            chatMessages.style.display = 'flex';
+            chatInput.style.display = 'block';
+            restartBtn.classList.add('visible');
+
+            console.log('UI State after update:', {
+                welcome: welcomeScreen.style.display,
+                chat: chatMessages.style.display,
+                input: chatInput.style.display
+            });
+
+            // Update header
             document.querySelector('.chat-title').textContent = `Phase ${phaseNumber}: ${phase.title}`;
             document.querySelector('.chat-subtitle').textContent = phase.description;
 
+            // Render and load
             renderPhases();
             loadPhaseMessages(phaseNumber);
 
-            // Track phase started
+            // Track
             trackEvent('phase_started', {
                 phase: phaseNumber,
                 userTier: userTier
             });
 
+            // Save state
             const demoState = PitchPerfect.DemoState.load();
             demoState.workshop.currentPhase = phaseNumber;
             PitchPerfect.DemoState.save(demoState);
+
+            console.log('✅ Phase selection complete');
         }
 
         function loadPhaseMessages(phaseNumber) {
+            console.log(`📥 Loading messages for Phase ${phaseNumber}`);
+
             const demoState = PitchPerfect.DemoState.load();
             const savedMessages = demoState.workshop.messages[phaseNumber] || [];
+
+            console.log(`Found ${savedMessages.length} saved messages`);
 
             if (savedMessages.length > 0) {
                 state.messages = savedMessages;
                 renderMessages();
+                console.log('✅ Rendered saved messages');
             } else {
                 const welcomeMessage = getPhaseWelcomeMessage(phaseNumber);
                 addMessage('assistant', welcomeMessage);
+                console.log('✅ Added welcome message');
             }
+
+            // ✅ VERIFY: Check if messages are actually visible
+            setTimeout(() => {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageCount = chatMessages.querySelectorAll('.message').length;
+                console.log(`🔍 Verification: ${messageCount} messages in DOM, display: ${chatMessages.style.display}`);
+            }, 100);
         }
 
         function getPhaseWelcomeMessage(phaseNumber) {
@@ -2894,13 +2926,6 @@
             }
             demoState.workshop.messages[state.currentPhase] = state.messages;
             PitchPerfect.DemoState.save(demoState);
-        }
-
-        function loadSavedMessages() {
-            const demoState = PitchPerfect.DemoState.load();
-            if (demoState.workshop.messages) {
-                // Messages are loaded per phase in loadPhaseMessages
-            }
         }
 
         function scrollToBottom() {
