@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PitchPerfect AI - Finde die 7 fatalen Fehler in deinem Pitch in 5 Minuten</title>
-    <meta name="description" content="KI-gestützte Pitch-Diagnose, die die 7 kritischen Lücken in deiner Präsentation findet, bevor du dich blamierst. Genutzt von Gründern, die Millionen einsammeln und Speakern, die Keynotes landen.">
-    
+    <meta name="description"
+        content="KI-gestützte Pitch-Diagnose, die die 7 kritischen Lücken in deiner Präsentation findet, bevor du dich blamierst. Genutzt von Gründern, die Millionen einsammeln und Speakern, die Keynotes landen.">
+
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <script src="pitchperfect-connector.js"></script>
-    
+
     <style>
         /* CSS Reset & Base Styles */
         * {
@@ -18,20 +20,26 @@
         }
 
         :root {
-            --primary: #D97706;
-            --primary-dark: #B45309;
-            --primary-light: #FCD34D;
+            /* PRIMARY: Purple gradient (matches workshop/diagnostic) */
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --primary-light: #818cf8;
+
+            /* ACCENT: Orange for special highlights */
+            --accent: #D97706;
+            --accent-dark: #B45309;
+
             --secondary: #065F46;
             --secondary-dark: #064E3B;
             --text-dark: #1F2937;
             --text-medium: #4B5563;
             --text-light: #6B7280;
-            --bg-cream: #FFFBEB;
+            --bg-cream: #F8F7FF;
             --bg-light: #F9FAFB;
             --white: #FFFFFF;
             --error: #DC2626;
             --success: #059669;
-            
+
             --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
@@ -39,7 +47,7 @@
             --spacing-xl: 3rem;
             --spacing-2xl: 4rem;
             --spacing-3xl: 6rem;
-            
+
             --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             --line-height-tight: 1.2;
             --line-height-normal: 1.5;
@@ -88,6 +96,12 @@
             align-items: center;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
@@ -130,12 +144,12 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--white);
-            box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
@@ -170,7 +184,7 @@
             right: 0;
             width: 40%;
             height: 100%;
-            background: linear-gradient(135deg, transparent, rgba(217, 119, 6, 0.05));
+            background: linear-gradient(135deg, transparent, rgba(102, 126, 234, 0.05));
             pointer-events: none;
         }
 
@@ -415,9 +429,20 @@
             flex-shrink: 0;
         }
 
-        .status-critical { background: #FEE2E2; color: var(--error); }
-        .status-warning { background: #FEF3C7; color: #D97706; }
-        .status-good { background: #D1FAE5; color: var(--success); }
+        .status-critical {
+            background: #FEE2E2;
+            color: var(--error);
+        }
+
+        .status-warning {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .status-good {
+            background: #D1FAE5;
+            color: var(--success);
+        }
 
         /* Benefits Section */
         .benefits {
@@ -499,7 +524,7 @@
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0 auto var(--spacing-md);
-            box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
         }
 
         .step h3 {
@@ -625,7 +650,7 @@
 
         .pricing-card.featured {
             border-color: var(--primary);
-            box-shadow: 0 20px 25px -5px rgba(217, 119, 6, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(102, 126, 234, 0.2);
         }
 
         .pricing-badge {
@@ -776,6 +801,49 @@
             text-decoration: underline;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Animations */
         .fade-in {
             opacity: 0;
@@ -818,29 +886,61 @@
                 grid-template-columns: 1fr;
             }
 
-            .header-content .btn {
-                padding: 0.625rem 1.25rem;
+            .header-actions {
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+
+            .header-actions .btn {
+                padding: 0.625rem 1rem;
                 font-size: 0.875rem;
+            }
+
+            .header-actions .btn-secondary {
+                padding: 0.625rem 1rem;
             }
         }
 
-        .text-center { text-align: center; }
-        .mt-1 { margin-top: var(--spacing-sm); }
-        .mt-2 { margin-top: var(--spacing-md); }
-        .mb-1 { margin-bottom: var(--spacing-sm); }
-        .mb-2 { margin-bottom: var(--spacing-md); }
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 {
+            margin-top: var(--spacing-sm);
+        }
+
+        .mt-2 {
+            margin-top: var(--spacing-md);
+        }
+
+        .mb-1 {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .mb-2 {
+            margin-bottom: var(--spacing-md);
+        }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header id="header">
         <div class="container">
             <div class="header-content">
-                <a href="#" class="logo">
+                <a href="index.html" class="logo">
                     <div class="logo-icon">PP</div>
                     PitchPerfect AI
                 </a>
-                <a href="diagnostic-questionnaire.html" class="btn btn-primary">Kostenlose Diagnose</a>
+                <div class="header-actions">
+                    <a href="#" onclick="showLoginModal(event)" class="btn btn-secondary"
+                        style="padding: 0.75rem 1.5rem;">
+                        Anmelden
+                    </a>
+                    <a href="diagnostic-questionnaire.html" class="btn btn-primary">
+                        Kostenlos starten →
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -853,13 +953,15 @@
                     <span>⚡</span>
                     <span>Genutzt von 2.347+ Gründern und Speakern</span>
                 </div>
-                
+
                 <h1>
                     Finde die <span class="highlight">7 fatalen Fehler</span>, die deinen Pitch killen - in 5 Minuten
                 </h1>
-                
+
                 <p class="hero-subheading">
-                    KI-gestützte Pitch-Diagnose, die die kritischen Lücken in deinem Investoren-Deck oder deiner Präsentation findet, <strong>bevor</strong> du dich blamierst. Keine Templates. Kein Raten. Nur brutale Ehrlichkeit und Expertenrat.
+                    KI-gestützte Pitch-Diagnose, die die kritischen Lücken in deinem Investoren-Deck oder deiner
+                    Präsentation findet, <strong>bevor</strong> du dich blamierst. Keine Templates. Kein Raten. Nur
+                    brutale Ehrlichkeit und Expertenrat.
                 </p>
 
                 <div class="hero-cta-group">
@@ -901,37 +1003,43 @@
                 <div class="problem-card">
                     <div class="problem-icon">❌</div>
                     <h3>Vage Problemstellungen</h3>
-                    <p>"Menschen brauchen bessere Produktivität" — Investoren checken ihre Handys. Welches Problem <strong>genau</strong>? Wer hat es? Wie viel kostet es sie?</p>
+                    <p>"Menschen brauchen bessere Produktivität" — Investoren checken ihre Handys. Welches Problem
+                        <strong>genau</strong>? Wer hat es? Wie viel kostet es sie?</p>
                 </div>
 
                 <div class="problem-card">
                     <div class="problem-icon">❌</div>
                     <h3>Keine Beweise, dass es funktioniert</h3>
-                    <p>"Wir werden den Markt disruptieren" — Mit welchen Beweisen? Wo sind deine Kunden? Deine Metriken? Deine Fallstudien? Keine Beweise = keine Glaubwürdigkeit.</p>
+                    <p>"Wir werden den Markt disruptieren" — Mit welchen Beweisen? Wo sind deine Kunden? Deine Metriken?
+                        Deine Fallstudien? Keine Beweise = keine Glaubwürdigkeit.</p>
                 </div>
 
                 <div class="problem-card">
                     <div class="problem-icon">❌</div>
                     <h3>Schwache Finanzen</h3>
-                    <p>"Wir werden bald profitabel sein" — Zeig mir die Zahlen. LTV:CAC Verhältnis? Unit Economics? Burn Rate? Vage Zahlen = sofortige Ablehnung.</p>
+                    <p>"Wir werden bald profitabel sein" — Zeig mir die Zahlen. LTV:CAC Verhältnis? Unit Economics? Burn
+                        Rate? Vage Zahlen = sofortige Ablehnung.</p>
                 </div>
 
                 <div class="problem-card">
                     <div class="problem-icon">❌</div>
                     <h3>Kann grundlegende Fragen nicht beantworten</h3>
-                    <p>"Äh, da müsste ich nochmal nachschauen..." — Der Todeskuss. Wenn du dein Business nicht in- und auswendig kennst, warum sollte jemand investieren?</p>
+                    <p>"Äh, da müsste ich nochmal nachschauen..." — Der Todeskuss. Wenn du dein Business nicht in- und
+                        auswendig kennst, warum sollte jemand investieren?</p>
                 </div>
 
                 <div class="problem-card">
                     <div class="problem-icon">❌</div>
                     <h3>Verwirrende Lösung</h3>
-                    <p>"Es ist wie Uber für Hunde meets Blockchain KI" — Wenn deine Oma es nicht in 30 Sekunden versteht, werden Investoren es nicht finanzieren.</p>
+                    <p>"Es ist wie Uber für Hunde meets Blockchain KI" — Wenn deine Oma es nicht in 30 Sekunden
+                        versteht, werden Investoren es nicht finanzieren.</p>
                 </div>
 
                 <div class="problem-card">
                     <div class="problem-icon">❌</div>
                     <h3>Kein Wettbewerbsvorteil</h3>
-                    <p>"Wir haben keine Konkurrenz" — Falsch. Jeder hat Konkurrenz, selbst wenn es Excel ist. Was ist dein unfairer Vorteil, der nicht kopiert werden kann?</p>
+                    <p>"Wir haben keine Konkurrenz" — Falsch. Jeder hat Konkurrenz, selbst wenn es Excel ist. Was ist
+                        dein unfairer Vorteil, der nicht kopiert werden kann?</p>
                 </div>
             </div>
         </div>
@@ -949,33 +1057,40 @@
                 <div class="solution-text">
                     <h3>Wie die meisten Pitch-Coaches versagen</h3>
                     <p>
-                        Sie machen deine Slides hübscher. Sie sagen dir "sei selbstbewusster". Sie verlangen €5.000 für generische Ratschläge.
+                        Sie machen deine Slides hübscher. Sie sagen dir "sei selbstbewusster". Sie verlangen €5.000 für
+                        generische Ratschläge.
                     </p>
                     <p>
-                        Aber sie stellen nie die harten Fragen, die VCs, Investoren und Auswahlkomitees <strong>tatsächlich interessieren</strong>.
+                        Aber sie stellen nie die harten Fragen, die VCs, Investoren und Auswahlkomitees
+                        <strong>tatsächlich interessieren</strong>.
                     </p>
 
                     <h3 style="margin-top: 2rem;">Was PitchPerfect AI anders macht</h3>
                     <ul class="solution-features">
                         <li>
                             <span class="check">✓</span>
-                            <span><strong>Chirurgische Diagnose</strong> in 5 Minuten — findet die exakten Lücken, die deinen Pitch killen</span>
+                            <span><strong>Chirurgische Diagnose</strong> in 5 Minuten — findet die exakten Lücken, die
+                                deinen Pitch killen</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span><strong>Experten-Befragung</strong> über 12 Phasen — Problem, Lösung, Markt, Team, Finanzen</span>
+                            <span><strong>Experten-Befragung</strong> über 12 Phasen — Problem, Lösung, Markt, Team,
+                                Finanzen</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span><strong>Forschungsbasiert</strong> — Frameworks aus 10.000+ erfolgreichen Pitches</span>
+                            <span><strong>Forschungsbasiert</strong> — Frameworks aus 10.000+ erfolgreichen
+                                Pitches</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span><strong>Investoren Q&A Vorbereitung</strong> — weiß genau, wie man die 10 härtesten Fragen beantwortet</span>
+                            <span><strong>Investoren Q&A Vorbereitung</strong> — weiß genau, wie man die 10 härtesten
+                                Fragen beantwortet</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span><strong>Export-fertiger Pitch</strong> — geh mit investoren-tauglicher Dokumentation raus</span>
+                            <span><strong>Export-fertiger Pitch</strong> — geh mit investoren-tauglicher Dokumentation
+                                raus</span>
                         </li>
                     </ul>
                 </div>
@@ -983,7 +1098,7 @@
                 <div class="solution-visual">
                     <div class="diagnostic-preview">
                         <h4 style="margin-bottom: 1rem; font-size: 1.125rem;">Deine Pitch-Diagnose Vorschau</h4>
-                        
+
                         <div class="diagnostic-item">
                             <div class="status-icon status-critical">🔴</div>
                             <div>
@@ -1049,19 +1164,22 @@
                 <div class="benefit-card">
                     <div class="benefit-icon">🎯</div>
                     <h3>Sofortige Fehler-Erkennung</h3>
-                    <p>Beantworte 10 Fragen und erhalte eine umfassende Diagnose, die genau zeigt, was in deinem Pitch kaputt ist. 🔴 Kritische Probleme, 🟡 braucht Arbeit, 🟢 starke Bereiche.</p>
+                    <p>Beantworte 10 Fragen und erhalte eine umfassende Diagnose, die genau zeigt, was in deinem Pitch
+                        kaputt ist. 🔴 Kritische Probleme, 🟡 braucht Arbeit, 🟢 starke Bereiche.</p>
                 </div>
 
                 <div class="benefit-card">
                     <div class="benefit-icon">🧠</div>
                     <h3>12-Phasen Experten-Verfeinerung</h3>
-                    <p>Systematisches Hinterfragen zu Problem, Lösung, Markt, Traktion, Team, Finanzen und Wettbewerbspositionierung. Wie einen €5k Coach zu einem Bruchteil der Kosten.</p>
+                    <p>Systematisches Hinterfragen zu Problem, Lösung, Markt, Traktion, Team, Finanzen und
+                        Wettbewerbspositionierung. Wie einen €5k Coach zu einem Bruchteil der Kosten.</p>
                 </div>
 
                 <div class="benefit-card">
                     <div class="benefit-icon">📄</div>
                     <h3>Investoren-fertiger Export</h3>
-                    <p>Geh mit polierter Pitch-Dokumentation, Q&A-Vorbereitungsleitfaden und Talking Points raus, die du sofort in Meetings, Präsentationen oder Demo Days nutzen kannst.</p>
+                    <p>Geh mit polierter Pitch-Dokumentation, Q&A-Vorbereitungsleitfaden und Talking Points raus, die du
+                        sofort in Meetings, Präsentationen oder Demo Days nutzen kannst.</p>
                 </div>
             </div>
         </div>
@@ -1086,21 +1204,24 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <h3>Erhalte KI-Diagnose</h3>
-                    <p>Unsere KI analysiert deine Antworten und identifiziert die 7 fatalen Fehler mit Schweregradscores und Empfehlungen.</p>
+                    <p>Unsere KI analysiert deine Antworten und identifiziert die 7 fatalen Fehler mit Schweregradscores
+                        und Empfehlungen.</p>
                     <span class="step-time">Sofort</span>
                 </div>
 
                 <div class="step">
                     <div class="step-number">3</div>
                     <h3>Schließe kritische Lücken</h3>
-                    <p>Arbeite durch unseren 12-Phasen-Verfeinerungsprozess. Jede Phase befragt und stärkt deinen Pitch systematisch.</p>
-                    <span class="step-time">€49 freischalten</span>
+                    <p>Arbeite durch unseren 12-Phasen-Verfeinerungsprozess. Jede Phase befragt und stärkt deinen Pitch
+                        systematisch.</p>
+                    <span class="step-time">€29/Monat freischalten</span>
                 </div>
 
                 <div class="step">
                     <div class="step-number">4</div>
                     <h3>Exportieren & Präsentieren</h3>
-                    <p>Lade deine investoren-fertige Pitch-Dokumentation, Q&A-Vorbereitung und Talking Points herunter. Du bist bereit zu gewinnen.</p>
+                    <p>Lade deine investoren-fertige Pitch-Dokumentation, Q&A-Vorbereitung und Talking Points herunter.
+                        Du bist bereit zu gewinnen.</p>
                     <span class="step-time">Fertig ✓</span>
                 </div>
             </div>
@@ -1118,7 +1239,8 @@
             <div class="testimonial-grid fade-in">
                 <div class="testimonial">
                     <p class="testimonial-quote">
-                        "Ich dachte, mein Pitch wäre solide. PitchPerfect fand 6 kritische Lücken, von denen ich nicht mal wusste. In 2 Stunden behoben. 3 Wochen später unsere Seed-Runde eingesammelt."
+                        "Ich dachte, mein Pitch wäre solide. PitchPerfect fand 6 kritische Lücken, von denen ich nicht
+                        mal wusste. In 2 Stunden behoben. 3 Wochen später unsere Seed-Runde eingesammelt."
                     </p>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">SJ</div>
@@ -1132,7 +1254,8 @@
 
                 <div class="testimonial">
                     <p class="testimonial-quote">
-                        "Ich habe bei 20+ VCs gepitcht und immer gehört 'wir passen'. PitchPerfect zeigte mir, dass meine Problemstellung Müll war und meine Finanzen nicht aufgingen. Kompletter Game Changer."
+                        "Ich habe bei 20+ VCs gepitcht und immer gehört 'wir passen'. PitchPerfect zeigte mir, dass
+                        meine Problemstellung Müll war und meine Finanzen nicht aufgingen. Kompletter Game Changer."
                     </p>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">MC</div>
@@ -1146,7 +1269,8 @@
 
                 <div class="testimonial">
                     <p class="testimonial-quote">
-                        "Als Keynote-Speaker muss ich jeden Pitch nageln. Dieses Tool fand Lücken in meiner Erzählung, die ich nie erwischt hätte. Jetzt buche ich 2x mehr Speaking-Gigs."
+                        "Als Keynote-Speaker muss ich jeden Pitch nageln. Dieses Tool fand Lücken in meiner Erzählung,
+                        die ich nie erwischt hätte. Jetzt buche ich 2x mehr Speaking-Gigs."
                     </p>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">RP</div>
@@ -1174,36 +1298,38 @@
                     <h3>Kostenlose Diagnose</h3>
                     <div class="price">€0</div>
                     <p class="price-description">Finde heraus, was kaputt ist</p>
-                    
+
                     <ul class="pricing-features">
                         <li><span class="check">✓</span> <span>Beantworte 10 Fragen über deinen Pitch</span></li>
                         <li><span class="check">✓</span> <span>Erhalte sofortige KI-Diagnose</span></li>
-                        <li><span class="check">✓</span> <span>Sieh deine 7 fatalen Fehler mit Schweregradscores</span></li>
+                        <li><span class="check">✓</span> <span>Sieh deine 7 fatalen Fehler mit Schweregradscores</span>
+                        </li>
                         <li><span class="check">✓</span> <span>Personalisierte Verbesserungs-Roadmap</span></li>
                         <li><span class="check">✓</span> <span>Keine Kreditkarte erforderlich</span></li>
                     </ul>
 
-                    <a href="diagnostic-questionnaire.html" class="btn btn-secondary" style="width: 100%; justify-content: center;">Kostenlose Diagnose starten</a>
+                    <a href="diagnostic-questionnaire.html" class="btn btn-secondary"
+                        style="width: 100%; justify-content: center;">Kostenlose Diagnose starten</a>
                 </div>
 
                 <div class="pricing-card featured">
                     <div class="pricing-badge">Beliebteste</div>
-                    <h3>Vollständiger Workshop</h3>
-                    <div class="price">€49<span> einmalig</span></div>
-                    <p class="price-description">Alles beheben + exportieren</p>
-                    
+                    <h3>Core Workshop</h3>
+                    <div class="price">€29<span> /Monat</span></div>
+                    <p class="price-description">Die wichtigsten Phasen freischalten</p>
+
                     <ul class="pricing-features">
                         <li><span class="check">✓</span> <span>Alles in Kostenloser Diagnose</span></li>
-                        <li><span class="check">✓</span> <span>12-Phasen Experten-Verfeinerungsprozess</span></li>
-                        <li><span class="check">✓</span> <span>Problem, Lösung, Markt, Traktion-Befragung</span></li>
-                        <li><span class="check">✓</span> <span>Finanzmodell & Unit Economics Validierung</span></li>
-                        <li><span class="check">✓</span> <span>Wettbewerbsanalyse & Positionierung</span></li>
-                        <li><span class="check">✓</span> <span>Q&A Vorbereitung für harte Fragen</span></li>
-                        <li><span class="check">✓</span> <span>Exportiere investoren-fertige Pitch-Dokumentation</span></li>
-                        <li><span class="check">✓</span> <span>30-Tage Geld-zurück-Garantie</span></li>
+                        <li><span class="check">✓</span> <span>7 Core Workshop-Phasen</span></li>
+                        <li><span class="check">✓</span> <span>Problem, Lösung, Markt-Befragung</span></li>
+                        <li><span class="check">✓</span> <span>Finanzmodell & Unit Economics</span></li>
+                        <li><span class="check">✓</span> <span>Traktion & Team-Validierung</span></li>
+                        <li><span class="check">✓</span> <span>Pitch-Export als PDF</span></li>
+                        <li><span class="check">✓</span> <span>Jederzeit kündbar</span></li>
                     </ul>
 
-                    <a href="diagnostic-questionnaire.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Kostenlos starten, später upgraden</a>
+                    <a href="diagnostic-questionnaire.html" class="btn btn-primary"
+                        style="width: 100%; justify-content: center;">Kostenlos starten, später upgraden</a>
                 </div>
             </div>
         </div>
@@ -1214,9 +1340,10 @@
         <div class="container">
             <div class="guarantee-box fade-in">
                 <div class="guarantee-icon">🛡️</div>
-                <h3>30-Tage Geld-zurück-Garantie</h3>
+                <h3>7-Tage Geld-zurück-Garantie</h3>
                 <p>
-                    Wenn PitchPerfect AI deinen Pitch nicht signifikant verbessert, erstatten wir dir sofort das Geld zurück. 
+                    Wenn PitchPerfect AI deinen Pitch nicht signifikant verbessert, erstatten wir dir sofort das Geld
+                    zurück.
                     Keine Fragen. Du hast nichts zu verlieren und alles zu gewinnen.
                 </p>
             </div>
@@ -1228,9 +1355,12 @@
         <div class="container">
             <h2>Dein nächster Pitch könnte alles verändern</h2>
             <p>
-                Verschwende deine eine Chance nicht mit einem kaputten Pitch. Finde deine fatalen Fehler in 5 Minuten. Behebe sie in 2 Stunden. Gewinne deine Finanzierung, lande deine Speaking-Gigs oder schließe deinen Deal.
+                Verschwende deine eine Chance nicht mit einem kaputten Pitch. Finde deine fatalen Fehler in 5 Minuten.
+                Behebe sie in 2 Stunden. Gewinne deine Finanzierung, lande deine Speaking-Gigs oder schließe deinen
+                Deal.
             </p>
-            <a href="diagnostic-questionnaire.html" class="btn btn-primary btn-large">Kostenlose Diagnose jetzt erhalten →</a>
+            <a href="diagnostic-questionnaire.html" class="btn btn-primary btn-large">Kostenlose Diagnose jetzt erhalten
+                →</a>
             <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.9;">
                 Schließe dich 2.347+ Gründern und Speakern an, die aufhörten, sich zu blamieren
             </p>
@@ -1247,20 +1377,225 @@
         </div>
     </footer>
 
-    <!-- Scroll Animations Script -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        ">
+            <button onclick="closeLoginModal()" style="
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                width: 32px;
+                height: 32px;
+                background: #F3F4F6;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 1.25rem;
+                color: #6B7280;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+            " onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+                ×
+            </button>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="
+                    width: 64px;
+                    height: 64px;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 1rem;
+                    font-size: 2rem;
+                ">👋</div>
+                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; color: #1F2937;">
+                    Willkommen zurück!
+                </h2>
+                <p style="color: #6B7280; font-size: 1rem;">
+                    Melde dich an, um deinen Pitch-Workshop fortzusetzen
+                </p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)"
+                style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div>
+                    <label
+                        style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151; font-size: 0.875rem;">
+                        E-Mail-Adresse
+                    </label>
+                    <input type="email" id="loginEmail" required placeholder="deine@email.com" style="
+                            width: 100%;
+                            padding: 0.875rem 1rem;
+                            border: 2px solid #E5E7EB;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            transition: all 0.2s ease;
+                        "
+                        onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 4px rgba(102, 126, 234, 0.1)'"
+                        onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none'" />
+                </div>
+
+                <div>
+                    <label
+                        style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151; font-size: 0.875rem;">
+                        Passwort
+                    </label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" style="
+                            width: 100%;
+                            padding: 0.875rem 1rem;
+                            border: 2px solid #E5E7EB;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            transition: all 0.2s ease;
+                        "
+                        onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 4px rgba(102, 126, 234, 0.1)'"
+                        onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none'" />
+                </div>
+
+                <div id="loginError" style="
+                    display: none;
+                    background: #FEE2E2;
+                    border-left: 4px solid #DC2626;
+                    padding: 0.875rem;
+                    border-radius: 8px;
+                    color: #991B1B;
+                    font-size: 0.875rem;
+                "></div>
+
+                <button type="submit" id="loginButton" style="
+                        width: 100%;
+                        padding: 1rem;
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    "
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(102, 126, 234, 0.4)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    Anmelden
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+                <p style="color: #6B7280; font-size: 0.875rem;">
+                    Noch kein Konto?
+                    <a href="diagnostic-questionnaire.html"
+                        style="color: #667eea; font-weight: 600; text-decoration: none;">
+                        Kostenlos starten →
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://pmhtmcxqlfqybzftwvhq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHRtY3hxbGZxeWJ6ZnR3dmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTAyMDEsImV4cCI6MjA1MzU2NjIwMX0.2rGLM8yt7NUm9PGbzMJq0gCH1zXjWNPXqrXALd4PcLQ';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Show login modal
+        function showLoginModal(event) {
+            if (event) event.preventDefault();
+            document.getElementById('loginModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close login modal
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+
+            // Clear form
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        // Handle login
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const button = document.getElementById('loginButton');
+            const errorDiv = document.getElementById('loginError');
+
+            // Disable button
+            button.disabled = true;
+            button.textContent = 'Anmelden...';
+            errorDiv.style.display = 'none';
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                console.log('✅ Login successful:', data);
+
+                // Redirect to dashboard
+                window.location.href = '/dashboard.html';
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+
+                errorDiv.textContent = error.message === 'Invalid login credentials'
+                    ? 'Ungültige E-Mail oder Passwort'
+                    : 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+                errorDiv.style.display = 'block';
+
+                button.disabled = false;
+                button.textContent = 'Anmelden';
+            }
+        }
+
+        // Close modal on background click
+        document.getElementById('loginModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'loginModal') {
+                closeLoginModal();
+            }
+        });
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('loginModal').style.display === 'flex') {
+                closeLoginModal();
+            }
+        });
+
+        // Scroll animations
         const header = document.getElementById('header');
         let lastScroll = 0;
 
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
-            
+
             if (currentScroll > 50) {
                 header.classList.add('scrolled');
             } else {
                 header.classList.remove('scrolled');
             }
-            
+
             lastScroll = currentScroll;
         }, { passive: true });
 
@@ -1294,39 +1629,26 @@
             });
         });
 
-        document.querySelectorAll('.btn-primary').forEach(button => {
-            button.addEventListener('click', function() {
-                console.log('CTA geklickt:', this.textContent);
-            });
-        });
-    </script>
+        // Auth redirect handler
+        const checkAuthCallback = () => {
+            const hash = window.location.hash;
+            const params = new URLSearchParams(hash.substring(1));
 
-    <!-- Auth Redirect Handler -->
-    <script>
-    // Check if this is an email confirmation callback
-    const checkAuthCallback = () => {
-        const hash = window.location.hash;
-        const params = new URLSearchParams(hash.substring(1));
-        
-        // Check for Supabase auth tokens
-        const hasAccessToken = params.get('access_token');
-        const hasRefreshToken = params.get('refresh_token');
-        const type = params.get('type');
-        
-        // If this is an auth callback, redirect to dashboard
-        if (hasAccessToken || type === 'signup' || type === 'recovery' || type === 'invite') {
-            console.log('Auth callback detected, redirecting to dashboard...');
-            window.location.href = '/dashboard.html' + window.location.hash;
-            return true;
-        }
-        
-        return false;
-    };
-    
-    // Run check immediately
-    checkAuthCallback();
-</script>
+            const hasAccessToken = params.get('access_token');
+            const hasRefreshToken = params.get('refresh_token');
+            const type = params.get('type');
+
+            if (hasAccessToken || type === 'signup' || type === 'recovery' || type === 'invite') {
+                console.log('Auth callback detected, redirecting to dashboard...');
+                window.location.href = '/dashboard.html' + window.location.hash;
+                return true;
+            }
+
+            return false;
+        };
+
+        checkAuthCallback();
+    </script>
 </body>
-</html>
-</body>
+
 </html>
