@@ -43,11 +43,13 @@ async function loadAPIHandlers() {
     const chatV2 = await import('./api/chat-v2.js');
     const analyzePitch = await import('./api/analyze-pitch.js');
     const adaptiveQuestion = await import('./api/generate-adaptive-question.js');
+    const evaluatePhase = await import('./api/evaluate-phase.js');
 
     return {
         '/api/chat-v2': chatV2.default,
         '/api/analyze-pitch': analyzePitch.default,
-        '/api/generate-adaptive-question': adaptiveQuestion.default
+        '/api/generate-adaptive-question': adaptiveQuestion.default,
+        '/api/evaluate-phase': evaluatePhase.default
     };
 }
 
@@ -176,6 +178,7 @@ server.listen(PORT, () => {
     console.log('   POST /api/chat-v2');
     console.log('   POST /api/analyze-pitch');
     console.log('   POST /api/generate-adaptive-question\n');
+    console.log('   POST /api/evaluate-phase');
     console.log('📄 Static files served from root directory\n');
     console.log('🎯 Try: http://localhost:3000/workshop-interface.html\n');
     console.log(`💡 Press Ctrl+C to stop\n`);

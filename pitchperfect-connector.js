@@ -179,6 +179,9 @@
 
                 console.log(`🚀 Calling ${CONFIG.features.useV2API ? 'V2' : 'V1'} API for Phase ${phase}`);
 
+                // Get pitch context if available
+                const pitchContext = window.pitchContext || null;
+
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
@@ -188,6 +191,7 @@
                         phase: phase,
                         message: message,
                         conversationHistory: conversationHistory,
+                        pitchContext: pitchContext, // ✅ Pass pitch context to API
                         useV2: CONFIG.features.useV2API
                     })
                 });

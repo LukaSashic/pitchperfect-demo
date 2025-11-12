@@ -1575,6 +1575,206 @@
         .phase-card.locked .phase-title {
             color: #6B7280;
         }
+
+        /* ========================================
+   EVALUATION RESULTS DISPLAY
+   ======================================== */
+
+        .evaluation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-circle-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 3rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .score-circle-large.excellent {
+            background: linear-gradient(135deg, #059669, #10B981);
+            color: white;
+            box-shadow: 0 8px 24px rgba(5, 150, 105, 0.3);
+        }
+
+        .score-circle-large.good {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .score-circle-large.needs-work {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            box-shadow: 0 8px 24px rgba(217, 119, 6, 0.3);
+        }
+
+        .score-label {
+            font-size: 1rem;
+            color: var(--text-medium);
+            font-weight: 600;
+        }
+
+        .criteria-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .criteria-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-medium);
+            margin-bottom: 0.75rem;
+        }
+
+        .criterion-item {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .criterion-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .criterion-icon.met {
+            background: var(--success);
+            color: white;
+        }
+
+        .criterion-icon.missing {
+            background: var(--error);
+            color: white;
+        }
+
+        .criterion-text {
+            flex: 1;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+        }
+
+        .feedback-box {
+            background: #FFFBEB;
+            border-left: 4px solid #F59E0B;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-box strong {
+            color: #D97706;
+            font-size: 0.875rem;
+        }
+
+        .feedback-box p {
+            margin: 0.5rem 0 0 0;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .gaps-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .gaps-list li {
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+        }
+
+        .gaps-list li::before {
+            content: '→';
+            color: #F59E0B;
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, #059669, #10B981);
+            color: white;
+        }
+
+        .action-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+        }
+
+        .action-button.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-button.secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 2px solid var(--border);
+        }
+
+        .action-button.secondary:hover {
+            background: var(--border);
+        }
     </style>
 </head>
 
@@ -1640,6 +1840,38 @@
             </div>
 
             <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                <!-- ✅ NEW: Check Readiness Section -->
+                <div id="readinessSection" style="
+                    padding: 1rem 1.5rem;
+                    background: linear-gradient(135deg, #f8f7ff 0%, #ffffff 100%);
+                    border-bottom: 1px solid var(--border);
+                    display: none;
+                ">
+                    <button id="checkReadinessBtn" onclick="checkPhaseReadiness()" style="
+                            width: 100%;
+                            padding: 0.875rem 1.5rem;
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            color: white;
+                            border: none;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                        "
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
+                        🎯 Check Readiness - Bin ich bereit?
+                    </button>
+
+                    <!-- Evaluation Results Display -->
+                    <div id="evaluationResults" style="display: none; margin-top: 1rem;">
+                        <!-- Results will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Existing chat input -->
                 <div class="chat-input-wrapper">
                     <textarea class="chat-input" id="chatInput" placeholder="Schreibe deine Antwort..."
                         rows="1"></textarea>
@@ -1855,12 +2087,17 @@
             return Math.round((completed / total) * 100);
         }
 
-        let state = {
+        // Make state globally accessible for debugging
+        window.state = {
             currentPhase: null,
             messages: [],
             isTyping: false,
-            phaseCompletion: {}
+            phaseCompletion: {},
+            phaseScores: {}
         };
+
+        // Use window.state everywhere instead of just state
+        let state = window.state;
 
         // ========================================
         // METRICS SYSTEM
@@ -2143,6 +2380,11 @@
             if (demoState.workshop.messages && demoState.workshop.messages[state.currentPhase]) {
                 delete demoState.workshop.messages[state.currentPhase];
                 PitchPerfect.DemoState.save(demoState);
+
+                console.log('🔍 About to call showReadinessButton()');
+                showReadinessButton();
+
+                console.log('✅ === selectPhase END ===');
             }
 
             // Close modal
@@ -2794,7 +3036,8 @@
         }
 
         function selectPhase(phaseNumber) {
-            console.log(`🎯 selectPhase called with phase ${phaseNumber}`);
+            console.log(`🎯 === selectPhase START === Phase ${phaseNumber}`);
+            console.log(`🔍 Before: state.currentPhase =`, state.currentPhase);
 
             // Check if user has access to this phase
             const userTier = userProfile?.tier || 'free';
@@ -2808,6 +3051,8 @@
             console.log(`✅ Access granted to Phase ${phaseNumber}`);
 
             state.currentPhase = phaseNumber;
+            console.log(`🔍 After setting: state.currentPhase =`, state.currentPhase);
+
             state.messages = [];
 
             const phase = PHASES.find(p => p.number === phaseNumber);
@@ -2850,7 +3095,10 @@
             demoState.workshop.currentPhase = phaseNumber;
             PitchPerfect.DemoState.save(demoState);
 
-            console.log('✅ Phase selection complete');
+            console.log('🔍 About to call showReadinessButton()');
+            showReadinessButton();
+
+            console.log('✅ === selectPhase END ===');
         }
 
         function loadPhaseMessages(phaseNumber) {
@@ -3278,6 +3526,304 @@ Bist du bereit, diesen Fehler anzugehen?`;
                 document.getElementById('sidebar').classList.remove('open');
             }
         });
+
+        // ========================================
+        // PHASE READINESS EVALUATION
+        // ========================================
+
+        async function checkPhaseReadiness() {
+            if (!state.currentPhase) {
+                alert('Bitte wähle zuerst eine Phase aus.');
+                return;
+            }
+
+            if (state.messages.length < 2) {
+                alert('Arbeite erst etwas an dieser Phase, bevor du die Bereitschaft prüfst.');
+                return;
+            }
+
+            const btn = document.getElementById('checkReadinessBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Analysiere...';
+
+            try {
+                console.log('🎯 Checking readiness for Phase', state.currentPhase);
+
+                // Build conversation history
+                const conversationHistory = state.messages.map(m => ({
+                    role: m.role === 'user' ? 'user' : 'assistant',
+                    content: m.content
+                }));
+
+                // Call evaluation API
+                const response = await fetch('/api/evaluate-phase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phase: state.currentPhase,
+                        conversationHistory: conversationHistory
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Evaluation failed: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Evaluation result:', result);
+
+                // Display results
+                displayEvaluationResults(result.evaluation);
+
+                // Track analytics
+                trackEvent('phase_readiness_checked', {
+                    phase: state.currentPhase,
+                    score: result.evaluation.score,
+                    canProceed: result.evaluation.canProceed
+                });
+
+            } catch (error) {
+                console.error('❌ Evaluation error:', error);
+                alert('Fehler bei der Auswertung. Bitte versuche es erneut.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🎯 Check Readiness - Bin ich bereit?';
+            }
+        }
+
+        function displayEvaluationResults(evaluation) {
+            const resultsDiv = document.getElementById('evaluationResults');
+
+            // Determine score category
+            let scoreClass = 'needs-work';
+            let scoreLabel = 'Noch Arbeit nötig';
+
+            if (evaluation.score >= 80) {
+                scoreClass = 'excellent';
+                scoreLabel = 'Ausgezeichnet!';
+            } else if (evaluation.score >= 70) {
+                scoreClass = 'good';
+                scoreLabel = 'Gut - Bereit zum Fortfahren!';
+            }
+
+            // Build must-meet criteria display
+            const mustMeetItems = Object.entries(evaluation.mustMeetResults || {})
+                .map(([key, met]) => {
+                    const criterion = getPhaseCriteria(state.currentPhase).mustMeet.find(c => c.id === key);
+                    return `
+                <div class="criterion-item">
+                    <div class="criterion-icon ${met ? 'met' : 'missing'}">
+                        ${met ? '✓' : '✗'}
+                    </div>
+                    <div class="criterion-text">
+                        ${criterion ? criterion.label : key}
+                    </div>
+                </div>
+            `;
+                }).join('');
+
+            // Build should-meet criteria display
+            const shouldMeetItems = Object.entries(evaluation.shouldMeetResults || {})
+                .map(([key, met]) => {
+                    const criterion = getPhaseCriteria(state.currentPhase).shouldMeet.find(c => c.id === key);
+                    return `
+                <div class="criterion-item">
+                    <div class="criterion-icon ${met ? 'met' : 'missing'}">
+                        ${met ? '✓' : '✗'}
+                    </div>
+                    <div class="criterion-text">
+                        ${criterion ? criterion.label : key}
+                    </div>
+                </div>
+            `;
+                }).join('');
+
+            // Build gaps list
+            const gapsList = evaluation.gaps && evaluation.gaps.length > 0
+                ? `<ul class="gaps-list">${evaluation.gaps.map(gap => `<li>${gap}</li>`).join('')}</ul>`
+                : '';
+
+            // Build complete UI
+            const closeButtonHTML = `
+        <button 
+            onclick="hideEvaluationResults()" 
+            style="position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; background: white; border: 2px solid var(--border); border-radius: 50%; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10; color: var(--text-medium); font-weight: 700;"
+            onmouseover="this.style.background='var(--error)'; this.style.color='white'; this.style.borderColor='var(--error)'"
+            onmouseout="this.style.background='white'; this.style.color='var(--text-medium)'; this.style.borderColor='var(--border)'"
+            title="Ergebnisse ausblenden"
+        >
+            ✕
+        </button>
+    `;
+
+            const scoreHTML = `
+        <div class="score-display">
+            <div class="score-circle-large ${scoreClass}">
+                ${evaluation.score}
+            </div>
+            <div class="score-label">${scoreLabel}</div>
+        </div>
+    `;
+
+            const feedbackHTML = evaluation.feedback ? `
+        <div class="feedback-box">
+            <strong>📝 Feedback:</strong>
+            <p>${evaluation.feedback}</p>
+        </div>
+    ` : '';
+
+            const mustMeetHTML = mustMeetItems ? `
+        <div class="criteria-section">
+            <div class="criteria-title">✓ Erforderliche Kriterien</div>
+            ${mustMeetItems}
+        </div>
+    ` : '';
+
+            const shouldMeetHTML = shouldMeetItems ? `
+        <div class="criteria-section">
+            <div class="criteria-title">⭐ Bonus-Kriterien</div>
+            ${shouldMeetItems}
+        </div>
+    ` : '';
+
+            const gapsHTML = gapsList ? `
+        <div class="feedback-box">
+            <strong>🎯 Was noch fehlt:</strong>
+            ${gapsList}
+        </div>
+    ` : '';
+
+            const nextStepsHTML = evaluation.nextSteps ? `
+        <div class="feedback-box">
+            <strong>➡️ Nächster Schritt:</strong>
+            <p>${evaluation.nextSteps}</p>
+        </div>
+    ` : '';
+
+            const buttonsHTML = `
+        <div class="action-buttons">
+            ${evaluation.canProceed ? `
+                <button 
+                    class="action-button primary" 
+                    onclick="completePhaseWithScore(${evaluation.score})"
+                >
+                    ✓ Phase Abschließen
+                </button>
+            ` : ''}
+            <button 
+                class="action-button ${evaluation.canProceed ? 'secondary' : 'primary'}" 
+                onclick="hideEvaluationResults()"
+            >
+                ${evaluation.canProceed ? '← Zurück zum Chat' : '← Weiter arbeiten (' + evaluation.score + '/70)'}
+            </button>
+        </div>
+    `;
+
+            resultsDiv.innerHTML = `
+        <div class="evaluation-card" style="position: relative;">
+            ${closeButtonHTML}
+            ${scoreHTML}
+            ${feedbackHTML}
+            ${mustMeetHTML}
+            ${shouldMeetHTML}
+            ${gapsHTML}
+            ${nextStepsHTML}
+            ${buttonsHTML}
+        </div>
+    `;
+
+            resultsDiv.style.display = 'block';
+
+            // Scroll to results
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function getPhaseCriteria(phaseNumber) {
+            // Phase criteria definitions (matching api/evaluate-phase.js)
+            const PHASE_CRITERIA = {
+                2: {
+                    mustMeet: [
+                        { id: 'persona_identified', label: 'Spezifische Persona/Kunde identifiziert' },
+                        { id: 'problem_described', label: 'Problem klar artikuliert' },
+                        { id: 'hook_present', label: 'Eröffnungshaken vorhanden' }
+                    ],
+                    shouldMeet: [
+                        { id: 'problem_quantified', label: 'Problem mit Zahlen quantifiziert', weight: 20 },
+                        { id: 'alternative_mentioned', label: 'Aktuelle Lösung/Alternative erwähnt', weight: 15 },
+                        { id: 'specific_example', label: 'Spezifisches, lebendiges Beispiel enthalten', weight: 15 }
+                    ]
+                },
+                3: {
+                    mustMeet: [
+                        { id: 'specific_persona', label: 'Spezifische Persona mit demografischen Details' },
+                        { id: 'quantified_pain', label: 'Problem in €/Zeit/messbarer Metrik quantifiziert' },
+                        { id: 'current_alternative', label: 'Was Kunden HEUTE nutzen identifiziert' }
+                    ],
+                    shouldMeet: [
+                        { id: 'market_timing', label: 'Erklärt warum JETZT (Market Timing)', weight: 25 },
+                        { id: 'validation_evidence', label: 'Validierungs-Beweise (Interviews/Daten)', weight: 25 }
+                    ]
+                },
+                // Add more phases as needed
+            };
+
+            return PHASE_CRITERIA[phaseNumber] || { mustMeet: [], shouldMeet: [] };
+        }
+
+        function hideEvaluationResults() {
+            document.getElementById('evaluationResults').style.display = 'none';
+        }
+
+        function completePhaseWithScore(score) {
+            console.log(`✅ Completing phase ${state.currentPhase} with score ${score}`);
+
+            // Store score
+            if (!state.phaseScores) {
+                state.phaseScores = {};
+            }
+            state.phaseScores[state.currentPhase] = score;
+
+            // Mark as complete
+            completePhase();
+        }
+
+        // Show readiness button when phase starts
+        function showReadinessButton() {
+            console.log('🔍 === SHOW READINESS BUTTON START ===');
+
+            const section = document.getElementById('readinessSection');
+            const chatInputContainer = document.getElementById('chatInputContainer');
+
+            console.log('🔍 section exists:', !!section);
+            console.log('🔍 state.currentPhase:', state.currentPhase);
+            console.log('🔍 chatInputContainer display:', chatInputContainer?.style.display);
+
+            if (!section) {
+                console.error('❌ readinessSection element NOT FOUND!');
+                return;
+            }
+
+            if (!state.currentPhase) {
+                console.error('❌ No current phase set! Cannot show button.');
+                return;
+            }
+
+            // Force display
+            section.style.display = 'block';
+            console.log('✅ Readiness button display set to: block');
+            console.log('🔍 Final section.style.display:', section.style.display);
+            console.log('🔍 === SHOW READINESS BUTTON END ===');
+        }
+
+        // Hide readiness button
+        function hideReadinessButton() {
+            const section = document.getElementById('readinessSection');
+            if (section) {
+                section.style.display = 'none';
+            }
+        }
     </script>
 </body>
 
