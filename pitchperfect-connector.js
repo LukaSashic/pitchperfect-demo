@@ -34,7 +34,7 @@
                 diagnostic: { completed: false, answers: {}, results: null },
                 workshop: {
                     unlocked: false,
-                    currentPhase: 2,
+                    currentPhase: null,
                     messages: {},
                     phaseCompletion: {},
                     phaseScores: {}
