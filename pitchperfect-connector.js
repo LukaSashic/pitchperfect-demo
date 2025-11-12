@@ -34,7 +34,7 @@
                 diagnostic: { completed: false, answers: {}, results: null },
                 workshop: {
                     unlocked: false,
-                    currentPhase: null,
+                    currentPhase: null,  // ✅ FIX: Changed from 2 to null - prevents auto-loading phase on fresh start
                     messages: {},
                     phaseCompletion: {},
                     phaseScores: {}
@@ -363,58 +363,57 @@
                 phaseComplete: msgCount >= 5,
                 completionScore: Math.min(msgCount * 15, 100)
             };
-        }
-    };
+        },
 
-
-// ============================================
+        // ============================================
         // PITCH ANALYSIS (NEW)
         // ============================================
         async analyzePitch(pitchContent, pitchType = 'investor_deck', fundingStage = 'seed') {
-        try {
-            console.log('🔍 Analyzing pitch...');
+            try {
+                console.log('🔍 Analyzing pitch...');
 
-            const startTime = Date.now();
+                const startTime = Date.now();
 
-            const response = await fetch('/api/analyze-pitch', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    pitchContent,
-                    pitchType,
-                    fundingStage
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            const latency = Date.now() - startTime;
-
-            console.log(`✅ Pitch analysis completed in ${latency}ms`);
-            console.log(`📊 Overall Score: ${data.report.overallScore}/100`);
-
-            if (CONFIG.features.trackMetrics && !data.demo) {
-                Metrics.track('pitch-analysis', {
-                    cost_usd: 0.02,
-                    latency_ms: latency,
-                    input_tokens: 3000,
-                    output_tokens: 1000,
-                    cache_read_tokens: data.cached ? 2500 : 0
+                const response = await fetch('/api/analyze-pitch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pitchContent,
+                        pitchType,
+                        fundingStage
+                    })
                 });
-            }
 
-            return data;
-        } catch (error) {
-            console.error('Error analyzing pitch:', error);
-            throw error;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const latency = Date.now() - startTime;
+
+                console.log(`✅ Pitch analysis completed in ${latency}ms`);
+                console.log(`📊 Overall Score: ${data.report.overallScore}/100`);
+
+                if (CONFIG.features.trackMetrics && !data.demo) {
+                    Metrics.track('pitch-analysis', {
+                        cost_usd: 0.02,
+                        latency_ms: latency,
+                        input_tokens: 3000,
+                        output_tokens: 1000,
+                        cache_read_tokens: data.cached ? 2500 : 0
+                    });
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Error analyzing pitch:', error);
+                throw error;
+            }
         }
-    },
+    };
 
     // ============================================
     // EXPORT TO WINDOW
