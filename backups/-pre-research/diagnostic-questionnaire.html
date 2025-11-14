@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch-Diagnose - PitchPerfect AI</title>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="pitchperfect-connector.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            background: white;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .question-card {
+            background: white;
+            padding: 40px;
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .question-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .option-label {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .option-description {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .buttons {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .results h2 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+
+        .result-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-section h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .result-section p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .track-recommendation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .track-recommendation h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎯 Pitch-Diagnose</h1>
+            <p>5-Minuten-Analyse für deinen perfekten Pitch</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 8</div>
+        </div>
+
+        <!-- Question Cards -->
+        <div id="questionsContainer"></div>
+
+        <!-- Navigation Buttons -->
+        <div class="buttons">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">
+                ← Zurück
+            </button>
+            <div style="flex: 1"></div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+                Weiter →
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div class="results" id="results">
+            <div class="loading" id="loadingResults">
+                <div class="spinner"></div>
+                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch...</p>
+            </div>
+            <div id="resultsContent" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="auth-guard.js"></script>
+    <script>
+        // Questions configuration
+        const questions = [
+            {
+                id: 1,
+                question: "Was ist dein Hauptziel mit diesem Pitch?",
+                type: "choice",
+                options: [
+                    { value: "investor", label: "Investoren überzeugen", description: "Finanzierung für mein Startup" },
+                    { value: "speaking", label: "Publikum begeistern", description: "Vortrag oder Präsentation" },
+                    { value: "sales", label: "Kunden gewinnen", description: "Produkt/Service verkaufen" },
+                    { value: "networking", label: "Netzwerk erweitern", description: "BNI, Business-Events" }
+                ]
+            },
+            {
+                id: 2,
+                question: "In welcher Phase befindet sich dein Business?",
+                type: "choice",
+                options: [
+                    { value: "idea", label: "Idee", description: "Konzept in der Entwicklung" },
+                    { value: "mvp", label: "MVP", description: "Erstes Produkt gebaut" },
+                    { value: "traction", label: "Erste Kunden", description: "Umsatz wird generiert" },
+                    { value: "growth", label: "Wachstum", description: "Skalierung läuft" }
+                ]
+            },
+            {
+                id: 3,
+                question: "Wie viel Zeit hast du für deinen Pitch?",
+                type: "choice",
+                options: [
+                    { value: "60s", label: "60 Sekunden", description: "BNI oder schnelles Networking" },
+                    { value: "3min", label: "3 Minuten", description: "Kurze Präsentation" },
+                    { value: "10min", label: "10 Minuten", description: "Detaillierter Pitch" },
+                    { value: "20min", label: "20+ Minuten", description: "Ausführliche Präsentation" }
+                ]
+            },
+            {
+                id: 4,
+                question: "Beschreibe dein Produkt/Service in einem Satz:",
+                type: "text",
+                placeholder: "Was machst du? Für wen? Welches Problem löst du?"
+            },
+            {
+                id: 5,
+                question: "Wer ist deine Zielgruppe?",
+                type: "text",
+                placeholder: "Beschreibe deine idealen Kunden (Alter, Branche, Bedürfnisse...)"
+            },
+            {
+                id: 6,
+                question: "Was macht dich einzigartig?",
+                type: "text",
+                placeholder: "Warum sollten Kunden/Investoren sich für dich entscheiden?"
+            },
+            {
+                id: 7,
+                question: "Was ist deine größte Herausforderung beim Pitchen?",
+                type: "choice",
+                options: [
+                    { value: "hook", label: "Aufmerksamkeit gewinnen", description: "Starker Einstieg fehlt" },
+                    { value: "clarity", label: "Klarheit", description: "Komplexes Produkt einfach erklären" },
+                    { value: "confidence", label: "Selbstbewusstsein", description: "Nervosität überwinden" },
+                    { value: "structure", label: "Struktur", description: "Logischer Aufbau fehlt" }
+                ]
+            },
+            {
+                id: 8,
+                question: "Hast du bereits einen Pitch vorbereitet?",
+                type: "choice",
+                options: [
+                    { value: "yes", label: "Ja", description: "Ich habe einen fertigen Pitch" },
+                    { value: "draft", label: "Entwurf", description: "Ich habe Ideen gesammelt" },
+                    { value: "no", label: "Nein", description: "Ich fange bei Null an" }
+                ]
+            }
+        ];
+
+        // State
+        let currentQuestion = 0;
+        let answers = {};
+        let currentUser = null;
+        let userProfile = null;
+
+        // Initialize
+        async function init() {
+            // Check authentication
+            const authData = await getCurrentUserWithProfile();
+            if (!authData) return; // Redirected to login
+
+            currentUser = authData.user;
+            userProfile = authData.profile;
+
+            // Load saved progress if exists
+            await loadSavedProgress();
+
+            // Render questions
+            renderQuestions();
+            showQuestion(currentQuestion);
+            updateProgress();
+        }
+
+        // Load saved diagnostic progress
+        async function loadSavedProgress() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('pitch_projects')
+                    .select('diagnostic_data')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                // Check if we got any data
+                if (data && data.length > 0 && data[0].diagnostic_data) {
+                    answers = data[0].diagnostic_data;
+                    console.log('Loaded saved progress:', answers);
+                } else {
+                    console.log('No saved progress found, starting fresh');
+                }
+            } catch (error) {
+                // No saved progress or error loading - just start fresh
+                console.log('Could not load progress, starting fresh:', error.message);
+            }
+        }
+
+        // Render all questions
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+
+                let optionsHTML = '';
+
+                if (q.type === 'choice') {
+                    optionsHTML = `
+                        <div class="options">
+                            ${q.options.map(opt => `
+                                <div class="option" onclick="selectOption(${index}, '${opt.value}')">
+                                    <div class="option-label">${opt.label}</div>
+                                    <div class="option-description">${opt.description}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (q.type === 'text') {
+                    optionsHTML = `
+                        <textarea 
+                            class="text-input" 
+                            id="text-${index}"
+                            placeholder="${q.placeholder}"
+                            oninput="handleTextInput(${index})"
+                        >${answers[q.id] || ''}</textarea>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="question-number">Frage ${index + 1} von ${questions.length}</div>
+                    <div class="question-title">${q.question}</div>
+                    ${optionsHTML}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // Show specific question
+        function showQuestion(index) {
+            document.querySelectorAll('.question-card').forEach((card, i) => {
+                card.classList.toggle('active', i === index);
+            });
+
+            // Update buttons
+            document.getElementById('prevBtn').style.display = index > 0 ? 'block' : 'none';
+            document.getElementById('nextBtn').textContent =
+                index === questions.length - 1 ? 'Analyse starten →' : 'Weiter →';
+
+            // Check if current question is answered
+            const isAnswered = answers[questions[index].id] !== undefined;
+            document.getElementById('nextBtn').disabled = !isAnswered;
+
+            // Restore selected option if exists
+            if (questions[index].type === 'choice' && answers[questions[index].id]) {
+                const options = document.querySelectorAll(`#question-${index} .option`);
+                options.forEach(opt => {
+                    const value = opt.onclick.toString().match(/'([^']+)'/)[1];
+                    if (value === answers[questions[index].id]) {
+                        opt.classList.add('selected');
+                    }
+                });
+            }
+        }
+
+        // Select option
+        function selectOption(questionIndex, value) {
+            const questionId = questions[questionIndex].id;
+            answers[questionId] = value;
+
+            // Update UI
+            const options = document.querySelectorAll(`#question-${questionIndex} .option`);
+            options.forEach(opt => {
+                const optValue = opt.onclick.toString().match(/'([^']+)'/)[1];
+                opt.classList.toggle('selected', optValue === value);
+            });
+
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+
+            // Auto-advance after 500ms
+            setTimeout(() => nextQuestion(), 500);
+        }
+
+        // Handle text input
+        function handleTextInput(questionIndex) {
+            const questionId = questions[questionIndex].id;
+            const value = document.getElementById(`text-${questionIndex}`).value.trim();
+
+            if (value.length > 10) {
+                answers[questionId] = value;
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                delete answers[questionId];
+                document.getElementById('nextBtn').disabled = true;
+            }
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateProgress();
+
+                // Auto-save progress
+                saveProgress();
+            } else {
+                // All questions answered - show results
+                finishDiagnostic();
+            }
+        }
+
+        // Previous question
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateProgress();
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent =
+                `${currentQuestion + 1} / ${questions.length}`;
+        }
+
+        // Save progress to database
+        async function saveProgress() {
+            try {
+                // Check if project exists
+                const { data: existing, error: fetchError } = await supabaseClient
+                    .from('pitch_projects')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    // Update existing
+                    await supabaseClient
+                        .from('pitch_projects')
+                        .update({
+                            diagnostic_data: answers,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', existing[0].id);
+
+                    console.log('Progress updated');
+                } else {
+                    // Create new
+                    await supabaseClient
+                        .from('pitch_projects')
+                        .insert({
+                            user_id: currentUser.id,
+                            title: 'Mein Pitch-Projekt',
+                            pitch_type: answers[1] || 'unknown',
+                            diagnostic_data: answers,
+                            stage: answers[2] || null,
+                            target_duration: answers[3] || null
+                        });
+
+                    console.log('New project created');
+                }
+            } catch (error) {
+                console.error('Failed to save progress:', error);
+            }
+        }
+
+        // Finish diagnostic and redirect to pitch input
+        async function finishDiagnostic() {
+            // Hide questions, show loading
+            document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
+            document.querySelector('.progress-bar').style.display = 'none';
+            document.querySelector('.buttons').style.display = 'none';
+            document.getElementById('results').classList.add('active');
+
+            // Save final answers with completion flag
+            await saveFinalDiagnostic();
+
+            // ✅ ALSO save to localStorage for pitch-input page
+            localStorage.setItem('diagnosticData', JSON.stringify(answers));
+
+            console.log('✅ Diagnostic completed, saved to DB and localStorage');
+
+            // Small delay to ensure save completes
+            setTimeout(() => {
+                window.location.href = '/pitch-input.html';
+            }, 500);
+        }
+
+        // Save final diagnostic with completion flag
+        async function saveFinalDiagnostic() {
+            try {
+                // Check if project exists
+                const { data: existing, error: fetchError } = await supabaseClient
+                    .from('pitch_projects')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    // Update existing project with completion flag
+                    await supabaseClient
+                        .from('pitch_projects')
+                        .update({
+                            diagnostic_data: answers,
+                            diagnostic_completed: true,  // ← NEW: Completion flag
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', existing[0].id);
+
+                    console.log('Diagnostic updated with completion flag');
+                } else {
+                    // Create new project with completion flag
+                    await supabaseClient
+                        .from('pitch_projects')
+                        .insert({
+                            user_id: currentUser.id,
+                            title: 'Mein Pitch-Projekt',
+                            pitch_type: answers[1] || 'unknown',
+                            diagnostic_data: answers,
+                            diagnostic_completed: true,  // ← NEW: Completion flag
+                            stage: answers[2] || null,
+                            target_duration: answers[3] || null
+                        });
+
+                    console.log('New project created with completion flag');
+                }
+            } catch (error) {
+                console.error('Failed to save final diagnostic:', error);
+            }
+        }
+
+        // Generate personalized results
+        async function generateResults() {
+            // Simulate API call (replace with actual Claude API integration)
+            setTimeout(() => {
+                const pitchType = answers[1];
+                const stage = answers[2];
+                const duration = answers[3];
+                const challenge = answers[7];
+
+                // Determine recommended track
+                let track = 'investor';
+                if (pitchType === 'networking' && duration === '60s') {
+                    track = 'BNI 60-Sekunden-Track';
+                } else if (pitchType === 'investor') {
+                    track = 'Investor-Pitch-Track';
+                } else if (pitchType === 'sales') {
+                    track = 'Sales-Pitch-Track';
+                } else if (pitchType === 'speaking') {
+                    track = 'Präsentations-Track';
+                }
+
+                const resultsHTML = `
+                    <h2>✅ Deine Pitch-Diagnose</h2>
+                    
+                    <div class="track-recommendation">
+                        <h3>🎯 Empfohlener Track</h3>
+                        <p style="font-size: 20px; margin: 12px 0;">${track}</p>
+                        <p style="opacity: 0.9;">Basierend auf deinen Antworten</p>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h3>📊 Dein Pitch-Profil</h3>
+                        <p><strong>Ziel:</strong> ${answers[1]}</p>
+                        <p><strong>Phase:</strong> ${answers[2]}</p>
+                        <p><strong>Dauer:</strong> ${answers[3]}</p>
+                        <p><strong>Hauptherausforderung:</strong> ${answers[7]}</p>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h3>💡 Deine nächsten Schritte</h3>
+                        <p>1. <strong>Workshop starten:</strong> Arbeite dich durch die ${track}-Phasen</p>
+                        <p>2. <strong>Kernbotschaft schärfen:</strong> Fokussiere auf dein Alleinstellungsmerkmal</p>
+                        <p>3. <strong>Struktur optimieren:</strong> Nutze bewährte Story-Frameworks</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 32px;">
+                        <button class="btn btn-primary" onclick="startWorkshop()">
+                            Zum Workshop →
+                        </button>
+                        <button class="btn btn-secondary" onclick="restartDiagnostic()" style="margin-left: 12px;">
+                            Diagnose wiederholen
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('loadingResults').style.display = 'none';
+                document.getElementById('resultsContent').innerHTML = resultsHTML;
+                document.getElementById('resultsContent').style.display = 'block';
+            }, 2000);
+        }
+
+        // Start workshop
+        function startWorkshop() {
+            window.location.href = '/workshop-interface.html';
+        }
+
+        // Restart diagnostic
+        function restartDiagnostic() {
+            answers = {};
+            currentQuestion = 0;
+
+            document.getElementById('results').classList.remove('active');
+            document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
+            document.querySelector('.progress-bar').style.display = 'flex';
+            document.querySelector('.buttons').style.display = 'flex';
+
+            init();
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
