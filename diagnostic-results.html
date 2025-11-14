@@ -822,7 +822,9 @@
             cta: null
         };
 
-        window.addEventListener('DOMContentLoaded', () => {
+       window.addEventListener('DOMContentLoaded', async () => {
+            console.log('🔵 Results page loaded');
+
             // Load diagnostic data
             const dataStr = localStorage.getItem('diagnosticData');
             if (!dataStr) {
@@ -832,13 +834,29 @@
             }
 
             diagnosticData = JSON.parse(dataStr);
+            console.log('📊 Diagnostic data loaded');
 
-            // Calculate analysis
-            analysisResult = calculateAnalysis(diagnosticData);
+            // Check if we have pitch text (Q10) and call API
+            if (!diagnosticData[10]) {
+                console.warn('⚠️ Q10 missing, using generic analysis');
+                analysisResult = calculateAnalysis(diagnosticData);
+            } else if (diagnosticData[10].length < 100) {
+                console.warn(`⚠️ Q10 too short (${diagnosticData[10].length} chars), using generic analysis`);
+                analysisResult = calculateAnalysis(diagnosticData);
+            } else {
+                console.log('✅ Q10 found, calling API with pitch text:', diagnosticData[10].substring(0, 50) + '...');
+                analysisResult = await analyzeWithAPI(diagnosticData);
+            }
 
             // Show red flag first
             showRedFlag();
 
+            // Initialize self-rating buttons
+            initializeSelfRatingButtons();
+        });
+
+            // Show red flag first
+            showRedFlag();
             // Initialize self-rating buttons
             initializeSelfRatingButtons();
         });
