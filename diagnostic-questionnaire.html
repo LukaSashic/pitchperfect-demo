@@ -720,35 +720,50 @@
             setTimeout(() => nextQuestion(), 500);
         }
 
-        // Handle dual text input (Q4)
-        function handleDualTextInput(questionIndex, partId, minChars, maxChars) {
-            const questionId = questions[questionIndex].id;
-            const textarea = document.getElementById(`text-${questionIndex}-${partId}`);
-            const value = textarea.value.trim();
+        // Handle dual text input (Q4) - WITH DEBUG
+            function handleDualTextInput(questionIndex, partId, minChars, maxChars) {
+                const questionId = questions[questionIndex].id;
+                const textarea = document.getElementById(`text-${questionIndex}-${partId}`);
+                const value = textarea.value.trim();
 
-            // Initialize answer object if needed
-            if (!answers[questionId]) {
-                answers[questionId] = {};
-            }
+                console.log(`[DEBUG] Q${questionIndex} (ID: ${questionId}), Part: ${partId}, Value length: ${value.length}`);
 
-            answers[questionId][partId] = value;
-
-            // Update character counter
-            updateCharCounter(questionIndex, partId, minChars, maxChars);
-
-            // Check if BOTH parts are valid - FIXED
-            const question = questions[questionIndex];
-
-            // Count how many parts are valid
-            let validParts = 0;
-            const totalParts = question.parts.length;
-
-            question.parts.forEach(part => {
-                const partValue = answers[questionId]?.[part.id];
-                if (partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars) {
-                    validParts++;
+                // Initialize answer object if needed
+                if (!answers[questionId]) {
+                    answers[questionId] = {};
+                    console.log(`[DEBUG] Initialized answers[${questionId}]`);
                 }
-            });
+
+                // Store the value
+                answers[questionId][partId] = value;
+                console.log(`[DEBUG] Stored in answers[${questionId}][${partId}]:`, value.substring(0, 30) + '...');
+                console.log(`[DEBUG] Full answers object:`, JSON.stringify(answers, null, 2));
+
+                // Update character counter
+                updateCharCounter(questionIndex, partId, minChars, maxChars);
+
+                // Check if BOTH parts are valid
+                const question = questions[questionIndex];
+
+                let validParts = 0;
+                const totalParts = question.parts.length;
+
+                question.parts.forEach(part => {
+                    const partValue = answers[questionId]?.[part.id];
+                    const isValid = partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars;
+
+                    console.log(`[DEBUG] Checking ${part.id}: length=${partValue?.length || 0}, minChars=${part.minChars}, valid=${isValid}`);
+
+                    if (isValid) {
+                        validParts++;
+                    }
+                });
+
+                const allValid = (validParts === totalParts);
+
+                console.log(`[DEBUG] Q${questionIndex}: ${validParts}/${totalParts} parts valid, button enabled: ${allValid}`);
+                document.getElementById('nextBtn').disabled = !allValid;
+            }
 
             const allValid = (validParts === totalParts);
 
