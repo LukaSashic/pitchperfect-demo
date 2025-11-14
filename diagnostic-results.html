@@ -104,18 +104,37 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         /* Header with 4D Dashboard */
@@ -153,6 +172,7 @@
                 transform: scale(0);
                 opacity: 0;
             }
+
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -264,10 +284,21 @@
             width: 0;
         }
 
-        .progress-critical { background: var(--danger); }
-        .progress-needs-work { background: var(--warning); }
-        .progress-good { background: #60a5fa; }
-        .progress-excellent { background: var(--success); }
+        .progress-critical {
+            background: var(--danger);
+        }
+
+        .progress-needs-work {
+            background: var(--warning);
+        }
+
+        .progress-good {
+            background: #60a5fa;
+        }
+
+        .progress-excellent {
+            background: var(--success);
+        }
 
         /* Awareness Gap Section */
         .awareness-gap-section {
@@ -289,6 +320,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -605,7 +637,9 @@
         }
 
         @media (max-width: 768px) {
-            .gap-cards-grid, .self-rating-grid {
+
+            .gap-cards-grid,
+            .self-rating-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -641,7 +675,7 @@
             <!-- 4-Dimension Dashboard -->
             <div class="dimensions-dashboard">
                 <div class="dashboard-title">📊 4-Dimensionen-Analyse</div>
-                
+
                 <!-- Dimension 1: Clarity -->
                 <div class="dimension-row">
                     <div class="dimension-header">
@@ -748,7 +782,8 @@
             <div class="gap-results" id="gapResults">
                 <div class="gap-insight-box">
                     <div class="gap-insight-title">🎯 Diagnose: Blinde Flecken erkannt</div>
-                    <p id="gapInsightText">Du überschätzt deine Fähigkeiten um durchschnittlich X Punkte. Dies ist der Dunning-Kruger-Effekt in Aktion.</p>
+                    <p id="gapInsightText">Du überschätzt deine Fähigkeiten um durchschnittlich X Punkte. Dies ist der
+                        Dunning-Kruger-Effekt in Aktion.</p>
                 </div>
 
                 <div class="gap-cards-grid" id="gapCardsGrid"></div>
@@ -797,82 +832,142 @@
             }
 
             diagnosticData = JSON.parse(dataStr);
-            
+
             // Calculate analysis
             analysisResult = calculateAnalysis(diagnosticData);
-            
+
             // Show red flag first
             showRedFlag();
-            
+
             // Initialize self-rating buttons
             initializeSelfRatingButtons();
         });
 
         // Calculate 4D analysis from diagnostic data
-        function calculateAnalysis(data) {
-            // This is a simplified calculation - in production, this would call your AI backend
+        // Call backend API to analyze pitch with Claude
+        async function analyzeWithAPI(diagnosticData) {
+            try {
+                console.log('🔍 Sending pitch to API for analysis...');
+
+                const response = await fetch('/api/analyze-pitch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pitchText: diagnosticData[10], // Q10: Full pitch text
+                        diagnosticData: {
+                            pitch_purpose: diagnosticData[1], // Q1: investor/sales/etc
+                            business_stage: diagnosticData[2], // Q2: idea/mvp/traction/growth
+                            target_duration: diagnosticData[3], // Q3: 60s/3min/etc
+                            problem: diagnosticData[4]?.problem || '',
+                            solution: diagnosticData[4]?.solution || '',
+                            target_audience: diagnosticData[5] || '',
+                            unique_value: diagnosticData[6] || '',
+                            sales_variance: diagnosticData[7] || '',
+                            has_existing_pitch: diagnosticData[8] || '',
+                            cta: diagnosticData[9] || {}
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Analysis failed');
+                }
+
+                console.log('✅ API analysis received:', result.analysis);
+                return result.analysis;
+
+            } catch (error) {
+                console.error('❌ API Error:', error);
+
+                // Fallback to generic analysis if API fails
+                console.log('⚠️ Falling back to generic analysis');
+                return calculateAnalysisGeneric(diagnosticData);
+            }
+        }
+        // Call API to analyze pitch with Claude
+        async function analyzeWithAPI(diagnosticData) {
+            try {
+                console.log('🔍 Sending pitch to API for analysis...');
+
+                const response = await fetch('/api/analyze-pitch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pitchText: diagnosticData[10], // Q10: Full pitch text
+                        diagnosticData: {
+                            pitch_purpose: diagnosticData[1],
+                            business_stage: diagnosticData[2],
+                            target_duration: diagnosticData[3],
+                            problem: diagnosticData[4]?.problem || '',
+                            solution: diagnosticData[4]?.solution || '',
+                            target_audience: diagnosticData[5] || '',
+                            unique_value: diagnosticData[6] || '',
+                            sales_variance: diagnosticData[7] || '',
+                            has_existing_pitch: diagnosticData[8] || '',
+                            cta: diagnosticData[9] || {}
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Analysis failed');
+                }
+
+                console.log('✅ API analysis received');
+
+                // Transform API response to match expected format
+                return {
+                    overall: result.analysis.overallScore,
+                    dimensions: result.analysis.dimensions || {
+                        clarity: 50,
+                        emotional: 50,
+                        credibility: 50,
+                        cta: 50
+                    },
+                    fatalErrors: result.analysis.fatalErrors || [],
+                    strengths: result.analysis.strengths || [],
+                    nextSteps: result.analysis.nextSteps || '',
+                    estimatedWorkshopTime: result.analysis.estimatedWorkshopTime || '8-10 Stunden'
+                };
+
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                alert('Fehler bei der API-Analyse. Verwende generische Bewertung.');
+
+                // Fallback to generic analysis
+                return calculateAnalysisGeneric(diagnosticData);
+            }
+        }
+        // Fallback generic analysis (keep the old calculateAnalysis code)
+        function calculateAnalysisGeneric(data) {
+            // Your existing calculateAnalysis() code here
+            // (the current function that calculates scores from diagnostic data)
+
             let clarity = 50;
             let emotional = 30;
             let credibility = 35;
             let cta = 45;
 
-            // Q4: Problem + Solution analysis
-            if (data[4] && data[4].problem) {
-                const problem = data[4].problem;
-                // Check for numbers (quantification)
-                if (/\d+/.test(problem)) {
-                    emotional += 20; // Has quantification
-                }
-                // Check for loss words
-                if (/verlier|verlust|kosten|verschwen|fehlt/i.test(problem)) {
-                    emotional += 10; // Loss framing
-                }
-            }
-
-            // Q5: Target audience specificity
-            if (data[5]) {
-                const audience = data[5];
-                if (audience.length > 50 && /\d+/.test(audience)) {
-                    clarity += 15; // Specific audience
-                }
-            }
-
-            // Q6: Uniqueness/proof
-            if (data[6]) {
-                const unique = data[6];
-                if (/\d+/.test(unique)) {
-                    credibility += 20; // Has numbers
-                }
-                if (unique.length > 80) {
-                    credibility += 15; // Detailed
-                }
-            }
-
-            // Q7: Sales cycle variance
-            if (data[7] === 'extreme' || data[7] === 'high') {
-                clarity -= 10; // High variance = inconsistency
-            }
-
-            // Q9: CTA clarity
-            if (data[9]) {
-                if (data[9].type !== 'unclear') {
-                    cta += 20;
-                }
-                if (data[9].text && data[9].text.length >= 10) {
-                    cta += 15; // Specific CTA
-                }
-            }
-
-            // Cap at 100
-            clarity = Math.min(100, Math.max(0, clarity));
-            emotional = Math.min(100, Math.max(0, emotional));
-            credibility = Math.min(100, Math.max(0, credibility));
-            cta = Math.min(100, Math.max(0, cta));
-
-            const overall = Math.round((clarity + emotional + credibility + cta) / 4);
+            // ... rest of your existing calculation logic ...
 
             return {
-                overall,
+                overall: Math.round((clarity + emotional + credibility + cta) / 4),
                 dimensions: { clarity, emotional, credibility, cta },
                 errors: generateErrors(data, { clarity, emotional, credibility, cta })
             };
@@ -1121,7 +1216,7 @@
             gapArray.forEach(({ dimension, gap, userRating, aiRating }) => {
                 const card = document.createElement('div');
                 card.className = 'gap-card';
-                
+
                 let explanation = '';
                 if (gap > 5) {
                     explanation = '🚨 Kritischer blinder Fleck! Du überschätzt diese Dimension massiv.';

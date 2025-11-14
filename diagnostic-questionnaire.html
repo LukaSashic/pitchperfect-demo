@@ -522,6 +522,16 @@
                 ],
                 textPlaceholder: "Beschreibe die SPEZIFISCHE Aktion (z.B. 'Buche jetzt deine 15-Min-Demo unter...')",
                 showTextFor: ["meeting", "trial", "invest", "contact", "buy"]
+            },
+            {
+                id: 10,
+                question: "Füge deinen aktuellen Pitch-Text ein:",
+                subtitle: "🤖 AI/ML: Unsere KI analysiert DEINEN konkreten Pitch Wort für Wort",
+                type: "long-text",
+                placeholder: "Füge hier deinen kompletten Pitch-Text ein. Beispiel:\n\n'Stell dir vor, du verlierst 70 unvorhersehbare Tage pro Deal durch inkonsistente Pitches. Das passiert 80% aller Gründer in Deutschland.\n\nWir sind PitchPerfect - die erste KI-gestützte Pitch-Optimierung, die deine Erfolgsrate um 40% steigert durch wissenschaftlich fundierte Analyse aus 9 Disziplinen.\n\nBereits 247 Gründer nutzen unsere Plattform...'",
+                minChars: 100,
+                maxChars: 5000,
+                hint: "Mindestens 100 Zeichen. Je detaillierter dein Pitch, desto präziser die Analyse."
             }
         ];
 
@@ -625,6 +635,25 @@
                             `).join('')}
                         </div>
                     `;
+                } else if (q.type === 'text' || q.type === 'long-text') {
+                    const minHeight = q.type === 'long-text' ? '200px' : '120px';
+                    const minChars = q.minChars || 10;
+                    const maxChars = q.maxChars || 500;
+
+                    optionsHTML = `
+        <textarea 
+            class="text-input" 
+            id="text-${index}"
+            placeholder="${q.placeholder}"
+            oninput="handleTextInput(${index}, ${minChars}, ${maxChars})"
+            style="min-height: ${minHeight};"
+            maxlength="${maxChars}"
+        >${answers[q.id] || ''}</textarea>
+        ${q.hint ? `<div class="input-hint" style="font-size: 13px; color: #666; margin-top: 8px;">${q.hint}</div>` : ''}
+        <div class="char-counter" id="counter-${index}">
+            0 / ${minChars}-${maxChars} Zeichen
+        </div>
+    `;
                 } else if (q.type === 'choice-with-text') {
                     // Q9: CTA with optional text input
                     optionsHTML = `
@@ -860,18 +889,35 @@
         }
 
         // Handle text input
-        function handleTextInput(questionIndex) {
-            const questionId = questions[questionIndex].id;
-            const value = document.getElementById(`text-${questionIndex}`).value.trim();
+        // Handle text input with validation
+            function handleTextInput(questionIndex, minChars, maxChars) {
+                const questionId = questions[questionIndex].id;
+                const value = document.getElementById(`text-${questionIndex}`).value.trim();
+                const counter = document.getElementById(`counter-${questionIndex}`);
 
-            if (value.length > 10) {
-                answers[questionId] = value;
-                document.getElementById('nextBtn').disabled = false;
-            } else {
-                delete answers[questionId];
-                document.getElementById('nextBtn').disabled = true;
+                // Update counter
+                counter.textContent = `${value.length} / ${minChars}-${maxChars} Zeichen`;
+
+                if (value.length >= minChars && value.length <= maxChars) {
+                    counter.className = 'char-counter valid';
+                    counter.style.color = '#10b981';
+                } else if (value.length > 0) {
+                    counter.className = 'char-counter invalid';
+                    counter.style.color = '#ef4444';
+                } else {
+                    counter.className = 'char-counter';
+                    counter.style.color = '#999';
+                }
+
+                // Save answer
+                if (value.length >= minChars) {
+                    answers[questionId] = value;
+                    document.getElementById('nextBtn').disabled = false;
+                } else {
+                    delete answers[questionId];
+                    document.getElementById('nextBtn').disabled = true;
+                }
             }
-        }
 
         // Next question
         function nextQuestion() {
