@@ -1,0 +1,93 @@
+warning: in the working copy of 'diagnostic-questionnaire.html', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/diagnostic-questionnaire.html b/diagnostic-questionnaire.html[m
+[1mindex 6c6aac9..d3e1418 100644[m
+[1m--- a/diagnostic-questionnaire.html[m
+[1m+++ b/diagnostic-questionnaire.html[m
+[36m@@ -397,7 +397,8 @@[m
+         <div class="results" id="results">[m
+             <div class="loading" id="loadingResults">[m
+                 <div class="spinner"></div>[m
+[31m-                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch mit 9 wissenschaftlichen Methoden...</p>[m
+[32m+[m[32m                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch mit 9 wissenschaftlichen Methoden...[m
+[32m+[m[32m                </p>[m
+             </div>[m
+             <div id="resultsContent" style="display: none;"></div>[m
+         </div>[m
+[36m@@ -735,13 +736,23 @@[m
+             // Update character counter[m
+             updateCharCounter(questionIndex, partId, minChars, maxChars);[m
+ [m
+[31m-            // Check if BOTH parts are valid[m
+[31m-            const allParts = questions[questionIndex].parts;[m
+[31m-            const allValid = allParts.every(part => {[m
+[31m-                const partValue = answers[questionId][part.id];[m
+[31m-                return partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars;[m
+[32m+[m[32m            // Check if BOTH parts are valid - FIXED[m
+[32m+[m[32m            const question = questions[questionIndex];[m
+[32m+[m
+[32m+[m[32m            // Count how many parts are valid[m
+[32m+[m[32m            let validParts = 0;[m
+[32m+[m[32m            const totalParts = question.parts.length;[m
+[32m+[m
+[32m+[m[32m            question.parts.forEach(part => {[m
+[32m+[m[32m                const partValue = answers[questionId]?.[part.id];[m
+[32m+[m[32m                if (partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars) {[m
+[32m+[m[32m                    validParts++;[m
+[32m+[m[32m                }[m
+             });[m
+ [m
+[32m+[m[32m            const allValid = (validParts === totalParts);[m
+[32m+[m
+[32m+[m[32m            console.log(`Q${questionIndex}: ${validParts}/${totalParts} parts valid`);[m
+             document.getElementById('nextBtn').disabled = !allValid;[m
+         }[m
+ [m
+[36m@@ -752,7 +763,7 @@[m
+             const length = textarea.value.length;[m
+ [m
+             counter.textContent = `${length} / ${minChars}-${maxChars} Zeichen`;[m
+[31m-            [m
+[32m+[m
+             if (length >= minChars && length <= maxChars) {[m
+                 counter.className = 'char-counter valid';[m
+             } else if (length > 0) {[m
+[36m@@ -766,7 +777,7 @@[m
+         function selectCTAOption(questionIndex, value) {[m
+             const questionId = questions[questionIndex].id;[m
+             const q = questions[questionIndex];[m
+[31m-            [m
+[32m+[m
+             // Update selection UI[m
+             const options = document.querySelectorAll(`#question-${questionIndex} .option`);[m
+             options.forEach(opt => {[m
+[36m@@ -777,12 +788,12 @@[m
+             // Show/hide text input based on selection[m
+             const textInput = document.getElementById(`cta-text-${questionIndex}`);[m
+             const validation = document.getElementById(`cta-validation-${questionIndex}`);[m
+[31m-            [m
+[32m+[m
+             if (q.showTextFor.includes(value)) {[m
+                 textInput.classList.add('show');[m
+                 textInput.focus();[m
+                 answers[questionId] = { type: value, text: textInput.value || '' };[m
+[31m-                [m
+[32m+[m
+                 // Validate text length[m
+                 if (textInput.value.length >= 10) {[m
+                     validation.className = 'validation-message success show';[m
+[36m@@ -798,7 +809,7 @@[m
+                 validation.classList.remove('show');[m
+                 answers[questionId] = { type: value, text: '' };[m
+                 document.getElementById('nextBtn').disabled = false;[m
+[31m-                [m
+[32m+[m
+                 if (value === 'unclear') {[m
+                     // Auto-advance for "unclear" selection[m
+                     setTimeout(() => nextQuestion(), 500);[m
+[36m@@ -965,4 +976,4 @@[m
+     </script>[m
+ </body>[m
+ [m
+[31m-</html>[m
+[32m+[m[32m</html>[m
+\ No newline at end of file[m

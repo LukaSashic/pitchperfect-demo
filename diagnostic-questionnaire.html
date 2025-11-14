@@ -397,7 +397,8 @@
         <div class="results" id="results">
             <div class="loading" id="loadingResults">
                 <div class="spinner"></div>
-                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch mit 9 wissenschaftlichen Methoden...</p>
+                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch mit 9 wissenschaftlichen Methoden...
+                </p>
             </div>
             <div id="resultsContent" style="display: none;"></div>
         </div>
@@ -735,13 +736,23 @@
             // Update character counter
             updateCharCounter(questionIndex, partId, minChars, maxChars);
 
-            // Check if BOTH parts are valid
-            const allParts = questions[questionIndex].parts;
-            const allValid = allParts.every(part => {
-                const partValue = answers[questionId][part.id];
-                return partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars;
+            // Check if BOTH parts are valid - FIXED
+            const question = questions[questionIndex];
+
+            // Count how many parts are valid
+            let validParts = 0;
+            const totalParts = question.parts.length;
+
+            question.parts.forEach(part => {
+                const partValue = answers[questionId]?.[part.id];
+                if (partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars) {
+                    validParts++;
+                }
             });
 
+            const allValid = (validParts === totalParts);
+
+            console.log(`Q${questionIndex}: ${validParts}/${totalParts} parts valid`);
             document.getElementById('nextBtn').disabled = !allValid;
         }
 
@@ -752,7 +763,7 @@
             const length = textarea.value.length;
 
             counter.textContent = `${length} / ${minChars}-${maxChars} Zeichen`;
-            
+
             if (length >= minChars && length <= maxChars) {
                 counter.className = 'char-counter valid';
             } else if (length > 0) {
@@ -766,7 +777,7 @@
         function selectCTAOption(questionIndex, value) {
             const questionId = questions[questionIndex].id;
             const q = questions[questionIndex];
-            
+
             // Update selection UI
             const options = document.querySelectorAll(`#question-${questionIndex} .option`);
             options.forEach(opt => {
@@ -777,12 +788,12 @@
             // Show/hide text input based on selection
             const textInput = document.getElementById(`cta-text-${questionIndex}`);
             const validation = document.getElementById(`cta-validation-${questionIndex}`);
-            
+
             if (q.showTextFor.includes(value)) {
                 textInput.classList.add('show');
                 textInput.focus();
                 answers[questionId] = { type: value, text: textInput.value || '' };
-                
+
                 // Validate text length
                 if (textInput.value.length >= 10) {
                     validation.className = 'validation-message success show';
@@ -798,7 +809,7 @@
                 validation.classList.remove('show');
                 answers[questionId] = { type: value, text: '' };
                 document.getElementById('nextBtn').disabled = false;
-                
+
                 if (value === 'unclear') {
                     // Auto-advance for "unclear" selection
                     setTimeout(() => nextQuestion(), 500);
