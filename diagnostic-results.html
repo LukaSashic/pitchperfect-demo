@@ -822,38 +822,35 @@
             cta: null
         };
 
-       window.addEventListener('DOMContentLoaded', async () => {
-            console.log('🔵 Results page loaded');
+        window.addEventListener('DOMContentLoaded', async () => {
+                console.log('🔵 Results page loaded');
 
-            // Load diagnostic data
-            const dataStr = localStorage.getItem('diagnosticData');
-            if (!dataStr) {
-                alert('Keine Diagnosedaten gefunden.');
-                window.location.href = '/diagnostic-questionnaire.html';
-                return;
-            }
+                const dataStr = localStorage.getItem('diagnosticData');
+                if (!dataStr) {
+                    alert('Keine Diagnosedaten gefunden.');
+                    window.location.href = '/diagnostic-questionnaire.html';
+                    return;
+                }
 
-            diagnosticData = JSON.parse(dataStr);
-            console.log('📊 Diagnostic data loaded');
+                diagnosticData = JSON.parse(dataStr);
+                console.log('📊 Diagnostic data loaded');
 
-            // Check if we have pitch text (Q10) and call API
-            if (!diagnosticData[10]) {
-                console.warn('⚠️ Q10 missing, using generic analysis');
-                analysisResult = calculateAnalysis(diagnosticData);
-            } else if (diagnosticData[10].length < 100) {
-                console.warn(`⚠️ Q10 too short (${diagnosticData[10].length} chars), using generic analysis`);
-                analysisResult = calculateAnalysis(diagnosticData);
-            } else {
-                console.log('✅ Q10 found, calling API with pitch text:', diagnosticData[10].substring(0, 50) + '...');
-                analysisResult = await analyzeWithAPI(diagnosticData);
-            }
+                // Show red flag FIRST (with disabled button)
+                showRedFlag();
 
-            // Show red flag first
-            showRedFlag();
+                // THEN get analysis (async)
+                if (!diagnosticData[10] || diagnosticData[10].length < 100) {
+                    console.warn('⚠️ Q10 missing/short, using generic analysis');
+                    analysisResult = calculateAnalysis(diagnosticData);
+                } else {
+                    console.log('✅ Q10 found, calling API...');
+                    analysisResult = await analyzeWithAPI(diagnosticData);
+                    console.log('✅ API complete, button will enable now');
+                }
 
-            // Initialize self-rating buttons
-            initializeSelfRatingButtons();
-        });
+                // Initialize self-rating
+                initializeSelfRatingButtons();
+            });
 
 
         // Calculate 4D analysis from diagnostic data
@@ -1041,32 +1038,45 @@
             return errors;
         }
 
-        // Show red flag overlay
         function showRedFlag() {
             const variance = diagnosticData[7];
-            let metric = "70 Tage";
-            let message = "Deine systemische Varianz liegt bei 70 Tagen. Du verlierst 70 unvorhersehbare Tage pro Deal. Das ist inakzeptabel.";
+            const { dimensions } = analysisResult || { dimensions: {} };
 
-            if (variance === 'extreme') {
-                metric = "70+ Tage";
-                message = "🚨 Extrem hohe Varianz: 70+ Tage Unterschied zwischen bestem und schlechtestem Deal. Dies kostet dich massive Opportunitätskosten und signalisiert chaotische Prozesse.";
-            } else if (variance === 'high') {
-                metric = "40-60 Tage";
-                message = "⚠️ Hohe Varianz: 40-60 Tage Unterschied. Deine Pitch-Inkonsistenz verhindert systematischen Erfolg.";
-            } else if (analysisResult.dimensions.emotional < 40) {
-                metric = analysisResult.dimensions.emotional + "/100";
-                message = "🧬 Kritisch niedrige emotionale Aktivierung. Neuroscience zeigt: Ohne Amygdala-Aktivierung verschwindet dein Pitch aus der Erinnerung innerhalb von 24 Stunden.";
+            // ... existing red flag logic ...
+
+            const overlay = document.getElementById('redFlagOverlay');
+            const continueBtn = document.querySelector('#redFlagOverlay button');
+
+            // Disable button until analysis is ready
+            if (!analysisResult || !analysisResult.fatalErrors) {
+                continueBtn.disabled = true;
+                continueBtn.textContent = 'Analysiere Pitch... ⏳';
+
+                // Enable when ready
+                const checkReady = setInterval(() => {
+                    if (analysisResult && analysisResult.fatalErrors) {
+                        continueBtn.disabled = false;
+                        continueBtn.textContent = 'Vollständige Analyse anzeigen →';
+                        clearInterval(checkReady);
+                    }
+                }, 100);
             }
 
-            document.getElementById('redFlagMetric').textContent = metric;
-            document.getElementById('redFlagMessage').textContent = message;
+            overlay.style.display = 'flex';
         }
 
-        // Dismiss red flag and show full results
         function dismissRedFlag() {
+            // CRITICAL: Don't proceed if analysis isn't ready
+            if (!analysisResult || !analysisResult.fatalErrors) {
+                console.error('❌ Analysis not ready!');
+                alert('Die Analyse läuft noch. Bitte warte einen Moment...');
+                return;
+            }
+
             document.getElementById('redFlagOverlay').style.display = 'none';
             displayResults();
         }
+        
 
         // Display full results with 4D dashboard
         function displayResults() {
