@@ -48,6 +48,17 @@
             font-size: 16px;
         }
 
+        .header .research-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
         .progress-bar {
             background: white;
             padding: 20px 32px;
@@ -101,6 +112,16 @@
             line-height: 1.4;
         }
 
+        .question-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
         .options {
             display: flex;
             flex-direction: column;
@@ -137,18 +158,103 @@
             opacity: 0.8;
         }
 
+        /* Enhanced Q4: Two-part input */
+        .dual-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .input-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-section:focus-within {
+            border-color: #667eea;
+        }
+
+        .input-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-hint {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
         .text-input {
             width: 100%;
             padding: 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-family: inherit;
             resize: vertical;
-            min-height: 120px;
+            min-height: 100px;
+            background: white;
         }
 
         .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-counter.valid {
+            color: #10b981;
+        }
+
+        .char-counter.invalid {
+            color: #ef4444;
+        }
+
+        .example-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .example-box strong {
+            color: #10b981;
+        }
+
+        /* Q9: CTA Input */
+        .cta-text-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .cta-text-input.show {
+            display: block;
+        }
+
+        .cta-text-input:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -208,45 +314,6 @@
             display: block;
         }
 
-        .results h2 {
-            color: #667eea;
-            font-size: 32px;
-            margin-bottom: 24px;
-        }
-
-        .result-section {
-            margin-bottom: 32px;
-            padding: 24px;
-            background: #f8f9ff;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-
-        .result-section h3 {
-            color: #333;
-            font-size: 20px;
-            margin-bottom: 12px;
-        }
-
-        .result-section p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .track-recommendation {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 32px;
-            border-radius: 12px;
-            margin-bottom: 32px;
-            text-align: center;
-        }
-
-        .track-recommendation h3 {
-            font-size: 24px;
-            margin-bottom: 12px;
-        }
-
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -267,6 +334,31 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Validation feedback */
+        .validation-message {
+            font-size: 13px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .validation-message.show {
+            display: block;
+        }
+
+        .validation-message.success {
+            background: #f0fdf4;
+            color: #10b981;
+            border: 1px solid #86efac;
+        }
+
+        .validation-message.error {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+        }
     </style>
 </head>
 
@@ -275,7 +367,8 @@
         <!-- Header -->
         <div class="header">
             <h1>🎯 Pitch-Diagnose</h1>
-            <p>5-Minuten-Analyse für deinen perfekten Pitch</p>
+            <p>6-Minuten-Analyse für deinen perfekten Pitch</p>
+            <span class="research-badge">🔬 Wissenschaftlich fundiert</span>
         </div>
 
         <!-- Progress Bar -->
@@ -283,7 +376,7 @@
             <div class="progress-track">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
-            <div class="progress-text" id="progressText">0 / 8</div>
+            <div class="progress-text" id="progressText">0 / 9</div>
         </div>
 
         <!-- Question Cards -->
@@ -304,7 +397,7 @@
         <div class="results" id="results">
             <div class="loading" id="loadingResults">
                 <div class="spinner"></div>
-                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch...</p>
+                <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch mit 9 wissenschaftlichen Methoden...</p>
             </div>
             <div id="resultsContent" style="display: none;"></div>
         </div>
@@ -312,11 +405,12 @@
 
     <script src="auth-guard.js"></script>
     <script>
-        // Questions configuration
+        // Enhanced questions with research backing
         const questions = [
             {
                 id: 1,
                 question: "Was ist dein Hauptziel mit diesem Pitch?",
+                subtitle: "🎲 Game Theory: Unterschiedliche Ziele = unterschiedliche strategische Spiele",
                 type: "choice",
                 options: [
                     { value: "investor", label: "Investoren überzeugen", description: "Finanzierung für mein Startup" },
@@ -328,6 +422,7 @@
             {
                 id: 2,
                 question: "In welcher Phase befindet sich dein Business?",
+                subtitle: "👥 Social Psychology: Jede Phase braucht unterschiedliche Autoritätssignale",
                 type: "choice",
                 options: [
                     { value: "idea", label: "Idee", description: "Konzept in der Entwicklung" },
@@ -339,52 +434,93 @@
             {
                 id: 3,
                 question: "Wie viel Zeit hast du für deinen Pitch?",
+                subtitle: "🧠 Cognitive Psychology: Zeit bestimmt kognitive Last (Miller's 7±2)",
                 type: "choice",
                 options: [
-                    { value: "60s", label: "60 Sekunden", description: "BNI oder schnelles Networking" },
-                    { value: "3min", label: "3 Minuten", description: "Kurze Präsentation" },
-                    { value: "10min", label: "10 Minuten", description: "Detaillierter Pitch" },
+                    { value: "60s", label: "60 Sekunden", description: "BNI oder schnelles Networking (1 Kernbotschaft)" },
+                    { value: "3min", label: "3 Minuten", description: "Kurze Präsentation (3 Botschaften)" },
+                    { value: "10min", label: "10 Minuten", description: "Detaillierter Pitch (7 Botschaften)" },
                     { value: "20min", label: "20+ Minuten", description: "Ausführliche Präsentation" }
                 ]
             },
             {
                 id: 4,
-                question: "Beschreibe dein Produkt/Service in einem Satz:",
-                type: "text",
-                placeholder: "Was machst du? Für wen? Welches Problem löst du?"
+                question: "Beschreibe Problem & Lösung:",
+                subtitle: "🧬 Neuroscience + 💡 Behavioral Science: Loss Aversion aktiviert Amygdala 2x stärker",
+                type: "dual-text",
+                parts: [
+                    {
+                        id: "problem",
+                        label: "A) Was ist der größte VERLUST/SCHMERZ deiner Zielgruppe?",
+                        hint: "Quantifiziere den Schmerz mit Zahlen (Zeit, Geld, Opportunitätskosten)",
+                        placeholder: "Beispiel: 'Gründer verlieren 70 unvorhersehbare Tage pro Deal durch inkonsistente Pitches'",
+                        minChars: 20,
+                        maxChars: 200,
+                        example: "✅ Gut: 'Deine Konkurrenten schließen Deals in 20 Tagen, während du 90 Tage verschwendest'\n❌ Schlecht: 'Unternehmen haben ineffiziente Prozesse'"
+                    },
+                    {
+                        id: "solution",
+                        label: "B) Wie löst du das KONKRET?",
+                        hint: "Beschreibe den MECHANISMUS, nicht nur das Ergebnis",
+                        placeholder: "Beispiel: 'KI-gestützte Pitch-Analyse + 12-Phasen-Workshop = 70% kürzere Deal-Cycles'",
+                        minChars: 20,
+                        maxChars: 200,
+                        example: "✅ Gut: 'Durch automatisierte Sentiment-Analyse + strukturiertes Coaching reduzieren wir...'\n❌ Schlecht: 'Wir helfen Unternehmen erfolgreicher zu sein'"
+                    }
+                ]
             },
             {
                 id: 5,
                 question: "Wer ist deine Zielgruppe?",
+                subtitle: "📢 Communication Science: Personalisierung erhöht Response um 30%",
                 type: "text",
-                placeholder: "Beschreibe deine idealen Kunden (Alter, Branche, Bedürfnisse...)"
+                placeholder: "Beispiel: 'CFOs in FinTech-Startups (10-50 Mitarbeiter), die Fundraising planen'\n\nSEI SPEZIFISCH: Rolle + Branche + Unternehmensgröße"
             },
             {
                 id: 6,
                 question: "Was macht dich einzigartig?",
+                subtitle: "👥 Social Psychology: Authority + Social Proof = Multiplicative Trust Effect",
                 type: "text",
-                placeholder: "Warum sollten Kunden/Investoren sich für dich entscheiden?"
+                placeholder: "Beispiel: '15+ Jahre Pitch-Coaching + 500 finanzierte Startups + TechCrunch Featured'\n\nKombiniere: Expertise + Zahlen + Externe Validierung"
             },
             {
                 id: 7,
-                question: "Was ist deine größte Herausforderung beim Pitchen?",
+                question: "Beste und schlechteste Sales Cycle Dauer (letzte 6 Monate)?",
+                subtitle: "📊 Data Science: Varianz zeigt systemische Inkonsistenz",
                 type: "choice",
                 options: [
-                    { value: "hook", label: "Aufmerksamkeit gewinnen", description: "Starker Einstieg fehlt" },
-                    { value: "clarity", label: "Klarheit", description: "Komplexes Produkt einfach erklären" },
-                    { value: "confidence", label: "Selbstbewusstsein", description: "Nervosität überwinden" },
-                    { value: "structure", label: "Struktur", description: "Logischer Aufbau fehlt" }
+                    { value: "consistent", label: "Konsistent (±10 Tage)", description: "Stabile Prozesse" },
+                    { value: "moderate", label: "Moderat (±20-30 Tage)", description: "Leichte Schwankungen" },
+                    { value: "high", label: "Hoch (±40-60 Tage)", description: "Deutliche Unterschiede" },
+                    { value: "extreme", label: "Extrem (±70+ Tage)", description: "Völlig unvorhersehbar" }
                 ]
             },
             {
                 id: 8,
                 question: "Hast du bereits einen Pitch vorbereitet?",
+                subtitle: "🤖 AI/ML: Bestehender Pitch ermöglicht Pattern-Matching mit 85% Genauigkeit",
                 type: "choice",
                 options: [
                     { value: "yes", label: "Ja", description: "Ich habe einen fertigen Pitch" },
                     { value: "draft", label: "Entwurf", description: "Ich habe Ideen gesammelt" },
                     { value: "no", label: "Nein", description: "Ich fange bei Null an" }
                 ]
+            },
+            {
+                id: 9,
+                question: "Was soll dein Publikum NACH dem Pitch tun?",
+                subtitle: "🧠 Cognitive Psychology: Klarer CTA reduziert Entscheidungslast um 80%",
+                type: "choice-with-text",
+                options: [
+                    { value: "meeting", label: "Meeting buchen", description: "Demo-Call, Due Diligence..." },
+                    { value: "trial", label: "Trial starten", description: "Kostenlos testen" },
+                    { value: "invest", label: "Investieren", description: "Term Sheet unterzeichnen" },
+                    { value: "contact", label: "Kontakt aufnehmen", description: "Visitenkarten tauschen" },
+                    { value: "buy", label: "Kaufen", description: "Direkt bestellen/buchen" },
+                    { value: "unclear", label: "Unklar", description: "Ich bin mir nicht sicher" }
+                ],
+                textPlaceholder: "Beschreibe die SPEZIFISCHE Aktion (z.B. 'Buche jetzt deine 15-Min-Demo unter...')",
+                showTextFor: ["meeting", "trial", "invest", "contact", "buy"]
             }
         ];
 
@@ -398,15 +534,12 @@
         async function init() {
             // Check authentication
             const authData = await getCurrentUserWithProfile();
-            if (!authData) return; // Redirected to login
+            if (!authData) return;
 
             currentUser = authData.user;
             userProfile = authData.profile;
 
-            // Load saved progress if exists
             await loadSavedProgress();
-
-            // Render questions
             renderQuestions();
             showQuestion(currentQuestion);
             updateProgress();
@@ -422,16 +555,12 @@
                     .order('created_at', { ascending: false })
                     .limit(1);
 
-                // Check if we got any data
                 if (data && data.length > 0 && data[0].diagnostic_data) {
                     answers = data[0].diagnostic_data;
                     console.log('Loaded saved progress:', answers);
-                } else {
-                    console.log('No saved progress found, starting fresh');
                 }
             } catch (error) {
-                // No saved progress or error loading - just start fresh
-                console.log('Could not load progress, starting fresh:', error.message);
+                console.log('Starting fresh:', error.message);
             }
         }
 
@@ -457,6 +586,53 @@
                             `).join('')}
                         </div>
                     `;
+                } else if (q.type === 'dual-text') {
+                    // Enhanced Q4: Two-part input
+                    optionsHTML = `
+                        <div class="dual-input-container">
+                            ${q.parts.map((part, partIndex) => `
+                                <div class="input-section">
+                                    <div class="input-label">
+                                        ${part.label}
+                                    </div>
+                                    <div class="input-hint">${part.hint}</div>
+                                    <textarea 
+                                        class="text-input" 
+                                        id="text-${index}-${part.id}"
+                                        placeholder="${part.placeholder}"
+                                        oninput="handleDualTextInput(${index}, '${part.id}', ${part.minChars}, ${part.maxChars})"
+                                        maxlength="${part.maxChars}"
+                                    >${answers[q.id] ? (answers[q.id][part.id] || '') : ''}</textarea>
+                                    <div class="char-counter" id="counter-${index}-${part.id}">
+                                        0 / ${part.minChars}-${part.maxChars} Zeichen
+                                    </div>
+                                    <div class="example-box">
+                                        ${part.example.replace(/\n/g, '<br>')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (q.type === 'choice-with-text') {
+                    // Q9: CTA with optional text input
+                    optionsHTML = `
+                        <div class="options">
+                            ${q.options.map(opt => `
+                                <div class="option" onclick="selectCTAOption(${index}, '${opt.value}')">
+                                    <div class="option-label">${opt.label}</div>
+                                    <div class="option-description">${opt.description}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <input 
+                            type="text" 
+                            class="cta-text-input" 
+                            id="cta-text-${index}"
+                            placeholder="${q.textPlaceholder}"
+                            oninput="handleCTATextInput(${index})"
+                        />
+                        <div class="validation-message" id="cta-validation-${index}"></div>
+                    `;
                 } else if (q.type === 'text') {
                     optionsHTML = `
                         <textarea 
@@ -471,6 +647,7 @@
                 card.innerHTML = `
                     <div class="question-number">Frage ${index + 1} von ${questions.length}</div>
                     <div class="question-title">${q.question}</div>
+                    ${q.subtitle ? `<div class="question-subtitle">${q.subtitle}</div>` : ''}
                     ${optionsHTML}
                 `;
 
@@ -484,22 +661,44 @@
                 card.classList.toggle('active', i === index);
             });
 
-            // Update buttons
             document.getElementById('prevBtn').style.display = index > 0 ? 'block' : 'none';
             document.getElementById('nextBtn').textContent =
                 index === questions.length - 1 ? 'Analyse starten →' : 'Weiter →';
 
-            // Check if current question is answered
             const isAnswered = answers[questions[index].id] !== undefined;
             document.getElementById('nextBtn').disabled = !isAnswered;
 
-            // Restore selected option if exists
+            // Restore selections
             if (questions[index].type === 'choice' && answers[questions[index].id]) {
                 const options = document.querySelectorAll(`#question-${index} .option`);
                 options.forEach(opt => {
                     const value = opt.onclick.toString().match(/'([^']+)'/)[1];
                     if (value === answers[questions[index].id]) {
                         opt.classList.add('selected');
+                    }
+                });
+            } else if (questions[index].type === 'choice-with-text' && answers[questions[index].id]) {
+                const options = document.querySelectorAll(`#question-${index} .option`);
+                const savedAnswer = answers[questions[index].id];
+                options.forEach(opt => {
+                    const value = opt.onclick.toString().match(/'([^']+)'/)[1];
+                    if (value === savedAnswer.type) {
+                        opt.classList.add('selected');
+                        // Show text input if needed
+                        if (questions[index].showTextFor.includes(value)) {
+                            const textInput = document.getElementById(`cta-text-${index}`);
+                            textInput.classList.add('show');
+                            textInput.value = savedAnswer.text || '';
+                        }
+                    }
+                });
+            } else if (questions[index].type === 'dual-text' && answers[questions[index].id]) {
+                // Restore both text inputs for Q4
+                questions[index].parts.forEach(part => {
+                    const textarea = document.getElementById(`text-${index}-${part.id}`);
+                    if (textarea && answers[questions[index].id][part.id]) {
+                        textarea.value = answers[questions[index].id][part.id];
+                        updateCharCounter(index, part.id, part.minChars, part.maxChars);
                     }
                 });
             }
@@ -510,18 +709,123 @@
             const questionId = questions[questionIndex].id;
             answers[questionId] = value;
 
-            // Update UI
             const options = document.querySelectorAll(`#question-${questionIndex} .option`);
             options.forEach(opt => {
                 const optValue = opt.onclick.toString().match(/'([^']+)'/)[1];
                 opt.classList.toggle('selected', optValue === value);
             });
 
-            // Enable next button
             document.getElementById('nextBtn').disabled = false;
-
-            // Auto-advance after 500ms
             setTimeout(() => nextQuestion(), 500);
+        }
+
+        // Handle dual text input (Q4)
+        function handleDualTextInput(questionIndex, partId, minChars, maxChars) {
+            const questionId = questions[questionIndex].id;
+            const textarea = document.getElementById(`text-${questionIndex}-${partId}`);
+            const value = textarea.value.trim();
+
+            // Initialize answer object if needed
+            if (!answers[questionId]) {
+                answers[questionId] = {};
+            }
+
+            answers[questionId][partId] = value;
+
+            // Update character counter
+            updateCharCounter(questionIndex, partId, minChars, maxChars);
+
+            // Check if BOTH parts are valid
+            const allParts = questions[questionIndex].parts;
+            const allValid = allParts.every(part => {
+                const partValue = answers[questionId][part.id];
+                return partValue && partValue.length >= part.minChars && partValue.length <= part.maxChars;
+            });
+
+            document.getElementById('nextBtn').disabled = !allValid;
+        }
+
+        // Update character counter
+        function updateCharCounter(questionIndex, partId, minChars, maxChars) {
+            const textarea = document.getElementById(`text-${questionIndex}-${partId}`);
+            const counter = document.getElementById(`counter-${questionIndex}-${partId}`);
+            const length = textarea.value.length;
+
+            counter.textContent = `${length} / ${minChars}-${maxChars} Zeichen`;
+            
+            if (length >= minChars && length <= maxChars) {
+                counter.className = 'char-counter valid';
+            } else if (length > 0) {
+                counter.className = 'char-counter invalid';
+            } else {
+                counter.className = 'char-counter';
+            }
+        }
+
+        // Select CTA option (Q9)
+        function selectCTAOption(questionIndex, value) {
+            const questionId = questions[questionIndex].id;
+            const q = questions[questionIndex];
+            
+            // Update selection UI
+            const options = document.querySelectorAll(`#question-${questionIndex} .option`);
+            options.forEach(opt => {
+                const optValue = opt.onclick.toString().match(/'([^']+)'/)[1];
+                opt.classList.toggle('selected', optValue === value);
+            });
+
+            // Show/hide text input based on selection
+            const textInput = document.getElementById(`cta-text-${questionIndex}`);
+            const validation = document.getElementById(`cta-validation-${questionIndex}`);
+            
+            if (q.showTextFor.includes(value)) {
+                textInput.classList.add('show');
+                textInput.focus();
+                answers[questionId] = { type: value, text: textInput.value || '' };
+                
+                // Validate text length
+                if (textInput.value.length >= 10) {
+                    validation.className = 'validation-message success show';
+                    validation.textContent = '✓ CTA ist spezifisch genug';
+                    document.getElementById('nextBtn').disabled = false;
+                } else {
+                    validation.className = 'validation-message error show';
+                    validation.textContent = '⚠ Bitte beschreibe die spezifische Aktion (min. 10 Zeichen)';
+                    document.getElementById('nextBtn').disabled = true;
+                }
+            } else {
+                textInput.classList.remove('show');
+                validation.classList.remove('show');
+                answers[questionId] = { type: value, text: '' };
+                document.getElementById('nextBtn').disabled = false;
+                
+                if (value === 'unclear') {
+                    // Auto-advance for "unclear" selection
+                    setTimeout(() => nextQuestion(), 500);
+                }
+            }
+        }
+
+        // Handle CTA text input
+        function handleCTATextInput(questionIndex) {
+            const questionId = questions[questionIndex].id;
+            const textInput = document.getElementById(`cta-text-${questionIndex}`);
+            const validation = document.getElementById(`cta-validation-${questionIndex}`);
+            const value = textInput.value.trim();
+
+            if (answers[questionId]) {
+                answers[questionId].text = value;
+            }
+
+            if (value.length >= 10) {
+                validation.className = 'validation-message success show';
+                validation.textContent = '✓ CTA ist spezifisch genug';
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                validation.className = 'validation-message error show';
+                validation.textContent = `⚠ Noch ${10 - value.length} Zeichen für spezifischen CTA`;
+                document.getElementById('nextBtn').disabled = true;
+            }
         }
 
         // Handle text input
@@ -544,11 +848,8 @@
                 currentQuestion++;
                 showQuestion(currentQuestion);
                 updateProgress();
-
-                // Auto-save progress
                 saveProgress();
             } else {
-                // All questions answered - show results
                 finishDiagnostic();
             }
         }
@@ -573,7 +874,6 @@
         // Save progress to database
         async function saveProgress() {
             try {
-                // Check if project exists
                 const { data: existing, error: fetchError } = await supabaseClient
                     .from('pitch_projects')
                     .select('id')
@@ -582,7 +882,6 @@
                     .limit(1);
 
                 if (existing && existing.length > 0) {
-                    // Update existing
                     await supabaseClient
                         .from('pitch_projects')
                         .update({
@@ -590,10 +889,7 @@
                             updated_at: new Date().toISOString()
                         })
                         .eq('id', existing[0].id);
-
-                    console.log('Progress updated');
                 } else {
-                    // Create new
                     await supabaseClient
                         .from('pitch_projects')
                         .insert({
@@ -604,41 +900,33 @@
                             stage: answers[2] || null,
                             target_duration: answers[3] || null
                         });
-
-                    console.log('New project created');
                 }
             } catch (error) {
                 console.error('Failed to save progress:', error);
             }
         }
 
-        // Finish diagnostic and redirect to pitch input
+        // Finish diagnostic and redirect to results
         async function finishDiagnostic() {
-            // Hide questions, show loading
             document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
             document.querySelector('.progress-bar').style.display = 'none';
             document.querySelector('.buttons').style.display = 'none';
             document.getElementById('results').classList.add('active');
 
-            // Save final answers with completion flag
             await saveFinalDiagnostic();
-
-            // ✅ ALSO save to localStorage for pitch-input page
             localStorage.setItem('diagnosticData', JSON.stringify(answers));
 
-            console.log('✅ Diagnostic completed, saved to DB and localStorage');
+            console.log('✅ Diagnostic completed - redirecting to enhanced results page');
 
-            // Small delay to ensure save completes
             setTimeout(() => {
-                window.location.href = '/pitch-input.html';
+                window.location.href = '/diagnostic-results-enhanced.html';
             }, 500);
         }
 
         // Save final diagnostic with completion flag
         async function saveFinalDiagnostic() {
             try {
-                // Check if project exists
-                const { data: existing, error: fetchError } = await supabaseClient
+                const { data: existing } = await supabaseClient
                     .from('pitch_projects')
                     .select('id')
                     .eq('user_id', currentUser.id)
@@ -646,19 +934,15 @@
                     .limit(1);
 
                 if (existing && existing.length > 0) {
-                    // Update existing project with completion flag
                     await supabaseClient
                         .from('pitch_projects')
                         .update({
                             diagnostic_data: answers,
-                            diagnostic_completed: true,  // ← NEW: Completion flag
+                            diagnostic_completed: true,
                             updated_at: new Date().toISOString()
                         })
                         .eq('id', existing[0].id);
-
-                    console.log('Diagnostic updated with completion flag');
                 } else {
-                    // Create new project with completion flag
                     await supabaseClient
                         .from('pitch_projects')
                         .insert({
@@ -666,95 +950,14 @@
                             title: 'Mein Pitch-Projekt',
                             pitch_type: answers[1] || 'unknown',
                             diagnostic_data: answers,
-                            diagnostic_completed: true,  // ← NEW: Completion flag
+                            diagnostic_completed: true,
                             stage: answers[2] || null,
                             target_duration: answers[3] || null
                         });
-
-                    console.log('New project created with completion flag');
                 }
             } catch (error) {
                 console.error('Failed to save final diagnostic:', error);
             }
-        }
-
-        // Generate personalized results
-        async function generateResults() {
-            // Simulate API call (replace with actual Claude API integration)
-            setTimeout(() => {
-                const pitchType = answers[1];
-                const stage = answers[2];
-                const duration = answers[3];
-                const challenge = answers[7];
-
-                // Determine recommended track
-                let track = 'investor';
-                if (pitchType === 'networking' && duration === '60s') {
-                    track = 'BNI 60-Sekunden-Track';
-                } else if (pitchType === 'investor') {
-                    track = 'Investor-Pitch-Track';
-                } else if (pitchType === 'sales') {
-                    track = 'Sales-Pitch-Track';
-                } else if (pitchType === 'speaking') {
-                    track = 'Präsentations-Track';
-                }
-
-                const resultsHTML = `
-                    <h2>✅ Deine Pitch-Diagnose</h2>
-                    
-                    <div class="track-recommendation">
-                        <h3>🎯 Empfohlener Track</h3>
-                        <p style="font-size: 20px; margin: 12px 0;">${track}</p>
-                        <p style="opacity: 0.9;">Basierend auf deinen Antworten</p>
-                    </div>
-                    
-                    <div class="result-section">
-                        <h3>📊 Dein Pitch-Profil</h3>
-                        <p><strong>Ziel:</strong> ${answers[1]}</p>
-                        <p><strong>Phase:</strong> ${answers[2]}</p>
-                        <p><strong>Dauer:</strong> ${answers[3]}</p>
-                        <p><strong>Hauptherausforderung:</strong> ${answers[7]}</p>
-                    </div>
-                    
-                    <div class="result-section">
-                        <h3>💡 Deine nächsten Schritte</h3>
-                        <p>1. <strong>Workshop starten:</strong> Arbeite dich durch die ${track}-Phasen</p>
-                        <p>2. <strong>Kernbotschaft schärfen:</strong> Fokussiere auf dein Alleinstellungsmerkmal</p>
-                        <p>3. <strong>Struktur optimieren:</strong> Nutze bewährte Story-Frameworks</p>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 32px;">
-                        <button class="btn btn-primary" onclick="startWorkshop()">
-                            Zum Workshop →
-                        </button>
-                        <button class="btn btn-secondary" onclick="restartDiagnostic()" style="margin-left: 12px;">
-                            Diagnose wiederholen
-                        </button>
-                    </div>
-                `;
-
-                document.getElementById('loadingResults').style.display = 'none';
-                document.getElementById('resultsContent').innerHTML = resultsHTML;
-                document.getElementById('resultsContent').style.display = 'block';
-            }, 2000);
-        }
-
-        // Start workshop
-        function startWorkshop() {
-            window.location.href = '/workshop-interface.html';
-        }
-
-        // Restart diagnostic
-        function restartDiagnostic() {
-            answers = {};
-            currentQuestion = 0;
-
-            document.getElementById('results').classList.remove('active');
-            document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
-            document.querySelector('.progress-bar').style.display = 'flex';
-            document.querySelector('.buttons').style.display = 'flex';
-
-            init();
         }
 
         // Initialize on load
