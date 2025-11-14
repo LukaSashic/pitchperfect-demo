@@ -951,11 +951,11 @@
                 alert('Fehler bei der API-Analyse. Verwende generische Bewertung.');
 
                 // Fallback to generic analysis
-                return calculateAnalysisGeneric(diagnosticData);
+                return calculateAnalysis(diagnosticData);
             }
         }
         // Fallback generic analysis (keep the old calculateAnalysis code)
-        function calculateAnalysisGeneric(data) {
+        function calculateAnalysis(data) {
             // Your existing calculateAnalysis() code here
             // (the current function that calculates scores from diagnostic data)
 
