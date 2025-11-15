@@ -20,32 +20,36 @@ Stage: ${diagnosticData?.business_stage || 'unknown'}
 </pitch_context>
 
 <analysis_task>
-Identify 3-5 FATAL ERRORS in this pitch that would cause investors to reject it immediately.
+You must provide TWO analyses:
 
-Focus on errors like:
-- Vague problem statements (no specific persona or quantified pain)
-- Missing or unclear solution
-- No market sizing or unrealistic numbers
-- Weak differentiation (sounds like everyone else)
-- No clear ask or vague funding request
-- Missing traction/validation
-- Confusing language or jargon
+1. **Dimension Scores (0-100)**: Rate the pitch on these 4 dimensions:
+   - clarity: How clear and understandable is the pitch? Are problem, solution, and value prop obvious?
+   - emotional: How emotionally engaging? Does it activate pain points and create urgency?
+   - credibility: How credible and trustworthy? Does it include proof, authority, social proof?
+   - cta: How clear is the call-to-action? Is it specific and low-friction?
+
+2. **Fatal Errors (3-5 specific issues)**: Identify critical problems that would cause rejection.
 
 For each error, provide:
-1. Error name (short, punchy) - IN GERMAN
-2. What's wrong (quote the problematic part) - IN GERMAN
-3. Why it's fatal (investor perspective) - IN GERMAN
-4. How to fix it (specific, actionable) - IN GERMAN
+- Error name (short, punchy) - IN GERMAN
+- What's wrong (quote the problematic part) - IN GERMAN
+- Why it's fatal (investor perspective) - IN GERMAN
+- How to fix it (specific, actionable) - IN GERMAN
 
-**IMPORTANT: ALL output must be in German language. Error titles, descriptions, impact statements, and fixes should all be in German.**
+**CRITICAL: You MUST score each dimension independently. Do NOT give all dimensions the same score.**
 
 Output ONLY valid JSON in this exact format (no markdown, no code blocks):
 {
-  "overallScore": <number 0-100>,
-  "canProceedToWorkshop": <boolean>,
+  "overallScore": <number 0-100, calculated as average of dimensions>,
+  "dimensions": {
+    "clarity": <number 0-100>,
+    "emotional": <number 0-100>,
+    "credibility": <number 0-100>,
+    "cta": <number 0-100>
+  },
   "fatalErrors": [
     {
-      "id": "vague_problem",
+      "id": "unique_id",
       "title": "<Kurzer Fehlername auf Deutsch>",
       "severity": "critical|high|medium",
       "evidence": "<Zitat aus dem Pitch auf Deutsch>",
@@ -54,12 +58,15 @@ Output ONLY valid JSON in this exact format (no markdown, no code blocks):
     }
   ],
   "strengths": ["<Dinge die gut gemacht sind - auf Deutsch>"],
-  "nextSteps": "<Was der Nutzer zuerst fokussieren sollte - auf Deutsch>",
-  "estimatedWorkshopTime": "<z.B., 2-3 Stunden>"
+  "nextSteps": "<Was der Nutzer zuerst fokussieren sollte - auf Deutsch>"
 }
-</analysis_task>
 
-**REMEMBER: Respond ENTIRELY in German. This is for a German founder.**
+**IMPORTANT:** 
+- ALL text must be in German
+- Dimensions must have DIFFERENT scores based on the pitch quality
+- Include 3-5 fatal errors with evidence quotes
+- Be harsh but constructive
+</analysis_task>
 
 Analyze the pitch and return ONLY the JSON object.`;
 }

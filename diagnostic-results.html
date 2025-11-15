@@ -1290,28 +1290,55 @@
         // Display errors with scientific attribution
         function displayErrors() {
             const errorsList = document.getElementById('errorsList');
-            analysisResult.errors.forEach(error => {
-                const card = document.createElement('div');
-                card.className = 'error-card';
-                card.innerHTML = `
-                    <div class="error-header">
-                        <div class="error-icon">❌</div>
-                        <div class="error-content">
-                            <div class="error-title">${error.title}</div>
-                            <span class="scientific-angle">${error.scientificAngle}</span>
-                            <div class="error-impact">${error.impact}</div>
-                        </div>
+
+            try {
+                if (!analysisResult) {
+                    throw new Error('analysisResult is undefined');
+                }
+
+                if (!analysisResult.fatalErrors) {
+                    throw new Error('fatalErrors is undefined');
+                }
+
+                if (!Array.isArray(analysisResult.fatalErrors)) {
+                    throw new Error('fatalErrors is not an array: ' + typeof analysisResult.fatalErrors);
+                }
+
+                console.log(`✅ Displaying ${analysisResult.fatalErrors.length} errors`);
+
+                analysisResult.fatalErrors.forEach((error, index) => {
+                    if (!error) {
+                        console.warn(`⚠️ Error ${index} is null/undefined`);
+                        return;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'error-card';
+                    card.innerHTML = `
+                <div class="error-header">
+                    <div class="error-icon">❌</div>
+                    <div class="error-content">
+                        <div class="error-title">${error.title || 'Unbekannter Fehler'}</div>
+                        <div class="error-impact">${error.impact || ''}</div>
                     </div>
+                </div>
+                ${error.evidence ? `
                     <div class="error-evidence">
-                        "${error.evidence}"
+                        <strong>Dein Text:</strong> "${error.evidence}"
                     </div>
-                    <div class="error-fix">
-                        <strong>So behebst du es:</strong> ${error.fix}
-                    </div>
-                    <div class="research-citation">📚 ${error.research}</div>
-                `;
-                errorsList.appendChild(card);
-            });
+                ` : ''}
+                <div class="error-fix">
+                    <strong>So behebst du es:</strong> ${error.fix || ''}
+                </div>
+            `;
+                    errorsList.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('❌ Error in displayErrors:', error);
+                console.error('analysisResult:', analysisResult);
+                errorsList.innerHTML = `<p style="color: red;">Fehler beim Anzeigen der Analyse. Bitte lade die Seite neu.</p>`;
+            }
         }
     </script>
 </body>
