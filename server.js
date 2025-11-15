@@ -41,7 +41,7 @@ const MIME_TYPES = {
 // Import API handlers
 async function loadAPIHandlers() {
     const chatV2 = await import('./api/chat-v2.js');
-    const analyzePitch = await import('./api/analyze-pitch.js');
+    const analyzePitch = await import('./api/analyze-pitch-enhanced.js');
     const adaptiveQuestion = await import('./api/generate-adaptive-question.js');
     const evaluatePhase = await import('./api/evaluate-phase.js');
 
