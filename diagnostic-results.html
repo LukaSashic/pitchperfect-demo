@@ -823,34 +823,52 @@
         };
 
         window.addEventListener('DOMContentLoaded', async () => {
-                console.log('🔵 Results page loaded');
+            console.log('🔵 Results page loaded');
 
-                const dataStr = localStorage.getItem('diagnosticData');
-                if (!dataStr) {
-                    alert('Keine Diagnosedaten gefunden.');
-                    window.location.href = '/diagnostic-questionnaire.html';
-                    return;
-                }
+            const dataStr = localStorage.getItem('diagnosticData');
+            if (!dataStr) {
+                alert('Keine Diagnosedaten gefunden.');
+                window.location.href = '/diagnostic-questionnaire.html';
+                return;
+            }
 
-                diagnosticData = JSON.parse(dataStr);
-                console.log('📊 Diagnostic data loaded');
+            diagnosticData = JSON.parse(dataStr);
+            console.log('📊 Diagnostic data loaded');
 
-                // Show red flag FIRST (with disabled button)
-                showRedFlag();
+            // Show loading overlay
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+                    background: rgba(0,0,0,0.9); display: flex; align-items: center; 
+                    justify-content: center; z-index: 10000;">
+            <div style="text-align: center; color: white;">
+                <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
+                <div style="font-size: 24px; margin-bottom: 10px;">Analysiere deinen Pitch...</div>
+                <div style="font-size: 14px; color: #999;">Dies kann 5-10 Sekunden dauern</div>
+            </div>
+        </div>
+    `;
+            document.body.appendChild(loadingOverlay);
 
-                // THEN get analysis (async)
-                if (!diagnosticData[10] || diagnosticData[10].length < 100) {
-                    console.warn('⚠️ Q10 missing/short, using generic analysis');
-                    analysisResult = calculateAnalysis(diagnosticData);
-                } else {
-                    console.log('✅ Q10 found, calling API...');
-                    analysisResult = await analyzeWithAPI(diagnosticData);
-                    console.log('✅ API complete, button will enable now');
-                }
+            // Get analysis (this takes 5-10 seconds)
+            if (!diagnosticData[10] || diagnosticData[10].length < 100) {
+                console.warn('⚠️ Q10 missing/short, using generic analysis');
+                analysisResult = calculateAnalysis(diagnosticData);
+            } else {
+                console.log('✅ Q10 found, calling API...');
+                analysisResult = await analyzeWithAPI(diagnosticData);
+                console.log('✅ API complete');
+            }
 
-                // Initialize self-rating
-                initializeSelfRatingButtons();
-            });
+            // Remove loading overlay
+            loadingOverlay.remove();
+
+            // NOW show red flag (with correct data)
+            showRedFlag();
+
+            // Initialize self-rating
+            initializeSelfRatingButtons();
+        });
 
 
         // Calculate 4D analysis from diagnostic data
@@ -1076,7 +1094,7 @@
             document.getElementById('redFlagOverlay').style.display = 'none';
             displayResults();
         }
-        
+
 
         // Display full results with 4D dashboard
         function displayResults() {
