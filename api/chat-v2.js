@@ -2,8 +2,8 @@
 // Integrates: XML Parser, Turn Manager, One-Question-at-a-Time
 
 import Anthropic from '@anthropic-ai/sdk';
-import { parseCoachingResponse, extractPhaseStatus } from '../utils/xml-parser.js';
-import { getTurnManager } from '../utils/turn-manager.js';
+import { parseCoachingResponse, extractPhaseStatus } from './utils/xml-parser.js';
+import { getTurnManager } from './utils/turn-manager.js';
 
 // ============================================
 // CACHED SYSTEM PROMPT (Reused across requests)
