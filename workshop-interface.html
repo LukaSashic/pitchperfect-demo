@@ -2843,6 +2843,13 @@
             }
 
             console.log('✅ Diagnostic completed - workshop unlocked');
+            console.log('✅ User context loaded:', {
+                userId: currentUser?.id,
+                userEmail: currentUser?.email,
+                projectId: currentProject?.id,
+                projectTitle: currentProject?.title,
+                diagnosticCompleted: currentProject?.diagnostic_completed
+            });
 
             // Load saved state
             const demoState = PitchPerfect?.DemoState?.load() || { workshop: {}, diagnostic: {} };
@@ -3307,26 +3314,78 @@ Bist du bereit, diesen Fehler anzugehen?`;
             showTypingIndicator();
 
             try {
+                // ✅ NEW: Get current user and project
+                const userId = currentUser?.id || null;
+                const projectId = currentProject?.id || null;
+
+                console.log('📤 Sending message with context:', {
+                    phase: state.currentPhase,
+                    userId: userId ? 'present' : 'missing',
+                    projectId: projectId ? 'present' : 'missing'
+                });
+
+                // Build conversation history
                 const conversationHistory = state.messages.map(m => ({
                     role: m.role === 'user' ? 'user' : 'assistant',
                     content: m.content
                 }));
 
-                const response = await PitchPerfect.AI.getResponse(
-                    state.currentPhase,
-                    message,
-                    conversationHistory
-                );
+                // ✅ NEW: Include pitch context if available (for Phase 2)
+                let pitchContext = null;
+                if (state.currentPhase === 2 && window.pitchContext) {
+                    pitchContext = window.pitchContext;
+                    console.log('📊 Including pitch context for Phase 2');
+                }
+
+                // Call API with enhanced context
+                const response = await fetch('/api/chat-v2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phase: state.currentPhase,
+                        message: message,
+                        conversationHistory: conversationHistory,
+                        pitchContext: pitchContext,
+                        userId: userId,        // ✅ NEW
+                        projectId: projectId   // ✅ NEW
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                console.log('✅ API response:', {
+                    contentLength: data.content?.length,
+                    phaseComplete: data.phaseComplete,
+                    xmlParsed: data.metadata?.xmlParsed,
+                    turn: data.metadata?.turn
+                });
 
                 removeTypingIndicator();
-                addMessage('assistant', response.content);
+                addMessage('assistant', data.content);
 
-                if (response.phaseComplete) {
+                // Check if phase is complete
+                if (data.phaseComplete) {
                     setTimeout(() => completePhase(), 1000);
                 }
 
+                // Log metrics if available
+                if (data.metrics) {
+                    console.log('📊 API Metrics:', {
+                        latency: `${data.metrics.latency_ms}ms`,
+                        tokens: `${data.metrics.input_tokens} in / ${data.metrics.output_tokens} out`,
+                        cacheRead: data.metrics.cache_read_tokens,
+                        cost: `$${data.metrics.cost_usd}`
+                    });
+                }
+
             } catch (error) {
-                console.error('Fehler beim Senden der Nachricht:', error);
+                console.error('❌ Error sending message:', error);
                 removeTypingIndicator();
                 addMessage('assistant', 'Entschuldigung, es gab ein Problem. Bitte versuche es erneut.');
             }
@@ -3824,6 +3883,46 @@ Bist du bereit, diesen Fehler anzugehen?`;
                 section.style.display = 'none';
             }
         }
+        // ========================================
+            // DEBUG: User Context Checker
+            // ========================================
+            function checkUserContext() {
+                console.group('🔍 User Context Check');
+
+                console.log('currentUser:', currentUser ? {
+                    id: currentUser.id,
+                    email: currentUser.email,
+                    created_at: currentUser.created_at
+                } : '❌ NOT LOADED');
+
+                console.log('userProfile:', userProfile ? {
+                    tier: userProfile.tier,
+                    full_name: userProfile.full_name
+                } : '❌ NOT LOADED');
+
+                console.log('currentProject:', currentProject ? {
+                    id: currentProject.id,
+                    title: currentProject.title,
+                    diagnostic_completed: currentProject.diagnostic_completed,
+                    diagnostic_data: currentProject.diagnostic_data ? 'present' : 'missing'
+                } : '❌ NOT LOADED');
+
+                console.log('state.currentPhase:', state.currentPhase || 'not set');
+                console.log('state.messages.length:', state.messages.length);
+
+                console.groupEnd();
+            }
+
+            // Auto-check on page load
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    console.log('🔍 Auto-checking user context...');
+                    checkUserContext();
+                }, 2000);
+            });
+
+            // Make available in console for manual checking
+            window.checkUserContext = checkUserContext;
     </script>
 </body>
 
