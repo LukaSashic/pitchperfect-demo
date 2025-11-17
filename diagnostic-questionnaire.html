@@ -990,14 +990,86 @@
             document.querySelector('.buttons').style.display = 'none';
             document.getElementById('results').classList.add('active');
 
-            await saveFinalDiagnostic();
-            localStorage.setItem('diagnosticData', JSON.stringify(answers));
+            // Show loading message
+            document.getElementById('loadingResults').innerHTML = `
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: #666;">Analysiere deinen Pitch mit 9 wissenschaftlichen Methoden...</p>
+        <p style="margin-top: 10px; color: #999; font-size: 14px;">Dies kann 5-10 Sekunden dauern</p>
+    `;
 
-            console.log('✅ Diagnostic completed - redirecting to enhanced results page');
+            try {
+                // Save diagnostic data first
+                await saveFinalDiagnostic();
+                localStorage.setItem('diagnosticData', JSON.stringify(answers));
 
-            setTimeout(() => {
-                window.location.href = '/diagnostic-results-professional.html';
-            }, 500);
+                console.log('📤 Calling API to analyze pitch...');
+
+                // Prepare data for API
+                const pitchText = answers[10]; // Question 10 = full pitch text
+                const diagnosticData = {
+                    pitch_purpose: answers[1],
+                    business_stage: answers[2],
+                    target_duration: answers[3],
+                    problem: answers[4]?.problem || '',
+                    solution: answers[4]?.solution || '',
+                    target_audience: answers[5] || '',
+                    unique_value: answers[6] || '',
+                    consistency: answers[7],
+                    has_pitch: answers[8],
+                    cta_type: answers[9]?.type || '',
+                    cta_text: answers[9]?.text || ''
+                };
+
+                console.log('Pitch text length:', pitchText?.length || 0, 'characters');
+
+                // ✅ CRITICAL: Call the API
+                const response = await fetch('/api/analyze-pitch-enhanced', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pitchText: pitchText,
+                        diagnosticData: diagnosticData
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const analysis = await response.json();
+
+                console.log('✅ API Response received. Score:', analysis.overallScore);
+                console.log('Fatal errors found:', analysis.fatalErrors?.length || 0);
+
+                // ✅ CRITICAL: Save analysis to localStorage
+                localStorage.setItem('pitchAnalysis', JSON.stringify(analysis));
+
+                console.log('✅ Diagnostic completed - redirecting to results page');
+
+                // Redirect to results
+                setTimeout(() => {
+                    window.location.href = '/diagnostic-results-professional.html';
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ Error during analysis:', error);
+
+                // Show error message
+                document.getElementById('loadingResults').innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <h3 style="color: #ef4444; margin-bottom: 16px;">⚠️ Fehler bei der Analyse</h3>
+                <p style="color: #666; margin-bottom: 24px;">
+                    Die Pitch-Analyse konnte nicht durchgeführt werden.<br>
+                    Bitte versuche es erneut.
+                </p>
+                <button class="btn btn-primary" onclick="location.reload()">
+                    Erneut versuchen
+                </button>
+            </div>
+        `;
+            }
         }
 
         // Save final diagnostic with completion flag
