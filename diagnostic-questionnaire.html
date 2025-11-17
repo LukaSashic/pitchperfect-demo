@@ -890,34 +890,34 @@
 
         // Handle text input
         // Handle text input with validation
-            function handleTextInput(questionIndex, minChars, maxChars) {
-                const questionId = questions[questionIndex].id;
-                const value = document.getElementById(`text-${questionIndex}`).value.trim();
-                const counter = document.getElementById(`counter-${questionIndex}`);
+        function handleTextInput(questionIndex, minChars, maxChars) {
+            const questionId = questions[questionIndex].id;
+            const value = document.getElementById(`text-${questionIndex}`).value.trim();
+            const counter = document.getElementById(`counter-${questionIndex}`);
 
-                // Update counter
-                counter.textContent = `${value.length} / ${minChars}-${maxChars} Zeichen`;
+            // Update counter
+            counter.textContent = `${value.length} / ${minChars}-${maxChars} Zeichen`;
 
-                if (value.length >= minChars && value.length <= maxChars) {
-                    counter.className = 'char-counter valid';
-                    counter.style.color = '#10b981';
-                } else if (value.length > 0) {
-                    counter.className = 'char-counter invalid';
-                    counter.style.color = '#ef4444';
-                } else {
-                    counter.className = 'char-counter';
-                    counter.style.color = '#999';
-                }
-
-                // Save answer
-                if (value.length >= minChars) {
-                    answers[questionId] = value;
-                    document.getElementById('nextBtn').disabled = false;
-                } else {
-                    delete answers[questionId];
-                    document.getElementById('nextBtn').disabled = true;
-                }
+            if (value.length >= minChars && value.length <= maxChars) {
+                counter.className = 'char-counter valid';
+                counter.style.color = '#10b981';
+            } else if (value.length > 0) {
+                counter.className = 'char-counter invalid';
+                counter.style.color = '#ef4444';
+            } else {
+                counter.className = 'char-counter';
+                counter.style.color = '#999';
             }
+
+            // Save answer
+            if (value.length >= minChars) {
+                answers[questionId] = value;
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                delete answers[questionId];
+                document.getElementById('nextBtn').disabled = true;
+            }
+        }
 
         // Next question
         function nextQuestion() {
@@ -996,7 +996,7 @@
             console.log('✅ Diagnostic completed - redirecting to enhanced results page');
 
             setTimeout(() => {
-                window.location.href = '/diagnostic-results-enhanced.html';
+                window.location.href = '/diagnostic-results-professional.html';
             }, 500);
         }
 
@@ -1040,6 +1040,76 @@
         // Initialize on load
         window.addEventListener('DOMContentLoaded', init);
     </script>
+
+    <!-- LEGAL FOOTER - Required for German TMG Compliance -->
+    <footer
+        style="background: #2d3748; color: white; padding: 40px 20px 20px 20px; margin-top: 60px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 30px;">
+
+                <!-- Company Info -->
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 15px; color: #667eea;">PitchPerfect AI</h3>
+                    <p style="font-size: 14px; line-height: 1.6; color: #cbd5e0; margin-bottom: 15px;">
+                        KI-gestütztes Pitch-Coaching für deutsche Startup-Gründer. Wissenschaftlich fundiert, praktisch
+                        umsetzbar.
+                    </p>
+                    <p style="font-size: 14px; color: #cbd5e0;">© 2025 PrincipAI<br>Alle Rechte vorbehalten.</p>
+                </div>
+
+                <!-- Legal Links -->
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 15px; color: #667eea;">Rechtliches</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="/impressum.html"
+                                style="color: #cbd5e0; text-decoration: none; font-size: 14px;">📄 Impressum</a></li>
+                        <li style="margin-bottom: 10px;"><a href="/privacy.html"
+                                style="color: #cbd5e0; text-decoration: none; font-size: 14px;">🔒
+                                Datenschutzerklärung</a>
+                        </li>
+                        <li style="margin-bottom: 10px;"><a href="/terms.html"
+                                style="color: #cbd5e0; text-decoration: none; font-size: 14px;">📋 AGB</a></li>
+                    </ul>
+                </div>
+
+                <!-- Product Links -->
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 15px; color: #667eea;">Produkt</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="/diagnostic-questionnaire.html"
+                                style="color: #cbd5e0; text-decoration: none; font-size: 14px;">🎯 Kostenlose
+                                Diagnose</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 15px; color: #667eea;">Kontakt</h3>
+                    <p style="font-size: 14px; color: #cbd5e0; margin-bottom: 10px;">📧 E-Mail:<br><a
+                            href="mailto:info@pitchperfect.ai"
+                            style="color: #667eea; text-decoration: none;">info@pitchperfect.ai</a></p>
+                    <p style="font-size: 14px; color: #cbd5e0;">📍 Berlin, Deutschland</p>
+                </div>
+
+            </div>
+
+            <!-- Bottom Bar -->
+            <div
+                style="border-top: 1px solid #4a5568; padding-top: 20px; text-align: center; font-size: 13px; color: #a0aec0;">
+                <p style="margin: 0;">
+                    Made with 💜 in Berlin |
+                    <a href="/impressum.html" style="color: #667eea; text-decoration: none;">Impressum</a> |
+                    <a href="/privacy.html" style="color: #667eea; text-decoration: none;">Datenschutz</a> |
+                    <a href="/terms.html" style="color: #667eea; text-decoration: none;">AGB</a>
+                </p>
+            </div>
+
+        </div>
+    </footer>
+
 </body>
 
 </html>

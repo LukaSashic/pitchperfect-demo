@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deine Pitch-Analyse | PitchPerfect AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            padding: 0;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: -40px auto 60px auto;
+            padding: 0 20px;
+        }
+
+        /* Score Card */
+        .score-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .score-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .score-number {
+            font-size: 72px;
+            font-weight: 700;
+            color: #667eea;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .score-insight {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .score-insight h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .score-insight p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 32px;
+        }
+
+        .dimension-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .dimension-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .dimension-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .dimension-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .dimension-bar {
+            height: 6px;
+            background: #e5e5e5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .dimension-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 1s ease-out;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 48px 0 24px 0;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-top: -16px;
+            margin-bottom: 24px;
+        }
+
+        /* Error Cards */
+        .error-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .error-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .error-number {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .scientific-badge {
+            background: #f8f9ff;
+            color: #667eea;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .error-section {
+            margin: 20px 0;
+        }
+
+        .error-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .error-evidence {
+            background: #fffbeb;
+            border-left: 3px solid #fbbf24;
+            padding: 16px;
+            border-radius: 6px;
+            font-style: italic;
+            color: #92400e;
+            font-size: 14px;
+        }
+
+        .error-impact {
+            color: #555;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .error-fix {
+            background: #f0fdf4;
+            border-left: 3px solid #10b981;
+            padding: 16px;
+            border-radius: 6px;
+            color: #065f46;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .error-scientific {
+            background: #fafafa;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: white;
+            border-radius: 12px;
+            padding: 48px 40px;
+            margin: 48px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .workshop-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+            text-align: left;
+        }
+
+        .benefit-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .benefit-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .benefit-card p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .pricing {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 40px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .pricing .price {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .pricing .period {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 48px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .guarantee {
+            background: #f8f9ff;
+            border: 1px solid #e0e7ff;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 32px;
+            text-align: left;
+        }
+
+        .guarantee h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+
+        .guarantee p {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0;
+        }
+
+        /* Footer */
+        footer {
+            background: #2d3748;
+            color: white;
+            padding: 40px 20px 20px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e0;
+            text-decoration: none;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a5568;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #a0aec0;
+        }
+
+        .footer-bottom a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .score-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .score-insight {
+                min-width: 100%;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .score-number {
+                font-size: 56px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+            }
+
+            .pricing .price {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: #666;">Lade deine Analyse...</p>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>📊 Deine Pitch-Analyse</h1>
+        <p>Wissenschaftlich fundierte Bewertung mit konkreten Verbesserungsvorschlägen</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContent" style="display: none;">
+
+        <!-- Score Card -->
+        <div class="score-card">
+            <div class="score-header">
+                <div>
+                    <div class="score-number" id="overallScore">--</div>
+                    <div class="score-label">Pitch-Score (von 100)</div>
+                </div>
+                <div class="score-insight">
+                    <h3>🎯 Diagnose</h3>
+                    <p id="scoreInsight">Lade Analyse...</p>
+                </div>
+            </div>
+
+            <!-- 4D Dashboard -->
+            <div class="dashboard">
+                <div class="dimension-card">
+                    <div class="dimension-header">
+                        <span class="dimension-name">💡 Klarheit</span>
+                        <span class="dimension-score" id="clarityScore">--</span>
+                    </div>
+                    <div class="dimension-bar">
+                        <div class="dimension-fill" id="clarityFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="dimension-card">
+                    <div class="dimension-header">
+                        <span class="dimension-name">❤️ Emotionale Wirkung</span>
+                        <span class="dimension-score" id="emotionalScore">--</span>
+                    </div>
+                    <div class="dimension-bar">
+                        <div class="dimension-fill" id="emotionalFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="dimension-card">
+                    <div class="dimension-header">
+                        <span class="dimension-name">🏆 Glaubwürdigkeit</span>
+                        <span class="dimension-score" id="credibilityScore">--</span>
+                    </div>
+                    <div class="dimension-bar">
+                        <div class="dimension-fill" id="credibilityFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="dimension-card">
+                    <div class="dimension-header">
+                        <span class="dimension-name">🎯 CTA-Stärke</span>
+                        <span class="dimension-score" id="ctaScore">--</span>
+                    </div>
+                    <div class="dimension-bar">
+                        <div class="dimension-fill" id="ctaFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Errors Section -->
+        <h2 class="section-title">🔍 Deine 5 kritischen Fehler</h2>
+        <p class="section-subtitle">
+            Jeder Fehler ist wissenschaftlich fundiert und mit konkreten Lösungsvorschlägen versehen.
+        </p>
+
+        <div id="errorsContainer"></div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>🚀 Bereit, diese Fehler zu beheben?</h2>
+            <p>
+                Der PitchPerfect Workshop führt dich durch 12 adaptive Phasen,<br>
+                um jeden dieser Fehler systematisch zu optimieren.
+            </p>
+
+            <div class="workshop-benefits">
+                <div class="benefit-card">
+                    <h4>📚 12-Phasen-System</h4>
+                    <p>Strukturierter Prozess vom Problem bis zur Lösung</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>🤖 KI-gestütztes Coaching</h4>
+                    <p>Claude Sonnet 4 analysiert und optimiert deinen Pitch</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>🧬 Wissenschaftliche Basis</h4>
+                    <p>Basierend auf 9 Forschungsdisziplinen</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>⚡ Sofortige Ergebnisse</h4>
+                    <p>Durchschnittlich 8 Stunden bis investor-ready</p>
+                </div>
+            </div>
+
+            <div class="pricing">
+                <div class="price">€29<span class="period">/Monat</span></div>
+                <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Jederzeit kündbar</p>
+            </div>
+
+            <button class="btn-primary" onclick="handleStartWorkshop()">
+                Workshop starten
+            </button>
+
+            <div class="guarantee">
+                <h4>🛡️ 100% Risikofrei</h4>
+                <p>
+                    <strong>30-Tage Geld-zurück-Garantie:</strong>
+                    Wenn dein Pitch-Score nach dem Workshop nicht mindestens 70/100 erreicht,
+                    erhältst du dein Geld zurück – ohne Fragen.
+                </p>
+                <p style="margin-top: 12px;">
+                    <strong>90-Tage Erfolgs-Garantie:</strong>
+                    Kein Investor-Meeting gesichert? Wir coachen dich persönlich (1-on-1, 60 Min) kostenlos.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>PitchPerfect AI</h3>
+                <p>
+                    KI-gestütztes Pitch-Coaching für deutsche Startup-Gründer.
+                    Wissenschaftlich fundiert, praktisch umsetzbar.
+                </p>
+                <p style="margin-top: 15px;">© 2025 PrincipAI<br>Alle Rechte vorbehalten.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Rechtliches</h3>
+                <ul>
+                    <li><a href="/impressum.html">📄 Impressum</a></li>
+                    <li><a href="/privacy.html">🔒 Datenschutzerklärung</a></li>
+                    <li><a href="/terms.html">📋 AGB</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Produkt</h3>
+                <ul>
+                    <li><a href="/diagnostic-questionnaire.html">🎯 Kostenlose Diagnose</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Kontakt</h3>
+                <p>📧 E-Mail:<br><a href="mailto:info@pitchperfect.ai">info@pitchperfect.ai</a></p>
+                <p>📍 Berlin, Deutschland</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                Made with 💜 in Berlin |
+                <a href="/impressum.html">Impressum</a> |
+                <a href="/privacy.html">Datenschutz</a> |
+                <a href="/terms.html">AGB</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        let analysisData = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAnalysisResults();
+        });
+
+        async function loadAnalysisResults() {
+            try {
+                // Load from localStorage
+                const storedData = localStorage.getItem('pitchAnalysis');
+
+                if (!storedData) {
+                    alert('Keine Analyse-Daten gefunden. Bitte führe zuerst die Diagnose durch.');
+                    window.location.href = '/diagnostic-questionnaire.html';
+                    return;
+                }
+
+                analysisData = JSON.parse(storedData);
+
+                // Hide loading, show content
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                document.getElementById('mainContent').style.display = 'block';
+
+                // Populate all sections
+                populateScoreCard();
+                populateDashboard();
+                populateErrors();
+
+            } catch (error) {
+                console.error('Error loading results:', error);
+                alert('Fehler beim Laden der Ergebnisse. Bitte versuche es erneut.');
+            }
+        }
+
+        function populateScoreCard() {
+            const score = analysisData.overallScore;
+            document.getElementById('overallScore').textContent = score;
+
+            let insight = '';
+            if (score < 30) {
+                insight = 'Dein Pitch benötigt grundlegende Überarbeitung in mehreren Dimensionen. Der Workshop hilft dir, systematisch alle kritischen Fehler zu beheben.';
+            } else if (score < 50) {
+                insight = 'Solide Grundlage vorhanden, aber signifikante Verbesserungen in 3-4 Dimensionen notwendig für Investor-Readiness.';
+            } else if (score < 70) {
+                insight = 'Guter Pitch mit Optimierungspotential. Einige gezielte Verbesserungen bringen dich auf Investor-Niveau.';
+            } else {
+                insight = 'Starker Pitch! Mit wenigen Feintunings erreichst du Top-10%-Niveau.';
+            }
+
+            document.getElementById('scoreInsight').textContent = insight;
+        }
+
+        function populateDashboard() {
+            const dims = analysisData.dimensions;
+
+            setDimension('clarity', dims.clarity.score);
+            setDimension('emotional', dims.emotional.score);
+            setDimension('credibility', dims.credibility.score);
+            setDimension('cta', dims.cta.score);
+
+            // Animate bars
+            setTimeout(() => {
+                document.getElementById('clarityFill').style.width = dims.clarity.score + '%';
+                document.getElementById('emotionalFill').style.width = dims.emotional.score + '%';
+                document.getElementById('credibilityFill').style.width = dims.credibility.score + '%';
+                document.getElementById('ctaFill').style.width = dims.cta.score + '%';
+            }, 300);
+        }
+
+        function setDimension(name, score) {
+            document.getElementById(name + 'Score').textContent = score;
+        }
+
+        function populateErrors() {
+            const errors = analysisData.fatalErrors || [];
+            const container = document.getElementById('errorsContainer');
+            container.innerHTML = '';
+
+            errors.forEach((error, index) => {
+                const card = document.createElement('div');
+                card.className = 'error-card';
+
+                card.innerHTML = `
+                    <div class="error-number">FEHLER #${index + 1}</div>
+                    <div class="error-header">
+                        <div>
+                            <div class="error-title">${error.title}</div>
+                        </div>
+                        <span class="scientific-badge">🧬 ${getScientificAngle(error.id)}</span>
+                    </div>
+
+                    <div class="error-section">
+                        <div class="error-section-title">📝 Dein Text</div>
+                        <div class="error-evidence">"${error.evidence}"</div>
+                    </div>
+
+                    <div class="error-section">
+                        <div class="error-section-title">⚠️ Warum das problematisch ist</div>
+                        <p class="error-impact">${error.impact}</p>
+                    </div>
+
+                    <div class="error-section">
+                        <div class="error-section-title">✅ So behebst du es</div>
+                        <div class="error-fix">${error.fix}</div>
+                    </div>
+
+                    ${error.scientificBasis ? `
+                        <div class="error-section">
+                            <div class="error-section-title">📚 Wissenschaftliche Basis</div>
+                            <div class="error-scientific">${error.scientificBasis}</div>
+                        </div>
+                    ` : ''}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function getScientificAngle(errorId) {
+            const mapping = {
+                'no_pain_quantification': 'Neuroscience',
+                'vague_solution': 'Cognitive Psychology',
+                'vague_solution_mechanism': 'Cognitive Psychology',
+                'zero_credibility_markers': 'Social Psychology',
+                'zero_credibility_signals': 'Social Psychology',
+                'vague_cta': 'Behavioral Science',
+                'maximum_friction_cta': 'Behavioral Science',
+                'no_target_specificity': 'Marketing Psychology'
+            };
+            return mapping[errorId] || 'Behavioral Science';
+        }
+
+        function handleStartWorkshop() {
+            alert('Payment integration coming soon! Redirecting to workshop...');
+            // In production: window.location.href = '/checkout?plan=monthly';
+        }
+    </script>
+
+</body>
+
+</html>
